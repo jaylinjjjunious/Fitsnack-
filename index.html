@@ -14,13 +14,26 @@
     /* Header */
     .row{position:relative; display:flex; align-items:center; gap:0}
     .search-wrap{flex:none; width:calc(100% - 200px);}
-    .search{width:100%;background:#1b1b20;border-radius:999px;border:1px solid #2a2a2e;padding:12px 44px;color:var(--text);outline:none}
+    .search{width:100%;background:#1b1b20;border-radius:999px;border:1px solid #2a2a2e;padding:12px 44px 12px 44px;color:var(--text);outline:none}
     .search::placeholder{color:#6c6c70}
     .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
-    .icon-rights{position:absolute; right:8px; top:50%; transform:translateY(-50%); display:flex; gap:10px;}
+    .icon-rights{position:absolute; right:8px; top:50%; transform:translateY(-50%); display:flex; gap:10px; margin-left:0}
     .btn{-webkit-appearance:none;appearance:none;background:#24242a;border:1px solid #2d2d33;border-radius:14px;width:44px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
     #cartBtn { position:relative; display:flex; align-items:center; justify-content:center }
-    .badge{position:absolute; top:-6px; right:-8px; background:var(--badge); color:white; border-radius:999px; padding:1px 6px; font-size:12px; font-weight:700; display:none; align-items:center; justify-content:center;}
+    .badge{
+      position:absolute;
+      top:-6px;
+      right:-8px;
+      background:var(--badge);
+      color:white;
+      border-radius:999px;
+      padding:1px 6px;
+      font-size:12px;
+      font-weight:700;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
 
     /* Carousel */
     .carousel{position:relative;margin:14px 0 8px;overflow:hidden;border-radius:16px;height:120px;background:#101014}
@@ -40,13 +53,36 @@
     .price{color:#c7c7cc;font-weight:600;margin-top:auto}
     .add{position:absolute;right:12px;bottom:12px;background:var(--accent);border:none;color:#001230;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer}
 
-    /* Overlays */
+    /* Overlays base */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
     .overlay.show{display:flex}
     .sheet{width:92%;max-width:360px;background:var(--card);border:1px solid #2a2a30;border-radius:20px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+
+    /* Bottom-sheet mini page for Cart (and Checkout for consistency) */
     #cartOverlay{align-items:flex-end}
-    #cartOverlay .sheet{width:100%;max-width:480px;border-top-left-radius:24px;border-top-right-radius:24px;border-bottom-left-radius:0;border-bottom-right-radius:0;margin:0 auto;padding-bottom:calc(16px + env(safe-area-inset-bottom));transform:translateY(100%);animation:slideUp 220ms ease-out forwards;}
+    #cartOverlay .sheet,
+    #checkoutOverlay .sheet{
+      width:100%;
+      max-width:480px;
+      border-top-left-radius:24px;border-top-right-radius:24px;
+      border-bottom-left-radius:0;border-bottom-right-radius:0;
+      margin:0 auto;
+      padding-bottom:calc(16px + env(safe-area-inset-bottom));
+      transform:translateY(100%);
+      animation:slideUp 220ms ease-out forwards;
+    }
     @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+    .row-between{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .qty{display:flex;align-items:center;gap:10px}
+    .qty button{width:36px;height:36px;border-radius:10px;border:1px solid #2a2a30;background:#1c1c22;color:var(--text);font-size:20px;font-weight:700}
+    .primary{background:var(--accent);border:0;color:#081425;font-weight:800;border-radius:12px;padding:12px 14px}
+    .ghost{background:#1b1b20;border:1px solid #2a2a30;color:#e7e7eb;border-radius:12px;padding:10px 12px}
+    .actions{display:flex;gap:10px;margin-top:12px}
+    .tabs{display:flex;gap:8px;margin:6px 0 12px}
+    .tab{padding:8px 10px;border-radius:10px;border:1px solid #2a2a30;background:#18181d;cursor:pointer}
+    .tab.active{background:#24242a}
+    .admin-list{max-height:240px;overflow:auto;border:1px solid #2a2a30;border-radius:12px;padding:8px;margin-top:8px}
   </style>
 </head>
 <body>
@@ -58,150 +94,187 @@
       </div>
       <div class="icon-rights">
         <button type="button" class="btn" id="cartBtn" aria-label="Open cart">
-          🛒 <span id="cartBadge" class="badge">0</span>
+          🛒
+          <span id="cartBadge" class="badge" style="display:none;">0</span>
         </button>
         <button type="button" class="btn" id="settingsBtn" aria-label="Open settings">⚙️</button>
       </div>
     </div>
 
-    <div class="carousel">
+    <div class="carousel" aria-label="School photos">
       <div class="track">
-        <div class="slide" style="background-image:url(assets/carousel-1.jpg)"></div>
-        <div class="slide" style="background-image:url(assets/carousel-2.jpg)"></div>
-        <div class="slide" style="background-image:url(assets/carousel-3.jpg)"></div>
+        <div class="slide" style="background-image:url(assets/carousel-1.jpg)" role="img" aria-label="Campus aerial"></div>
+        <div class="slide" style="background-image:url(assets/carousel-2.jpg)" role="img" aria-label="Front of school"></div>
+        <div class="slide" style="background-image:url(assets/carousel-3.jpg)" role="img" aria-label="Pep rally"></div>
       </div>
     </div>
 
     <div class="chips"><div class="chip">vegan</div><div class="chip">gluten-free</div><div class="chip">protein</div></div>
 
-    <!-- ✅ Updated grid with more product cards -->
     <div id="grid" class="grid" role="list">
       <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50">
         <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Potato Chips"></div>
-        <div class="title">Potato Chips</div>
-        <div class="price">$2.50</div>
+        <div class="title">Potato Chips</div><div class="price">$2.50</div>
         <button class="add" aria-label="Add Potato Chips">+</button>
       </div>
-
       <div class="card" role="listitem" data-name="Protein Bar" data-price="2.99">
         <div class="thumb"><img src="assets/product-chesters.jpg" alt="Protein Bar"></div>
-        <div class="title">Protein Bar</div>
-        <div class="price">$2.99</div>
+        <div class="title">Protein Bar</div><div class="price">$2.99</div>
         <button class="add" aria-label="Add Protein Bar">+</button>
       </div>
-
       <div class="card" role="listitem" data-name="Trail Mix" data-price="3.49">
         <div class="thumb"><img src="assets/product-cheetos.jpg" alt="Trail Mix"></div>
-        <div class="title">Trail Mix</div>
-        <div class="price">$3.49</div>
+        <div class="title">Trail Mix</div><div class="price">$3.49</div>
         <button class="add" aria-label="Add Trail Mix">+</button>
-      </div>
-
-      <!-- New products -->
-      <div class="card" role="listitem" data-name="Granola Bar" data-price="1.99">
-        <div class="thumb"><img src="assets/product-granola.jpg" alt="Granola Bar"></div>
-        <div class="title">Granola Bar</div>
-        <div class="price">$1.99</div>
-        <button class="add" aria-label="Add Granola Bar">+</button>
-      </div>
-
-      <div class="card" role="listitem" data-name="Fruit Snacks" data-price="1.49">
-        <div class="thumb"><img src="assets/product-fruitsnacks.jpg" alt="Fruit Snacks"></div>
-        <div class="title">Fruit Snacks</div>
-        <div class="price">$1.49</div>
-        <button class="add" aria-label="Add Fruit Snacks">+</button>
-      </div>
-
-      <div class="card" role="listitem" data-name="Energy Drink" data-price="2.25">
-        <div class="thumb"><img src="assets/product-energy.jpg" alt="Energy Drink"></div>
-        <div class="title">Energy Drink</div>
-        <div class="price">$2.25</div>
-        <button class="add" aria-label="Add Energy Drink">+</button>
-      </div>
-
-      <div class="card" role="listitem" data-name="Chocolate Bar" data-price="1.75">
-        <div class="thumb"><img src="assets/product-chocolate.jpg" alt="Chocolate Bar"></div>
-        <div class="title">Chocolate Bar</div>
-        <div class="price">$1.75</div>
-        <button class="add" aria-label="Add Chocolate Bar">+</button>
-      </div>
-
-      <div class="card" role="listitem" data-name="Trail Bar" data-price="2.15">
-        <div class="thumb"><img src="assets/product-trailbar.jpg" alt="Trail Bar"></div>
-        <div class="title">Trail Bar</div>
-        <div class="price">$2.15</div>
-        <button class="add" aria-label="Add Trail Bar">+</button>
       </div>
     </div>
   </div>
 
-  <!-- Cart overlay -->
-  <div id="cartOverlay" class="overlay">
-    <div class="sheet">
-      <div class="row-between"><h3>Cart</h3><div class="ghost" id="cartClose">Back</div></div>
+  <!-- Product mini sheet -->
+  <div id="productSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Add item">
+    <div class="sheet" role="document">
+      <div class="row-between"><h3 id="sheetTitle">Item</h3><div class="ghost" id="sheetClose">Close</div></div>
+      <div class="row-between"><div id="sheetPrice" class="price" style="font-size:18px;"></div>
+        <div class="qty"><button id="qtyMinus">−</button><div id="qtyVal">1</div><button id="qtyPlus">+</button></div>
+      </div>
+      <div class="actions"><button class="ghost" id="sheetCancel">Cancel</button><button class="primary" id="sheetAdd">Add</button></div>
+    </div>
+  </div>
+
+  <!-- Cart bottom-sheet mini page -->
+  <div id="cartOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Cart">
+    <div class="sheet" role="document">
+      <div class="row-between">
+        <h3>Cart</h3>
+        <div class="ghost" id="cartClose">Back</div>
+      </div>
       <div id="cartContent"></div>
-      <div class="row-between" style="margin-top:10px;"><strong>Total</strong><strong id="cartTotal">$0.00</strong></div>
-      <div class="actions"><button class="primary" id="cartCheckout">Checkout</button></div>
+      <div class="row-between" style="margin-top:10px;">
+        <strong>Total</strong><strong id="cartTotal">$0.00</strong>
+      </div>
+      <div class="actions">
+        <button class="primary" id="cartCheckout">Checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checkout bottom-sheet mini page -->
+  <div id="checkoutOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Checkout">
+    <div class="sheet" role="document">
+      <div class="row-between"><h3>Checkout</h3><div class="ghost" id="checkoutClose">Close</div></div>
+      <div style="margin-top:6px;">Your name:</div>
+      <input id="checkoutName" style="width:100%;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec;margin-top:6px">
+      <div style="margin-top:10px;">Where are you on campus?</div>
+      <input id="checkoutLocation" style="width:100%;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec;margin-top:6px">
+      <div id="checkoutError" style="display:none;color:#ff6b6b;margin-top:10px;">Please fill both fields.</div>
+      <div class="actions" style="margin-top:12px;"><button class="primary" id="checkoutSubmit">Place Order</button></div>
+    </div>
+  </div>
+
+  <!-- Settings mini page -->
+  <div id="settingsOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Settings">
+    <div class="sheet" role="document">
+      <div class="row-between"><h3>Settings</h3><div class="ghost" id="settingsClose">Close</div></div>
+      <div class="tabs">
+        <div id="tabGeneral" class="tab active">General</div>
+        <div id="tabAdmin" class="tab">Admin</div>
+      </div>
+      <div id="panelGeneral">
+        <div style="display:flex;gap:12px"><div class="ghost">Dark Mode (disabled)</div><div class="ghost">Notifications (disabled)</div></div>
+      </div>
+      <div id="panelAdmin" style="display:none">
+        <div id="adminLogin">
+          <div style="margin-top:6px;">Admin password:</div>
+          <input id="adminPassword" type="password" style="width:100%;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec;margin-top:6px">
+          <div id="adminError" style="display:none;color:#ff6b6b;margin-top:6px;">Wrong password.</div>
+          <div class="actions" style="margin-top:12px;"><button class="primary" id="adminSubmit">Unlock</button></div>
+        </div>
+        <div id="adminContent" style="display:none">
+          <div style="margin-top:6px;">Admin name:</div>
+          <input id="adminName" style="width:100%;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec;margin-top:6px">
+          <div style="margin-top:10px;">Default meet-up spot:</div>
+          <input id="meetSpot" style="width:100%;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec;margin-top:6px">
+          <div style="margin-top:12px;font-weight:700">Orders</div>
+          <div id="ordersList" class="admin-list">No orders yet</div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
-    /* Cart logic (already working from before) */
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+    }
+
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+
+    // Search filter
+    $('#search').addEventListener('input', e => {
+      const q = e.target.value.toLowerCase();
+      $$('.card').forEach(c => c.style.display = c.dataset.name.toLowerCase().includes(q) ? '' : 'none');
+    });
+
+    // Carousel pause on interaction
+    const track = document.querySelector('.track');
+    ['touchstart','mousedown','pointerdown'].forEach(ev=>track.addEventListener(ev,()=>track.style.animationPlayState='paused',{passive:true}));
+    ['touchend','mouseup','pointerup','mouseleave'].forEach(ev=>track.addEventListener(ev,()=>track.style.animationPlayState='running'));
+
+    // ===== Cart (PERSISTENT) =====
     const CART_KEY = 'fitsnacks.cart.v1';
     const fmt = n => '$' + n.toFixed(2);
 
-    function loadCart(){ try{ return new Map(JSON.parse(localStorage.getItem(CART_KEY) || '[]')); }catch(e){ return new Map(); } }
-    function saveCart(map){ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(map.entries()))); }
+    function loadCart(){
+      try{
+        const raw = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+        return new Map(raw);
+      }catch(e){
+        return new Map();
+      }
+    }
+    function saveCart(map){
+      try{
+        const arr = Array.from(map.entries());
+        localStorage.setItem(CART_KEY, JSON.stringify(arr));
+      }catch(e){}
+    }
 
     let cart = loadCart();
 
     function refreshBadge(){
-      let n=0; for(const v of cart.values()) n+=v.qty;
-      const badge=document.querySelector('#cartBadge');
-      if(n>0){ badge.textContent=n; badge.style.display='inline-flex'; } else { badge.style.display='none'; }
+      let n=0;
+      for (const v of cart.values()) n+=v.qty;
+      const badge = $('#cartBadge');
+      if(!badge) return;
+      if(n>0){
+        badge.textContent = n;
+        badge.style.display = 'inline-flex';
+      } else {
+        badge.style.display = 'none';
+      }
     }
 
     function renderCart(){
       let total=0, html='';
-      for(const [name,info] of cart){
+      for (const [name,info] of cart){
         const line=info.price*info.qty; total+=line;
-        html+=`<div class="row-between" style="margin-top:6px">
+        html += `<div class="row-between" style="margin-top:6px">
           <div style="display:flex;gap:10px;align-items:center">
-            <button data-act="-" data-name="${name}" class="ghost">−</button>
-            <div>${info.qty}</div>
-            <button data-act="+" data-name="${name}" class="ghost">+</button>
+            <button data-act="-" data-name="${name}" class="ghost" style="padding:4px 8px">−</button>
+            <div style="min-width:24px;text-align:center">${info.qty}</div>
+            <button data-act="+" data-name="${name}" class="ghost" style="padding:4px 8px">+</button>
             <div style="font-weight:700;margin-left:8px">${name}</div>
           </div>
           <div style="font-weight:700">${fmt(line)}</div>
         </div>`;
       }
-      document.querySelector('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
-      document.querySelector('#cartTotal').textContent=fmt(total);
-      saveCart(cart); refreshBadge();
+      const itemsContainer = $('#cartContent');
+      itemsContainer.innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
+      $('#cartTotal').textContent = fmt(total);
+      saveCart(cart);
+      refreshBadge();
     }
 
-    document.addEventListener('click',(e)=>{
-      const b=e.target.closest('button'); if(!b) return;
-      if(b.dataset.act&&b.dataset.name){
-        const entry=cart.get(b.dataset.name); if(!entry) return;
-        if(b.dataset.act==='+') entry.qty++; else if(b.dataset.act==='-') entry.qty=Math.max(1,entry.qty-1);
-        renderCart();
-      }
-      if(b.id==='cartBtn'){ renderCart(); document.querySelector('#cartOverlay').classList.add('show'); }
-      if(b.id==='cartClose'){ document.querySelector('#cartOverlay').classList.remove('show'); }
-    });
-
-    document.querySelectorAll('.add').forEach(btn=>{
-      btn.addEventListener('click', e=>{
-        const card=e.target.closest('.card');
-        const name=card.dataset.name, price=parseFloat(card.dataset.price);
-        const existing=cart.get(name)||{price,qty:0};
-        existing.qty+=1; cart.set(name,existing);
-        renderCart(); document.querySelector('#cartOverlay').classList.add('show');
-      });
-    });
-
-    renderCart();
-  </script>
-</body>
-</html>
+    document.addEventListener('click', (e)=>{
+      const b = e.target.closest('button'); if(!b) return;
+     
