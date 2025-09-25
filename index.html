@@ -13,7 +13,7 @@
 
     /* Header */
     .row{position:relative; display:flex; align-items:center; gap:0}
-    .search-wrap{flex:none; width:calc(100% - 200px);}
+    .search-wrap{flex:none; width:calc(100% - 200px);} /* shortened so buttons never overlap */
     .search{width:100%;background:#1b1b20;border-radius:999px;border:1px solid #2a2a2e;padding:12px 44px 12px 44px;color:var(--text);outline:none}
     .search::placeholder{color:#6c6c70}
     .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
@@ -49,14 +49,18 @@
     .overlay.show{display:flex}
     .sheet{width:92%;max-width:360px;background:var(--card);border:1px solid #2a2a30;border-radius:20px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
 
-    /* Bottom-sheet pages */
+    /* Bottom-sheet mini page for Cart (and Checkout for consistency) */
     #cartOverlay{align-items:flex-end}
-    #cartOverlay .sheet, #checkoutOverlay .sheet, #settingsOverlay .sheet {
-      width:100%; max-width:480px;
+    #cartOverlay .sheet,
+    #checkoutOverlay .sheet{
+      width:100%;
+      max-width:480px;
       border-top-left-radius:24px;border-top-right-radius:24px;
       border-bottom-left-radius:0;border-bottom-right-radius:0;
-      margin:0 auto; padding-bottom:calc(16px + env(safe-area-inset-bottom));
-      transform:translateY(100%); animation:slideUp 220ms ease-out forwards;
+      margin:0 auto;
+      padding-bottom:calc(16px + env(safe-area-inset-bottom));
+      transform:translateY(100%);
+      animation:slideUp 220ms ease-out forwards;
     }
     @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
@@ -127,20 +131,19 @@
     </div>
   </div>
 
-  <!-- Cart bottom-sheet -->
+  <!-- Cart bottom-sheet mini page -->
   <div id="cartOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Cart">
     <div class="sheet" role="document">
-      <div class="row-between">
-        <h3>Cart</h3>
-        <button class="ghost" id="cartClose" type="button" aria-label="Back">Back</button>
-      </div>
+      <div class="row-between"><h3>Cart</h3><div class="ghost" id="cartClose">Back</div></div>
       <div id="cartContent"></div>
       <div class="row-between" style="margin-top:10px;"><strong>Total</strong><strong id="cartTotal">$0.00</strong></div>
-      <div class="actions"><button class="primary" id="cartCheckout">Checkout</button></div>
+      <div class="actions">
+        <button class="primary" id="cartCheckout">Checkout</button>
+      </div>
     </div>
   </div>
 
-  <!-- Checkout bottom-sheet -->
+  <!-- Checkout bottom-sheet mini page (the "forms page") -->
   <div id="checkoutOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Checkout">
     <div class="sheet" role="document">
       <div class="row-between"><h3>Checkout</h3><div class="ghost" id="checkoutClose">Close</div></div>
@@ -153,7 +156,7 @@
     </div>
   </div>
 
-  <!-- Settings bottom-sheet -->
+  <!-- Settings mini page -->
   <div id="settingsOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Settings">
     <div class="sheet" role="document">
       <div class="row-between"><h3>Settings</h3><div class="ghost" id="settingsClose">Close</div></div>
@@ -183,38 +186,51 @@
     </div>
   </div>
 
+  <!-- Toast (feedback after placing an order) -->
+  <div id="toast" aria-live="polite" style="position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#1c1c22;color:#e9e9ec;border:1px solid #2a2a30;border-radius:12px;padding:10px 14px;font-weight:700;box-shadow:0 8px 20px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;z-index:10000">
+    Order placed!
+  </div>
+
   <script>
+    /* PWA */
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
     }
 
+    /* Helpers */
     const $ = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
 
-    // Search filter
+    /* Search filter */
     $('#search').addEventListener('input', e => {
       const q = e.target.value.toLowerCase();
       $$('.card').forEach(c => c.style.display = c.dataset.name.toLowerCase().includes(q) ? '' : 'none');
     });
 
-    // Carousel pause on interaction
+    /* Carousel pause on interaction */
     const track = document.querySelector('.track');
     ['touchstart','mousedown','pointerdown'].forEach(ev=>track.addEventListener(ev,()=>track.style.animationPlayState='paused',{passive:true}));
     ['touchend','mouseup','pointerup','mouseleave'].forEach(ev=>track.addEventListener(ev,()=>track.style.animationPlayState='running'));
 
-    // ===== Cart (persistent) =====
+    /* ===== Cart (persistent) ===== */
     const CART_KEY = 'fitsnacks.cart.v1';
     const fmt = n => '$' + n.toFixed(2);
 
-    function loadCart(){ try{ return new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]')); }catch{ return new Map(); } }
-    function saveCart(map){ try{ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(map.entries()))); }catch{} }
+    function loadCart(){
+      try{ return new Map(JSON.parse(localStorage.getItem(CART_KEY) || '[]')); }
+      catch(e){ return new Map(); }
+    }
+    function saveCart(map){
+      try{ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(map.entries()))); } catch(e){}
+    }
 
     let cart = loadCart();
 
     function refreshBadge(){
-      let n=0; for (const v of cart.values()) n+=v.qty;
+      let n=0; for(const v of cart.values()) n+=v.qty;
       const badge = $('#cartBadge'); if(!badge) return;
-      if(n>0){ badge.textContent=n; badge.style.display='inline-flex'; } else { badge.style.display='none'; }
+      if(n>0){ badge.textContent=n; badge.style.display='inline-flex'; }
+      else   { badge.style.display='none'; }
     }
 
     function renderCart(){
@@ -231,12 +247,12 @@
           <div style="font-weight:700">${fmt(line)}</div>
         </div>`;
       }
-      $('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
+      const itemsContainer = $('#cartContent');
+      itemsContainer.innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
       $('#cartTotal').textContent = fmt(total);
       saveCart(cart); refreshBadge();
     }
 
-    // Qty change in cart rows
     document.addEventListener('click', (e)=>{
       const b = e.target.closest('button'); if(!b) return;
       if (b.matches('[data-act][data-name]')) {
@@ -248,7 +264,7 @@
       }
     }, {passive:true});
 
-    // Product quick add sheet
+    /* Product quick add sheet */
     let current=null;
     $$('.add').forEach(b => b.addEventListener('click', e => {
       const card = e.target.closest('.card'); current = {name:card.dataset.name, price:parseFloat(card.dataset.price)};
@@ -264,12 +280,10 @@
       const n=parseInt($('#qtyVal').textContent);
       const e=cart.get(current.name)||{price:current.price,qty:0};
       e.qty+=n; cart.set(current.name,e);
-      closeSheet();
-      renderCart();
-      $('#cartOverlay').classList.add('show');
+      closeSheet(); renderCart(); $('#cartOverlay').classList.add('show');
     });
 
-    // Open/close overlays
+    /* Open/close overlays */
     function openCart(){ $('#cartOverlay')?.classList.add('show'); }
     function closeCart(){ $('#cartOverlay')?.classList.remove('show'); }
     function openSettings(goAdmin){
@@ -282,13 +296,10 @@
       } else {
         $('#tabGeneral').classList.add('active'); $('#tabAdmin').classList.remove('active');
         $('#panelGeneral').style.display='block'; $('#panelAdmin').style.display='none';
-        // make sure login is visible when locked
-        $('#adminLogin').style.display='block'; $('#adminContent').style.display='none';
       }
     }
     function closeSettings(){ $('#settingsOverlay').classList.remove('show'); }
 
-    // Header buttons + overlay controls
     document.addEventListener('click', (e)=>{
       if(e.target.closest('#cartBtn')) openCart();
       if(e.target.closest('#cartClose')) closeCart();
@@ -296,73 +307,12 @@
       if(e.target.closest('#settingsClose')) closeSettings();
     }, {passive:true});
 
-    // ===== Admin =====
-    function ordersKey(){ return 'fitsnacks.orders'; }
+    /* Admin state */
     function adminKey(){ return 'fitsnacks.admin'; }
-    function unlockedKey(){ return 'fitsnacks.admin.unlocked'; }
-    function loadOrders(){ try{return JSON.parse(localStorage.getItem(ordersKey())||'[]');}catch(e){return [];} }
-    function saveOrders(list){ localStorage.setItem(ordersKey(), JSON.stringify(list)); }
     function getAdmin(){ try{return JSON.parse(localStorage.getItem(adminKey())||'{}');}catch(e){return {};} }
     function saveAdmin(obj){ localStorage.setItem(adminKey(), JSON.stringify(obj||{})); }
-    function isUnlocked(){ return localStorage.getItem(unlockedKey())==='1'; }
-    function setUnlocked(v){ localStorage.setItem(unlockedKey(), v?'1':'0'); }
+    function setUnlocked(v){ localStorage.setItem('fitsnacks.admin.unlocked', v?'1':'0'); }
 
-    // Tab switching (General/Admin)
-    $('#tabGeneral').addEventListener('click', ()=>{
-      $('#tabGeneral').classList.add('active'); $('#tabAdmin').classList.remove('active');
-      $('#panelGeneral').style.display='block'; $('#panelAdmin').style.display='none';
-    });
-    $('#tabAdmin').addEventListener('click', ()=>{
-      $('#tabGeneral').classList.remove('active'); $('#tabAdmin').classList.add('active');
-      $('#panelGeneral').style.display='none'; $('#panelAdmin').style.display='block';
-      if(isUnlocked()){
-        $('#adminLogin').style.display='none';
-        $('#adminContent').style.display='block';
-        loadAdminPanel();
-      } else {
-        $('#adminLogin').style.display='block';
-        $('#adminContent').style.display='none';
-      }
-    });
-
-    $('#cartCheckout').addEventListener('click', ()=>{
-      $('#checkoutName').value=''; $('#checkoutLocation').value=''; $('#checkoutError').style.display='none';
-      closeCart(); $('#checkoutOverlay').classList.add('show');
-    });
-    $('#checkoutClose').addEventListener('click', ()=>$('#checkoutOverlay').classList.remove('show'));
-    $('#checkoutSubmit').addEventListener('click', ()=>{
-      const name=$('#checkoutName').value.trim(); const loc=$('#checkoutLocation').value.trim();
-      if(!name || !loc){ $('#checkoutError').style.display='block'; return; }
-      const lines = []; let total = 0;
-      for (const [n,info] of cart){ const line=info.price*info.qty; total+=line; lines.push({name:n, price:info.price, qty:info.qty, line}); }
-      const order = { when: new Date().toISOString(), name, location: loc, lines, total };
-      const list = loadOrders(); list.unshift(order); saveOrders(list);
-      cart.clear(); renderCart();
-      $('#checkoutOverlay').classList.remove('show');
-      openSettings(true);
-    });
-
-    function renderOrders(){
-      const list = loadOrders();
-      const box = $('#ordersList');
-      if(!list.length){ box.textContent='No orders yet'; return; }
-      box.innerHTML = list.map(o=>{
-        const items = o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
-        const when = new Date(o.when).toLocaleString();
-        return `<div style="padding:8px;border-bottom:1px solid #2a2a30">
-          <div style="font-weight:700">${when}</div>
-          <div style="margin-top:4px">${items}</div>
-          <div style="margin-top:6px;font-weight:700">Total: ${fmt(o.total)}</div>
-          <div style="color:#bbb;margin-top:4px">${o.name} @ ${o.location}</div>
-        </div>`;
-      }).join('');
-    }
-    function loadAdminPanel(){
-      const a = getAdmin();
-      $('#adminName').value = a.name||'';
-      $('#meetSpot').value = a.spot||'';
-      renderOrders();
-    }
     $('#adminSubmit').addEventListener('click', ()=>{
       if( $('#adminPassword').value === '8TSB077' ){
         setUnlocked(true);
@@ -375,13 +325,82 @@
     $('#adminName').addEventListener('input', e=>{ const a=getAdmin(); a.name=e.target.value; saveAdmin(a); });
     $('#meetSpot').addEventListener('input', e=>{ const a=getAdmin(); a.spot=e.target.value; saveAdmin(a); });
 
-    // a11y
+    function loadAdminPanel(){
+      const a = getAdmin();
+      $('#adminName').value = a.name||'';
+      $('#meetSpot').value = a.spot||'';
+      renderOrders(); // also render orders when admin opens
+    }
+
+    /* ===== Orders storage + rendering ===== */
+    function ordersKey(){ return 'fitsnacks.orders.v1'; }
+    function loadOrders(){
+      try { return JSON.parse(localStorage.getItem(ordersKey()) || '[]'); }
+      catch(e){ return []; }
+    }
+    function saveOrders(list){ localStorage.setItem(ordersKey(), JSON.stringify(list || [])); }
+
+    function renderOrders(){
+      const box = $('#ordersList'); if(!box) return;
+      const list = loadOrders();
+      if (!list.length){ box.textContent = 'No orders yet'; return; }
+      box.innerHTML = list.map(o=>{
+        const items = o.lines.map(l => `${l.name} × ${l.qty} -- ${fmt(l.price * l.qty)}`).join('<br>');
+        const when = new Date(o.when).toLocaleString();
+        return `<div style="padding:8px;border-bottom:1px solid #2a2a30">
+          <div style="font-weight:700">${when}</div>
+          <div style="color:#bbb;margin-top:4px">${o.name} @ ${o.location}</div>
+          <div style="margin-top:6px">${items}</div>
+          <div style="margin-top:6px;font-weight:700">Total: ${fmt(o.total)}</div>
+        </div>`;
+      }).join('');
+    }
+
+    /* Toast helper */
+    function showToast(msg='Order placed!'){
+      const el = $('#toast'); if(!el) return;
+      el.textContent = msg;
+      el.style.opacity = '1';
+      el.style.transform = 'translateX(-50%) translateY(-4px)';
+      setTimeout(()=>{
+        el.style.opacity = '0';
+        el.style.transform = 'translateX(-50%) translateY(0)';
+      }, 1600);
+    }
+
+    /* Checkout: save form to Orders, clear cart, open Admin tab */
+    $('#cartCheckout').addEventListener('click', ()=>{
+      $('#checkoutName').value=''; $('#checkoutLocation').value=''; $('#checkoutError').style.display='none';
+      closeCart(); $('#checkoutOverlay').classList.add('show');
+    });
+    $('#checkoutClose').addEventListener('click', ()=>$('#checkoutOverlay').classList.remove('show'));
+
+    $('#checkoutSubmit').addEventListener('click', ()=>{
+      const name=$('#checkoutName').value.trim();
+      const loc=$('#checkoutLocation').value.trim();
+      const err=$('#checkoutError');
+      if(!name || !loc){ err.style.display='block'; return; }
+      err.style.display='none';
+
+      const lines=[]; let total=0;
+      for(const [n,info] of cart){ lines.push({name:n, price:info.price, qty:info.qty}); total+=info.price*info.qty; }
+      const order={ id:Date.now(), when:new Date().toISOString(), name, location:loc, lines, total };
+      const list=loadOrders(); list.unshift(order); saveOrders(list);
+
+      cart.clear(); renderCart();
+      $('#checkoutOverlay').classList.remove('show');
+      openSettings(true); // jump to Admin tab
+      renderOrders();
+      showToast('Order placed!');
+    });
+
+    /* a11y */
     $$('.btn,.add,.ghost,.primary,.tab').forEach(el=>{
       el.tabIndex=0;
       el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
     });
 
-    // Initial draw
+    /* Initial render */
     renderCart();
   </script>
 </body>
