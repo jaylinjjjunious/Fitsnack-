@@ -143,8 +143,8 @@
     </div>
   </div>
 
-  <!-- Checkout bottom-sheet mini page (the "forms page") -->
-  <div id="checkoutOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Checkout">
+  <!-- (Kept but unused) Checkout bottom-sheet mini page -->
+  <div id="checkoutOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Checkout" style="display:none">
     <div class="sheet" role="document">
       <div class="row-between"><h3>Checkout</h3><div class="ghost" id="checkoutClose">Close</div></div>
       <div style="margin-top:6px;">Your name:</div>
@@ -186,7 +186,7 @@
     </div>
   </div>
 
-  <!-- Toast (feedback after placing an order) -->
+  <!-- Toast -->
   <div id="toast" aria-live="polite" style="position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#1c1c22;color:#e9e9ec;border:1px solid #2a2a30;border-radius:12px;padding:10px 14px;font-weight:700;box-shadow:0 8px 20px rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;z-index:10000">
     Order placed!
   </div>
@@ -200,6 +200,7 @@
     /* Helpers */
     const $ = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
+    const fmt = n => '$' + n.toFixed(2);
 
     /* Search filter */
     $('#search').addEventListener('input', e => {
@@ -214,7 +215,6 @@
 
     /* ===== Cart (persistent) ===== */
     const CART_KEY = 'fitsnacks.cart.v1';
-    const fmt = n => '$' + n.toFixed(2);
 
     function loadCart(){
       try{ return new Map(JSON.parse(localStorage.getItem(CART_KEY) || '[]')); }
@@ -307,7 +307,7 @@
       if(e.target.closest('#settingsClose')) closeSettings();
     }, {passive:true});
 
-    /* Admin state */
+    /* Admin state + panel */
     function adminKey(){ return 'fitsnacks.admin'; }
     function getAdmin(){ try{return JSON.parse(localStorage.getItem(adminKey())||'{}');}catch(e){return {};} }
     function saveAdmin(obj){ localStorage.setItem(adminKey(), JSON.stringify(obj||{})); }
@@ -329,7 +329,7 @@
       const a = getAdmin();
       $('#adminName').value = a.name||'';
       $('#meetSpot').value = a.spot||'';
-      renderOrders(); // also render orders when admin opens
+      renderOrders(); // render orders when admin opens
     }
 
     /* ===== Orders storage + rendering ===== */
@@ -356,7 +356,7 @@
       }).join('');
     }
 
-    /* Toast helper */
+    /* Toast */
     function showToast(msg='Order placed!'){
       const el = $('#toast'); if(!el) return;
       el.textContent = msg;
@@ -368,30 +368,28 @@
       }, 1600);
     }
 
-    /* Checkout: save form to Orders, clear cart, open Admin tab */
+    /* NEW: Checkout = instant order (skip forms, stay on main) */
     $('#cartCheckout').addEventListener('click', ()=>{
-      $('#checkoutName').value=''; $('#checkoutLocation').value=''; $('#checkoutError').style.display='none';
-      closeCart(); $('#checkoutOverlay').classList.add('show');
-    });
-    $('#checkoutClose').addEventListener('click', ()=>$('#checkoutOverlay').classList.remove('show'));
+      // prevent empty order
+      if (cart.size === 0) { showToast('Cart is empty'); return; }
 
-    $('#checkoutSubmit').addEventListener('click', ()=>{
-      const name=$('#checkoutName').value.trim();
-      const loc=$('#checkoutLocation').value.trim();
-      const err=$('#checkoutError');
-      if(!name || !loc){ err.style.display='block'; return; }
-      err.style.display='none';
+      // Use Admin defaults for name/location if provided
+      const a = getAdmin();
+      const name = (a && a.name) ? a.name : 'Customer';
+      const loc  = (a && a.spot) ? a.spot : 'Unknown';
 
-      const lines=[]; let total=0;
-      for(const [n,info] of cart){ lines.push({name:n, price:info.price, qty:info.qty}); total+=info.price*info.qty; }
-      const order={ id:Date.now(), when:new Date().toISOString(), name, location:loc, lines, total };
-      const list=loadOrders(); list.unshift(order); saveOrders(list);
+      // Build order from current cart
+      const lines = []; let total = 0;
+      for (const [n,info] of cart){ lines.push({name:n, price:info.price, qty:info.qty}); total += info.price*info.qty; }
 
+      const order = { id:Date.now(), when:new Date().toISOString(), name, location:loc, lines, total };
+      const list = loadOrders(); list.unshift(order); saveOrders(list);
+
+      // Clear cart + close overlay + toast (stay on main page)
       cart.clear(); renderCart();
-      $('#checkoutOverlay').classList.remove('show');
-      openSettings(true); // jump to Admin tab
-      renderOrders();
+      closeCart();
       showToast('Order placed!');
+      // NOTE: We do NOT open Admin automatically.
     });
 
     /* a11y */
