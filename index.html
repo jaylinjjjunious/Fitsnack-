@@ -19,8 +19,13 @@
     .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
     .icon-rights{position:absolute; right:8px; top:50%; transform:translateY(-50%); display:flex; gap:10px; margin-left:0}
     .btn{-webkit-appearance:none;appearance:none;background:#24242a;border:1px solid #2d2d33;border-radius:14px;width:44px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
-    #cartBtn{position:relative;display:flex;align-items:center;justify-content:center}
-    #badge{position:absolute;top:-6px;right:-8px;background:var(--badge);color:white;border-radius:999px;padding:1px 6px;font-size:12px;font-weight:700}
+    #cartBtn { position:relative; display:flex; align-items:center; justify-content:center }
+    .badge{
+      position:absolute; top:-6px; right:-8px;
+      background:var(--badge); color:white;
+      border-radius:999px; padding:1px 6px; font-size:12px; font-weight:700;
+      display:inline-flex; align-items:center; justify-content:center;
+    }
 
     /* Carousel */
     .carousel{position:relative;margin:14px 0 8px;overflow:hidden;border-radius:16px;height:120px;background:#101014}
@@ -49,14 +54,12 @@
     #cartOverlay{align-items:flex-end}
     #cartOverlay .sheet,
     #checkoutOverlay .sheet{
-      width:100%;
-      max-width:480px;
+      width:100%; max-width:480px;
       border-top-left-radius:24px;border-top-right-radius:24px;
       border-bottom-left-radius:0;border-bottom-right-radius:0;
       margin:0 auto;
       padding-bottom:calc(16px + env(safe-area-inset-bottom));
-      transform:translateY(100%);
-      animation:slideUp 220ms ease-out forwards;
+      transform:translateY(100%); animation:slideUp 220ms ease-out forwards;
     }
     @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
@@ -80,7 +83,9 @@
         <input id="search" class="search" placeholder="Search snacks…" autocomplete="off">
       </div>
       <div class="icon-rights">
-        <button type="button" class="btn" id="cartBtn" aria-label="Open cart">🛒<span id="badge">0</span></button>
+        <button type="button" class="btn" id="cartBtn" aria-label="Open cart">
+          🛒 <span id="cartBadge" class="badge" style="display:none;">0</span>
+        </button>
         <button type="button" class="btn" id="settingsBtn" aria-label="Open settings">⚙️</button>
       </div>
     </div>
@@ -197,10 +202,22 @@
     ['touchstart','mousedown','pointerdown'].forEach(ev=>track.addEventListener(ev,()=>track.style.animationPlayState='paused',{passive:true}));
     ['touchend','mouseup','pointerup','mouseleave'].forEach(ev=>track.addEventListener(ev,()=>track.style.animationPlayState='running'));
 
-    // Cart
-    const cart = new Map();
+    // ===== Cart (PERSISTENT) =====
+    const CART_KEY = 'fitsnacks.cart.v1';
     const fmt = n => '$' + n.toFixed(2);
-    function refreshBadge(){ let n=0; for (const v of cart.values()) n+=v.qty; $('#badge').textContent=n; }
+
+    function loadCart(){ try{ return new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]')); }catch(e){ return new Map(); } }
+    function saveCart(map){ try{ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(map.entries())));}catch(e){} }
+
+    let cart = loadCart();
+
+    function refreshBadge(){
+      let n=0; for (const v of cart.values()) n+=v.qty;
+      const badge = $('#cartBadge'); if(!badge) return;
+      if(n>0){ badge.textContent=n; badge.style.display='inline-flex'; }
+      else { badge.style.display='none'; }
+    }
+
     function renderCart(){
       let total=0, html='';
       for (const [name,info] of cart){
@@ -215,18 +232,19 @@
           <div style="font-weight:700">${fmt(line)}</div>
         </div>`;
       }
-      $('#items').innerHTML = html || '<div id="items"></div>'; // ensure element exists before usage
       const itemsContainer = $('#cartContent');
       itemsContainer.innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
-      $('#cartTotal').textContent = fmt(total); refreshBadge();
+      $('#cartTotal').textContent = fmt(total);
+      saveCart(cart); refreshBadge();
     }
+
     document.addEventListener('click', (e)=>{
       const b = e.target.closest('button'); if(!b) return;
       if (b.matches('[data-act][data-name]')) {
         const name = b.getAttribute('data-name');
         const act = b.getAttribute('data-act');
         const entry = cart.get(name); if(!entry) return;
-        entry.qty = Math.max( act==='+' ? entry.qty+1 : entry.qty-1, 1 );
+        entry.qty = Math.max(act==='+' ? entry.qty+1 : entry.qty-1, 1);
         renderCart();
       }
     }, {passive:true});
@@ -243,11 +261,16 @@
     function closeSheet(){ $('#productSheet').classList.remove('show'); }
     $('#sheetCancel').addEventListener('click', closeSheet);
     $('#sheetClose').addEventListener('click', closeSheet);
-    $('#sheetAdd').addEventListener('click', ()=>{ const n=parseInt($('#qtyVal').textContent); const e=cart.get(current.name)||{price:current.price,qty:0}; e.qty+=n; cart.set(current.name,e); closeSheet(); renderCart(); $('#cartOverlay').classList.add('show'); });
+    $('#sheetAdd').addEventListener('click', ()=>{
+      const n=parseInt($('#qtyVal').textContent);
+      const e=cart.get(current.name)||{price:current.price,qty:0};
+      e.qty+=n; cart.set(current.name,e);
+      closeSheet(); renderCart(); $('#cartOverlay').classList.add('show');
+    });
 
     // Open/close overlays
-    function openCart(){ const o=document.querySelector('#cartOverlay'); if(!o) return; o.classList.add('show'); }
-    function closeCart(){ const o=document.querySelector('#cartOverlay'); if(!o) return; o.classList.remove('show'); }
+    function openCart(){ $('#cartOverlay').classList.add('show'); }
+    function closeCart(){ $('#cartOverlay').classList.remove('show'); }
     function openSettings(goAdmin){
       $('#settingsOverlay').classList.add('show');
       const unlocked = localStorage.getItem('fitsnacks.admin.unlocked')==='1';
@@ -277,8 +300,7 @@
     function saveOrders(list){ localStorage.setItem(ordersKey(), JSON.stringify(list)); }
     function getAdmin(){ try{return JSON.parse(localStorage.getItem(adminKey())||'{}');}catch(e){return {};} }
     function saveAdmin(obj){ localStorage.setItem(adminKey(), JSON.stringify(obj||{})); }
-    function isUnlocked(){ return localStorage.getItem(unlockedKey())==='1'; }
-    function setUnlocked(v){ localStorage.setItem(unlockedKey(), v?'1':'0'); }
+    function setUnlocked(v){ localStorage.setItem('fitsnacks.admin.unlocked', v?'1':'0'); }
 
     $('#cartCheckout').addEventListener('click', ()=>{
       $('#checkoutName').value=''; $('#checkoutLocation').value=''; $('#checkoutError').style.display='none';
@@ -288,9 +310,9 @@
     $('#checkoutSubmit').addEventListener('click', ()=>{
       const name=$('#checkoutName').value.trim(); const loc=$('#checkoutLocation').value.trim();
       if(!name || !loc){ $('#checkoutError').style.display='block'; return; }
-      const lines = []; let total = 0;
+      const lines=[]; let total=0;
       for (const [n,info] of cart){ const line=info.price*info.qty; total+=line; lines.push({name:n, price:info.price, qty:info.qty, line}); }
-      const order = { when: new Date().toISOString(), name, location: loc, lines, total };
+      const order={ when:new Date().toISOString(), name, location:loc, lines, total };
       const list = loadOrders(); list.unshift(order); saveOrders(list);
       cart.clear(); renderCart();
       $('#checkoutOverlay').classList.remove('show');
@@ -302,7 +324,7 @@
       const box = $('#ordersList');
       if(!list.length){ box.textContent='No orders yet'; return; }
       box.innerHTML = list.map(o=>{
-        const items = o.lines.map(l=>`${l.name} × ${l.qty} — ${fmt(l.line)}`).join('<br>');
+        const items = o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
         const when = new Date(o.when).toLocaleString();
         return `<div style="padding:8px;border-bottom:1px solid #2a2a30">
           <div style="font-weight:700">${when}</div>
@@ -335,6 +357,9 @@
       el.tabIndex=0;
       el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
     });
+
+    // INITIAL RENDER so saved cart + badge show on load
+    renderCart();
   </script>
 </body>
 </html>
