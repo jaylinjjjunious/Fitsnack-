@@ -1,7 +1,6 @@
 // --- FitSnacks Service Worker ---
 // Bump this when you change any cached files:
-const CACHE = 'fitsnacks-v3';
-
+const CACHE = 'fitsnacks-v4';
 const ASSETS = [
   // Pages
   './',
