@@ -1,107 +1,114 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>FitSnacks</title>
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#0b0b0d">
-  <style>
-    :root { --bg:#0b0b0d; --card:#141418; --text:#e9e9ec; --muted:#aaa; --accent:#6ea8fe; --badge:#ff3b30; --radius:18px; }
-    html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
-    .app{max-width:393px;min-height:100svh;margin:0 auto;padding:12px 12px 32px;box-sizing:border-box}
+<script>
+// ===== Cart (persistent + renders to overlay) =====
+const CART_KEY = 'fitsnacks.cart.v1';
+const fmt = n => '$' + n.toFixed(2);
 
-    /* Header */
-    .row{position:relative; display:flex; align-items:center; gap:0}
-    .search-wrap{flex:none; width:calc(100% - 200px);} /* shortened so buttons never overlap */
-    .search{width:100%;background:#1b1b20;border-radius:999px;border:1px solid #2a2a2e;padding:12px 44px 12px 44px;color:var(--text);outline:none}
-    .search::placeholder{color:#6c6c70}
-    .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
-    .icon-rights{position:absolute; right:8px; top:50%; transform:translateY(-50%); display:flex; gap:10px; margin-left:0}
-    .btn{-webkit-appearance:none;appearance:none;background:#24242a;border:1px solid #2d2d33;border-radius:14px;width:44px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
-    #cartBtn { position:relative; display:flex; align-items:center; justify-content:center }
-    .badge{
-      position:absolute;
-      top:-6px;
-      right:-8px;
-      background:var(--badge);
-      color:white;
-      border-radius:999px;
-      padding:1px 6px;
-      font-size:12px;
-      font-weight:700;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-    }
+function loadCart() {
+  try { return new Map(JSON.parse(localStorage.getItem(CART_KEY) || '[]')); }
+  catch { return new Map(); }
+}
+function saveCart(map) {
+  localStorage.setItem(CART_KEY, JSON.stringify(Array.from(map.entries())));
+}
 
-    /* Carousel */
-    .carousel{position:relative;margin:14px 0 8px;overflow:hidden;border-radius:16px;height:120px;background:#101014}
-    .track{display:flex;width:300%;height:100%;animation:slide 15s infinite}
-    .slide{flex:0 0 100%;height:100%;background-size:cover;background-position:center}
-    @keyframes slide{0%,28%{transform:translateX(0)}33%,61%{transform:translateX(-100%)}66%,94%{transform:translateX(-200%)}100%{transform:translateX(0)}}
+let cart = loadCart();
 
-    .chips{display:flex;gap:10px;margin:6px 0 12px;flex-wrap:wrap}
-    .chip{background:#18181d;border:1px solid #2a2a30;color:#c9c9d1;padding:6px 10px;border-radius:999px;font-size:13px}
+function refreshBadge(){
+  let n = 0; for (const v of cart.values()) n += v.qty;
+  const b = document.querySelector('#cartBadge');
+  if (!b) return;
+  if (n > 0) { b.textContent = n; b.style.display = 'inline-flex'; }
+  else { b.style.display = 'none'; }
+}
 
-    /* Grid */
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    .card{background:var(--card);border:1px solid #26262b;border-radius:var(--radius);padding:12px;position:relative;display:flex;flex-direction:column;min-height:190px}
-    .thumb{height:90px;border-radius:12px;overflow:hidden;margin-bottom:8px}
-    .thumb img{width:100%;height:100%;object-fit:cover}
-    .title{font-weight:700;margin:4px 0 2px;letter-spacing:0.2px}
-    .price{color:#c7c7cc;font-weight:600;margin-top:auto}
-    .add{position:absolute;right:12px;bottom:12px;background:var(--accent);border:none;color:#001230;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer}
+function renderCart(){
+  let total = 0;
+  let html = '';
 
-    /* Overlays base */
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
-    .overlay.show{display:flex}
-    .sheet{width:92%;max-width:360px;background:var(--card);border:1px solid #2a2a30;border-radius:20px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+  for (const [name, info] of cart) {
+    const line = info.price * info.qty;
+    total += line;
+    html += `
+      <div class="row-between" style="margin-top:8px; gap:10px">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <button class="ghost" data-act="dec" data-name="${name}" style="padding:4px 10px">−</button>
+          <div style="min-width:28px;text-align:center">${info.qty}</div>
+          <button class="ghost" data-act="inc" data-name="${name}" style="padding:4px 10px">+</button>
+          <div style="font-weight:700;margin-left:4px">${name}</div>
+          <button class="ghost" data-act="del" data-name="${name}" style="padding:4px 10px">Remove</button>
+        </div>
+        <div style="font-weight:700">${fmt(line)}</div>
+      </div>`;
+  }
 
-    /* Bottom-sheet mini page for Cart (and Checkout for consistency) */
-    #cartOverlay{align-items:flex-end}
-    #cartOverlay .sheet,
-    #checkoutOverlay .sheet{
-      width:100%;
-      max-width:480px;
-      border-top-left-radius:24px;border-top-right-radius:24px;
-      border-bottom-left-radius:0;border-bottom-right-radius:0;
-      margin:0 auto;
-      padding-bottom:calc(16px + env(safe-area-inset-bottom));
-      transform:translateY(100%);
-      animation:slideUp 220ms ease-out forwards;
-    }
-    @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  const list = document.querySelector('#cartContent');
+  list.innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
+  document.querySelector('#cartTotal').textContent = fmt(total);
 
-    .row-between{display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .qty{display:flex;align-items:center;gap:10px}
-    .qty button{width:36px;height:36px;border-radius:10px;border:1px solid #2a2a30;background:#1c1c22;color:var(--text);font-size:20px;font-weight:700}
-    .primary{background:var(--accent);border:0;color:#081425;font-weight:800;border-radius:12px;padding:12px 14px}
-    .ghost{background:#1b1b20;border:1px solid #2a2a30;color:#e7e7eb;border-radius:12px;padding:10px 12px}
-    .actions{display:flex;gap:10px;margin-top:12px}
-    .tabs{display:flex;gap:8px;margin:6px 0 12px}
-    .tab{padding:8px 10px;border-radius:10px;border:1px solid #2a2a30;background:#18181d;cursor:pointer}
-    .tab.active{background:#24242a}
-    .admin-list{max-height:240px;overflow:auto;border:1px solid #2a2a30;border-radius:12px;padding:8px;margin-top:8px}
-  </style>
-</head>
-<body>
-  <div class="app" role="application">
-    <div class="row">
-      <div class="search-wrap">
-        <span class="icon-left" aria-hidden="true">🔍</span>
-        <input id="search" class="search" placeholder="Search snacks…" autocomplete="off">
-      </div>
-      <div class="icon-rights">
-        <button type="button" class="btn" id="cartBtn" aria-label="Open cart">
-          🛒
-          <span id="cartBadge" class="badge" style="display:none;">0</span>
-        </button>
-        <button type="button" class="btn" id="settingsBtn" aria-label="Open settings">⚙️</button>
-      </div>
-    </div>
+  saveCart(cart);
+  refreshBadge();
+}
 
-    <!-- … keep the rest of your file (carousel, grid, overlays, scripts, etc.) unchanged … -->
+// Handle +/−/remove inside cart
+document.addEventListener('click', (e)=>{
+  const btn = e.target.closest('button');
+  if (!btn || !btn.dataset.act || !btn.dataset.name) return;
 
-</body>
-</html>
+  const name = btn.dataset.name;
+  const entry = cart.get(name);
+  if (!entry) return;
+
+  if (btn.dataset.act === 'inc') entry.qty += 1;
+  if (btn.dataset.act === 'dec') entry.qty = Math.max(1, entry.qty - 1);
+  if (btn.dataset.act === 'del') cart.delete(name);
+
+  renderCart();
+}, {passive:true});
+
+// Hook the quick-add sheet
+let current = null;
+document.querySelectorAll('.add').forEach(b => b.addEventListener('click', e => {
+  const card = e.target.closest('.card');
+  current = { name: card.dataset.name, price: parseFloat(card.dataset.price) };
+  document.querySelector('#sheetTitle').textContent = current.name;
+  document.querySelector('#sheetPrice').textContent = fmt(current.price);
+  document.querySelector('#qtyVal').textContent = 1;
+  document.querySelector('#sheetAdd').textContent = 'Add • ' + fmt(current.price);
+  document.querySelector('#productSheet').classList.add('show');
+}));
+
+document.querySelector('#qtyPlus').addEventListener('click', ()=>{
+  const n = Math.min(99, parseInt(document.querySelector('#qtyVal').textContent) + 1);
+  document.querySelector('#qtyVal').textContent = n;
+  document.querySelector('#sheetAdd').textContent = 'Add • ' + fmt(current.price * n);
+});
+document.querySelector('#qtyMinus').addEventListener('click', ()=>{
+  const n = Math.max(1, parseInt(document.querySelector('#qtyVal').textContent) - 1);
+  document.querySelector('#qtyVal').textContent = n;
+  document.querySelector('#sheetAdd').textContent = 'Add • ' + fmt(current.price * n);
+});
+function closeSheet(){ document.querySelector('#productSheet').classList.remove('show'); }
+document.querySelector('#sheetCancel').addEventListener('click', closeSheet);
+document.querySelector('#sheetClose').addEventListener('click', closeSheet);
+
+document.querySelector('#sheetAdd').addEventListener('click', ()=>{
+  const n = parseInt(document.querySelector('#qtyVal').textContent);
+  const existing = cart.get(current.name) || { price: current.price, qty: 0 };
+  existing.qty += n;
+  cart.set(current.name, existing);
+  closeSheet();
+  renderCart();                                   // show items in list
+  document.querySelector('#cartOverlay').classList.add('show'); // open cart
+});
+
+// open/close cart refresh
+function openCart(){ renderCart(); document.querySelector('#cartOverlay').classList.add('show'); }
+function closeCart(){ document.querySelector('#cartOverlay').classList.remove('show'); }
+document.addEventListener('click', (e)=>{
+  if (e.target.closest('#cartBtn')) openCart();
+  if (e.target.closest('#cartClose')) closeCart();
+}, {passive:true});
+
+// show saved cart + badge on load
+renderCart();
+</script>
