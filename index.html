@@ -1,26 +1,29 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>FitSnacks</title>
-  <link rel="manifest" href="manifest.webmanifest" />
-  <meta name="theme-color" content="#0b0b0d" />
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0b0b0d">
   <style>
-    :root{--bg:#0b0b0d;--card:#141418;--text:#e9e9ec;--muted:#aaa;--accent:#6ea8fe;--badge:#ff3b30;--radius:18px}
+    :root { --bg:#0b0b0d; --card:#141418; --text:#e9e9ec; --muted:#aaa; --accent:#6ea8fe; --badge:#ff3b30; --radius:18px; }
     html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
     .app{max-width:393px;min-height:100svh;margin:0 auto;padding:12px 12px 32px;box-sizing:border-box}
 
     /* Header */
-    .row{position:relative;display:flex;align-items:center}
-    .search-wrap{flex:none;width:calc(100% - 200px)}
-    .search{width:100%;background:#1b1b20;border-radius:999px;border:1px solid #2a2a2e;padding:12px 44px;color:var(--text);outline:0}
+    .row{position:relative; display:flex; align-items:center; gap:0}
+    .search-wrap{flex:none; width:calc(100% - 200px);}
+    .search{width:100%;background:#1b1b20;border-radius:999px;border:1px solid #2a2a2e;padding:12px 44px 12px 44px;color:var(--text);outline:none}
     .search::placeholder{color:#6c6c70}
     .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
-    .icon-rights{position:absolute;right:8px;top:50%;transform:translateY(-50%);display:flex;gap:10px}
-    .btn{appearance:none;background:#24242a;border:1px solid #2d2d33;border-radius:14px;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
-    #cartBtn{position:relative;display:flex;align-items:center;justify-content:center}
-    .badge{position:absolute;top:-6px;right:-8px;background:var(--badge);color:#fff;border-radius:999px;padding:1px 6px;font-size:12px;font-weight:700;display:none;align-items:center;justify-content:center}
+    .icon-rights{position:absolute; right:8px; top:50%; transform:translateY(-50%); display:flex; gap:10px; margin-left:0}
+    .btn{-webkit-appearance:none;appearance:none;background:#24242a;border:1px solid #2d2d33;border-radius:14px;width:44px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+    #cartBtn { position:relative; display:flex; align-items:center; justify-content:center }
+    .badge{
+      position:absolute; top:-6px; right:-8px; background:var(--badge); color:white; border-radius:999px;
+      padding:1px 6px; font-size:12px; font-weight:700; display:none; align-items:center; justify-content:center;
+    }
 
     /* Carousel */
     .carousel{position:relative;margin:14px 0 8px;overflow:hidden;border-radius:16px;height:120px;background:#101014}
@@ -36,17 +39,26 @@
     .card{background:var(--card);border:1px solid #26262b;border-radius:var(--radius);padding:12px;position:relative;display:flex;flex-direction:column;min-height:190px}
     .thumb{height:90px;border-radius:12px;overflow:hidden;margin-bottom:8px}
     .thumb img{width:100%;height:100%;object-fit:cover}
-    .title{font-weight:700;margin:4px 0 2px;letter-spacing:.2px}
+    .title{font-weight:700;margin:4px 0 2px;letter-spacing:0.2px}
     .price{color:#c7c7cc;font-weight:600;margin-top:auto}
-    .add{position:absolute;right:12px;bottom:12px;background:var(--accent);border:0;color:#001230;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer}
+    .add{position:absolute;right:12px;bottom:12px;background:var(--accent);border:none;color:#001230;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer}
 
-    /* Overlays */
+    /* Overlays base */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
     .overlay.show{display:flex}
     .sheet{width:92%;max-width:360px;background:var(--card);border:1px solid #2a2a30;border-radius:20px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
-    .sheet *{pointer-events:auto}
+    .overlay, .sheet, .sheet * { pointer-events:auto } /* ensure everything inside is clickable */
+
+    /* Bottom-sheet style (cart, checkout, settings) */
     #cartOverlay{align-items:flex-end}
-    #cartOverlay .sheet,#checkoutOverlay .sheet,#settingsOverlay .sheet{width:100%;max-width:480px;border-top-left-radius:24px;border-top-right-radius:24px;border-bottom-left-radius:0;border-bottom-right-radius:0;margin:0 auto;padding-bottom:calc(16px + env(safe-area-inset-bottom));transform:translateY(100%);animation:slideUp .22s ease-out forwards}
+    #cartOverlay .sheet,
+    #checkoutOverlay .sheet,
+    #settingsOverlay .sheet{
+      width:100%; max-width:480px; border-top-left-radius:24px;border-top-right-radius:24px;
+      border-bottom-left-radius:0;border-bottom-right-radius:0; margin:0 auto;
+      padding-bottom:calc(16px + env(safe-area-inset-bottom)); transform:translateY(100%);
+      animation:slideUp 220ms ease-out forwards;
+    }
     @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
     .row-between{display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -66,10 +78,12 @@
     <div class="row">
       <div class="search-wrap">
         <span class="icon-left" aria-hidden="true">🔍</span>
-        <input id="search" class="search" placeholder="Search snacks…" autocomplete="off" />
+        <input id="search" class="search" placeholder="Search snacks…" autocomplete="off">
       </div>
       <div class="icon-rights">
-        <button type="button" class="btn" id="cartBtn" aria-label="Open cart">🛒<span id="cartBadge" class="badge">0</span></button>
+        <button type="button" class="btn" id="cartBtn" aria-label="Open cart">
+          🛒 <span id="cartBadge" class="badge">0</span>
+        </button>
         <button type="button" class="btn" id="settingsBtn" aria-label="Open settings">⚙️</button>
       </div>
     </div>
@@ -85,25 +99,26 @@
     <div class="chips"><div class="chip">vegan</div><div class="chip">gluten-free</div><div class="chip">protein</div></div>
 
     <div id="grid" class="grid" role="list">
+      <!-- Sample products -->
       <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50">
-        <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Potato Chips" /></div>
+        <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Potato Chips"></div>
         <div class="title">Potato Chips</div><div class="price">$2.50</div>
         <button class="add" aria-label="Add Potato Chips">+</button>
       </div>
       <div class="card" role="listitem" data-name="Protein Bar" data-price="2.99">
-        <div class="thumb"><img src="assets/product-chesters.jpg" alt="Protein Bar" /></div>
+        <div class="thumb"><img src="assets/product-chesters.jpg" alt="Protein Bar"></div>
         <div class="title">Protein Bar</div><div class="price">$2.99</div>
         <button class="add" aria-label="Add Protein Bar">+</button>
       </div>
       <div class="card" role="listitem" data-name="Trail Mix" data-price="3.49">
-        <div class="thumb"><img src="assets/product-cheetos.jpg" alt="Trail Mix" /></div>
+        <div class="thumb"><img src="assets/product-cheetos.jpg" alt="Trail Mix"></div>
         <div class="title">Trail Mix</div><div class="price">$3.49</div>
         <button class="add" aria-label="Add Trail Mix">+</button>
       </div>
     </div>
   </div>
 
-  <!-- Product sheet -->
+  <!-- Product mini sheet -->
   <div id="productSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Add item">
     <div class="sheet" role="document">
       <div class="row-between"><h3 id="sheetTitle">Item</h3><div class="ghost" id="sheetClose">Close</div></div>
@@ -114,7 +129,7 @@
     </div>
   </div>
 
-  <!-- Cart -->
+  <!-- Cart bottom-sheet -->
   <div id="cartOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Cart">
     <div class="sheet" role="document">
       <div class="row-between"><h3>Cart</h3><button class="ghost" id="cartBack">Back</button></div>
@@ -124,20 +139,20 @@
     </div>
   </div>
 
-  <!-- Checkout -->
+  <!-- Checkout bottom-sheet -->
   <div id="checkoutOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Checkout">
     <div class="sheet" role="document">
       <div class="row-between"><h3>Checkout</h3><div class="ghost" id="checkoutClose">Close</div></div>
       <div style="margin-top:6px;">Your name:</div>
-      <input id="checkoutName" style="width:100%;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec;margin-top:6px" />
+      <input id="checkoutName" style="width:100%;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec;margin-top:6px">
       <div style="margin-top:10px;">Where are you on campus?</div>
-      <input id="checkoutLocation" style="width:100%;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec;margin-top:6px" />
+      <input id="checkoutLocation" style="width:100%;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec;margin-top:6px">
       <div id="checkoutError" style="display:none;color:#ff6b6b;margin-top:10px;">Please fill both fields.</div>
       <div class="actions" style="margin-top:12px;"><button class="primary" id="checkoutSubmit">Place Order</button></div>
     </div>
   </div>
 
-  <!-- Settings -->
+  <!-- Settings bottom-sheet -->
   <div id="settingsOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Settings">
     <div class="sheet" role="document">
       <div class="row-between"><h3>Settings</h3><div class="ghost" id="settingsClose">Close</div></div>
@@ -152,59 +167,65 @@
       </div>
 
       <div id="panelAdmin" role="tabpanel" aria-labelledby="tabAdmin" style="display:none">
-        <div id="adminLogin">
+        <!-- This login block shows until unlocked -->
+        <div id="adminLogin" style="display:none">
           <div style="margin-top:6px;">Admin password:</div>
-          <input id="adminPassword" type="password" style="width:100%;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec;margin-top:6px" />
+          <input id="adminPassword" type="password" style="width:100%;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec;margin-top:6px">
           <div id="adminError" style="display:none;color:#ff6b6b;margin-top:6px;">Wrong password.</div>
           <div class="actions" style="margin-top:12px;"><button class="primary" id="adminSubmit">Unlock</button></div>
         </div>
+        <!-- Orders only show when unlocked -->
         <div id="adminContent" style="display:none">
           <div style="margin-top:12px;font-weight:700">Orders</div>
           <div id="ordersList" class="admin-list">No orders yet</div>
+          <div class="actions" style="margin-top:12px;"><button class="ghost" id="adminLock">Lock</button></div>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    /* PWA */
+    // PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
     }
 
-    const $ = s => document.querySelector(s);
+    const $  = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
 
-    /* Search */
+    // Search filter
     $('#search').addEventListener('input', e => {
       const q = e.target.value.toLowerCase();
       $$('.card').forEach(c => c.style.display = c.dataset.name.toLowerCase().includes(q) ? '' : 'none');
     });
 
-    /* Carousel pause/resume */
+    // Carousel pause/resume
     const track = document.querySelector('.track');
-    ['touchstart','mousedown','pointerdown'].forEach(ev => track.addEventListener(ev, () => track.style.animationPlayState='paused', {passive:true}));
-    ['touchend','mouseup','pointerup','mouseleave'].forEach(ev => track.addEventListener(ev, () => track.style.animationPlayState='running'));
+    ['touchstart','mousedown','pointerdown'].forEach(ev=>track.addEventListener(ev,()=>track.style.animationPlayState='paused',{passive:true}));
+    ['touchend','mouseup','pointerup','mouseleave'].forEach(ev=>track.addEventListener(ev,()=>track.style.animationPlayState='running'));
 
-    /* Cart (persistent) */
-    const CART_KEY='fitsnacks.cart.v1', ORDERS_KEY='fitsnacks.orders', UNLOCK_KEY='fitsnacks.admin.unlocked';
-    const fmt = n => '$'+n.toFixed(2);
+    // ===== Cart & Orders (persistent) =====
+    const CART_KEY   = 'fitsnacks.cart.v1';
+    const ORDERS_KEY = 'fitsnacks.orders';
+    const UNLOCK_KEY = 'fitsnacks.admin.unlocked';
+    const fmt = n => '$' + n.toFixed(2);
 
     function loadCart(){ try{ return new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]')); }catch{ return new Map(); } }
-    function saveCart(map){ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(map.entries()))); }
+    function saveCart(m){ try{ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(m.entries())));}catch{} }
+    function loadOrders(){ try{return JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');}catch(e){return [];} }
+    function saveOrders(list){ localStorage.setItem(ORDERS_KEY, JSON.stringify(list||[])); }
 
     let cart = loadCart();
 
     function refreshBadge(){
-      let n=0; for(const v of cart.values()) n+=v.qty;
+      let n=0; for (const v of cart.values()) n+=v.qty;
       const b = $('#cartBadge'); if (!b) return;
-      b.style.display = n>0 ? 'inline-flex':'none';
-      if(n>0) b.textContent = n;
+      if (n>0){ b.textContent=n; b.style.display='inline-flex'; } else { b.style.display='none'; }
     }
 
     function renderCart(){
       let total=0, html='';
-      for(const [name,info] of cart){
+      for (const [name,info] of cart){
         const line=info.price*info.qty; total+=line;
         html += `<div class="row-between" style="margin-top:6px">
           <div style="display:flex;gap:10px;align-items:center">
@@ -222,33 +243,38 @@
     }
 
     document.addEventListener('click', (e)=>{
-      const b=e.target.closest('button'); if(!b) return;
-      if(b.matches('[data-act][data-name]')){
-        const name=b.getAttribute('data-name'); const act=b.getAttribute('data-act');
-        const entry=cart.get(name); if(!entry) return;
-        entry.qty=Math.max(act==='+'?entry.qty+1:entry.qty-1,1);
+      const b = e.target.closest('button'); if(!b) return;
+      if (b.matches('[data-act][data-name]')) {
+        const name = b.getAttribute('data-name');
+        const act = b.getAttribute('data-act');
+        const entry = cart.get(name); if(!entry) return;
+        entry.qty = Math.max( act==='+' ? entry.qty+1 : entry.qty-1, 1 );
         renderCart();
       }
     }, {passive:true});
 
-    /* Product add sheet */
+    // Product quick add
     let current=null;
-    $$('.add').forEach(b=>b.addEventListener('click',e=>{
-      const card=e.target.closest('.card'); current={name:card.dataset.name, price:parseFloat(card.dataset.price)};
-      $('#sheetTitle').textContent=current.name; $('#sheetPrice').textContent=fmt(current.price);
-      $('#qtyVal').textContent=1; $('#productSheet').classList.add('show');
+    $$('.add').forEach(b => b.addEventListener('click', e => {
+      const card = e.target.closest('.card'); current = {name:card.dataset.name, price:parseFloat(card.dataset.price)};
+      $('#sheetTitle').textContent=current.name; $('#sheetPrice').textContent=fmt(current.price); $('#qtyVal').textContent=1; $('#sheetAdd').textContent='Add • '+fmt(current.price);
+      $('#productSheet').classList.add('show');
     }));
-    $('#qtyPlus').addEventListener('click',()=>$('#qtyVal').textContent=Math.min(99,parseInt($('#qtyVal').textContent)+1));
-    $('#qtyMinus').addEventListener('click',()=>$('#qtyVal').textContent=Math.max(1,parseInt($('#qtyVal').textContent)-1));
+    $('#qtyPlus').addEventListener('click', ()=>{ let n=Math.min(99,parseInt($('#qtyVal').textContent)+1); $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price*n); });
+    $('#qtyMinus').addEventListener('click', ()=>{ let n=Math.max(1,parseInt($('#qtyVal').textContent)-1); $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price*n); });
     function closeSheet(){ $('#productSheet').classList.remove('show'); }
-    $('#sheetCancel').addEventListener('click',closeSheet); $('#sheetClose').addEventListener('click',closeSheet);
-    $('#sheetAdd').addEventListener('click',()=>{
+    $('#sheetCancel').addEventListener('click', closeSheet);
+    $('#sheetClose').addEventListener('click', closeSheet);
+    $('#sheetAdd').addEventListener('click', ()=>{
       const n=parseInt($('#qtyVal').textContent);
-      const e=cart.get(current.name)||{price:current.price,qty:0}; e.qty+=n; cart.set(current.name,e);
-      closeSheet(); renderCart(); $('#cartOverlay').classList.add('show');
+      const e=cart.get(current.name)||{price:current.price,qty:0};
+      e.qty+=n; cart.set(current.name,e);
+      closeSheet();
+      renderCart();
+      $('#cartOverlay').classList.add('show');
     });
 
-    /* Overlays open/close */
+    // Open/close overlays
     function openCart(){ $('#cartOverlay').classList.add('show'); }
     function closeCart(){ $('#cartOverlay').classList.remove('show'); }
     function openSettings(defaultToAdmin=false){ $('#settingsOverlay').classList.add('show'); switchTab(defaultToAdmin?'admin':'general'); }
@@ -261,23 +287,21 @@
       if(e.target.closest('#settingsClose')) closeSettings();
     }, {passive:true});
 
-    /* Orders + Admin lock */
-    function loadOrders(){ try{return JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');}catch{ return []; } }
-    function saveOrders(list){ localStorage.setItem(ORDERS_KEY, JSON.stringify(list||[])); }
+    // Orders helpers
     function addOrderFromCart(name, location){
       const lines=[]; let total=0;
       for(const [n,info] of cart){ const line=info.price*info.qty; total+=line; lines.push({name:n, price:info.price, qty:info.qty, line}); }
       const order={when:new Date().toISOString(), name, location, lines, total};
-      const list=loadOrders(); list.unshift(order); saveOrders(list);
-      return order;
+      const list=loadOrders(); list.unshift(order); saveOrders(list); return order;
     }
     function renderOrders(){
-      const list=loadOrders(); const box=$('#ordersList'); if(!box) return;
+      const list = loadOrders();
+      const box = $('#ordersList'); if(!box) return;
       if(!list.length){ box.textContent='No orders yet'; return; }
-      box.innerHTML=list.map(o=>{
-        const items=o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
-        const when=new Date(o.when).toLocaleString();
-        return `<div style="padding:8px;border-bottom:1px solid #2a2a30">
+      box.innerHTML = list.map(o=>{
+        const items = o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
+        const when = new Date(o.when).toLocaleString();
+        return `<div style="padding:8px;border:1px solid #2a2a30;border-radius:10px;margin-bottom:8px">
           <div style="font-weight:700">${when}</div>
           <div style="margin-top:4px">${items}</div>
           <div style="margin-top:6px;font-weight:700">Total: ${fmt(o.total)}</div>
@@ -286,8 +310,9 @@
       }).join('');
     }
 
-    function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY)==='1'; }
-    function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v?'1':'0'); }
+    // Settings tabs + admin lock
+    function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY) === '1'; }
+    function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v ? '1':'0'); }
 
     function switchTab(which){
       const tabG=$('#tabGeneral'), tabA=$('#tabAdmin'), panG=$('#panelGeneral'), panA=$('#panelAdmin');
@@ -295,11 +320,11 @@
         tabG.classList.remove('active'); tabG.setAttribute('aria-selected','false');
         tabA.classList.add('active');    tabA.setAttribute('aria-selected','true');
         panG.style.display='none'; panA.style.display='block';
-        const unlocked=isUnlocked();
-        $('#adminLogin').style.display = unlocked ? 'none':'block';
-        $('#adminContent').style.display = unlocked ? 'block':'none';
-        if(unlocked) renderOrders();
-      }else{
+        const loggedIn=isUnlocked();
+        $('#adminLogin').style.display= loggedIn?'none':'block';
+        $('#adminContent').style.display= loggedIn?'block':'none';
+        if(loggedIn) renderOrders();
+      } else {
         tabA.classList.remove('active'); tabA.setAttribute('aria-selected','false');
         tabG.classList.add('active');    tabG.setAttribute('aria-selected','true');
         panA.style.display='none'; panG.style.display='block';
@@ -308,14 +333,16 @@
 
     document.addEventListener('click',(e)=>{
       if(e.target.closest('#tabGeneral')) switchTab('general');
-      if(e.target.closest('#tabAdmin')) switchTab('admin');
+      if(e.target.closest('#tabAdmin'))   switchTab('admin');
       if(e.target.closest('#adminSubmit')){
-        if($('#adminPassword').value==='8TSB077'){ setUnlocked(true); $('#adminError').style.display='none'; switchTab('admin'); }
+        const ok = $('#adminPassword').value === '8TSB077';
+        if(ok){ setUnlocked(true); $('#adminError').style.display='none'; switchTab('admin'); }
         else { $('#adminError').style.display='block'; }
       }
+      if(e.target.closest('#adminLock')){ setUnlocked(false); switchTab('admin'); }
     }, {passive:true});
 
-    /* Checkout: stay on main page; save order */
+    // Checkout flow: stay on main, store order, do not open Admin automatically
     $('#cartCheckout').addEventListener('click', ()=>{
       $('#checkoutName').value=''; $('#checkoutLocation').value=''; $('#checkoutError').style.display='none';
       closeCart(); $('#checkoutOverlay').classList.add('show');
@@ -326,16 +353,16 @@
       if(!name || !loc){ $('#checkoutError').style.display='block'; return; }
       addOrderFromCart(name, loc);
       cart.clear(); renderCart();
-      $('#checkoutOverlay').classList.remove('show'); // do not auto-open Admin; stay on main
+      $('#checkoutOverlay').classList.remove('show'); // stays on main page
     });
 
-    /* a11y keyboard */
+    // a11y keys
     $$('.btn,.add,.ghost,.primary,.tab').forEach(el=>{
       el.tabIndex=0;
       el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
     });
 
-    /* Initial paint */
+    // initial render
     renderCart(); refreshBadge();
   </script>
 </body>
