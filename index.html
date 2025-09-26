@@ -149,10 +149,6 @@
           <div class="actions"><button class="primary" id="adminSubmit">Unlock</button></div>
         </div>
         <div id="adminContent" style="display:none">
-          <div>Admin name:</div>
-          <input id="adminName">
-          <div>Default meet-up spot:</div>
-          <input id="meetSpot">
           <div style="margin-top:12px;font-weight:700">Orders</div>
           <div id="ordersList" class="admin-list">No orders yet</div>
         </div>
@@ -221,13 +217,10 @@
       }
     }, {passive:true});
 
-    // Quick add sheet (minimal)
-    let current=null;
+    // Quick add (1 item)
     $$('.add').forEach(b=>b.addEventListener('click',e=>{
-      const card=e.target.closest('.card'); current={name:card.dataset.name, price:parseFloat(card.dataset.price)};
-      // Minimal inline sheet omitted for brevity; directly add 1 and open cart:
-      const eItem = cart.get(current.name)||{price:current.price,qty:0};
-      eItem.qty+=1; cart.set(current.name,eItem);
+      const card=e.target.closest('.card'); const name=card.dataset.name; const price=parseFloat(card.dataset.price);
+      const item = cart.get(name)||{price,qty:0}; item.qty+=1; cart.set(name,item);
       renderCart(); $('#cartOverlay').classList.add('show');
     }));
 
@@ -243,7 +236,7 @@
         $('#adminLogin').style.display='none';
         $('#adminContent').style.display='block';
         $('#adminError').style.display='none';
-        loadAdminPanel();
+        renderOrders();
       } else {
         $('#adminLogin').style.display='block';
         $('#adminContent').style.display='none';
@@ -260,7 +253,7 @@
       if(e.target.closest('#checkoutClose')) $('#checkoutOverlay').classList.remove('show');
     }, {passive:true});
 
-    // Tabs (General <-> Admin)
+    // Tabs
     function showTab(which){
       const isAdmin = which === 'admin';
       $('#tabAdmin').classList.toggle('active', isAdmin);
@@ -271,9 +264,9 @@
     $('#tabGeneral').addEventListener('click', ()=>showTab('general'));
     $('#tabAdmin').addEventListener('click',   ()=>showTab('admin'));
 
-    // Orders/Admin
+    // Orders
     function ordersKey(){ return 'fitsnacks.orders'; }
-    function loadOrders(){ try{return JSON.parse(localStorage.getItem(ordersKey())||'[]');}catch(e){return [];} }
+    function loadOrders(){ try{return JSON.parse(localStorage.getItem(ordersKey())||'[]'));}catch(e){return [];} }
     function saveOrders(list){ localStorage.setItem(ordersKey(), JSON.stringify(list)); }
     function renderOrders(){
       const list = loadOrders();
@@ -290,36 +283,17 @@
         </div>`;
       }).join('');
     }
-    function loadAdminPanel(){
-      const a = (()=>{
-        try{ return JSON.parse(localStorage.getItem('fitsnacks.admin')||'{}'); }catch(e){ return {}; }
-      })();
-      $('#adminName').value = a.name||'';
-      $('#meetSpot').value = a.spot||'';
-      renderOrders();
-    }
-    function setUnlocked(v){ localStorage.setItem('fitsnacks.admin.unlocked', v?'1':'0'); }
 
+    // Admin unlock
+    function setUnlocked(v){ localStorage.setItem('fitsnacks.admin.unlocked', v?'1':'0'); }
     $('#adminSubmit').addEventListener('click', ()=>{
       if($('#adminPassword').value==='8TSB077'){
         setUnlocked(true);
         $('#adminLogin').style.display='none';
         $('#adminContent').style.display='block';
         $('#adminError').style.display='none';
-        loadAdminPanel();
+        renderOrders();
       } else { $('#adminError').style.display='block'; }
-    });
-    $('#adminName').addEventListener('input', e=>{
-      const a = (()=>{
-        try{ return JSON.parse(localStorage.getItem('fitsnacks.admin')||'{}'); }catch(e){ return {}; }
-      })();
-      a.name = e.target.value; localStorage.setItem('fitsnacks.admin', JSON.stringify(a));
-    });
-    $('#meetSpot').addEventListener('input', e=>{
-      const a = (()=>{
-        try{ return JSON.parse(localStorage.getItem('fitsnacks.admin')||'{}'); }catch(e){ return {}; }
-      })();
-      a.spot = e.target.value; localStorage.setItem('fitsnacks.admin', JSON.stringify(a));
     });
 
     // Checkout flow (keeps form; stays on main page)
