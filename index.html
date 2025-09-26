@@ -13,7 +13,7 @@
 
     /* Header */
     .row{position:relative; display:flex; align-items:center; gap:0}
-    .search-wrap{flex:none; width:calc(100% - 200px);} /* leaves room for two buttons */
+    .search-wrap{flex:none; width:calc(100% - 200px);} /* leaves room for the two buttons */
     .search{width:100%;background:#1b1b20;border-radius:999px;border:1px solid #2a2a2e;padding:12px 44px 12px 44px;color:var(--text);outline:none}
     .search::placeholder{color:#6c6c70}
     .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
@@ -33,7 +33,7 @@
 
     /* Grid */
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    .card{background:var(--card);border:1px solid #26262b;border-radius:var(--radius);padding:12px;position:relative;display:flex;flex-direction:column;min-height:190px}
+    .card{background:var(--card);border:1px solid #26262b;border-radius:var(--radius);padding:12px;position:relative;display:flex;flex-direction:column;min-height:190px;cursor:pointer}
     .thumb{height:90px;border-radius:12px;overflow:hidden;margin-bottom:8px}
     .thumb img{width:100%;height:100%;object-fit:cover}
     .title{font-weight:700;margin:4px 0 2px;letter-spacing:0.2px}
@@ -46,7 +46,7 @@
     .sheet{width:92%;max-width:360px;background:var(--card);border:1px solid #2a2a30;border-radius:20px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
     .sheet *{pointer-events:auto}
 
-    /* Bottom-sheet style (cart, checkout, settings) */
+    /* Bottom-sheets */
     #cartOverlay{align-items:flex-end}
     #cartOverlay .sheet,
     #checkoutOverlay .sheet,
@@ -66,10 +66,10 @@
     .tab{padding:8px 10px;border-radius:10px;border:1px solid #2a2a30;background:#18181d;cursor:pointer}
     .tab.active{background:#24242a}
     .admin-list{max-height:240px;overflow:auto;border:1px solid #2a2a30;border-radius:12px;padding:8px;margin-top:8px}
-    .field-row{display:flex;align-items:center;gap:10px;padding:8px;border-bottom:1px solid #2a2a30}
-    .field-row label{flex:1}
-    .field-row input[type="number"]{width:88px;padding:8px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec}
-    .hint{color:#aaa;font-size:12px;margin-top:6px}
+
+    /* Product sheet preview image */
+    .preview{height:170px;border-radius:12px;overflow:hidden;margin:10px 0}
+    .preview img{width:100%;height:100%;object-fit:cover}
   </style>
 </head>
 <body>
@@ -119,14 +119,26 @@
     </div>
   </div>
 
-  <!-- Product mini sheet -->
+  <!-- Product mini sheet (photo + qty + add) -->
   <div id="productSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Add item">
     <div class="sheet" role="document">
-      <div class="row-between"><h3 id="sheetTitle">Item</h3><div class="ghost" id="sheetClose">Close</div></div>
-      <div class="row-between"><div id="sheetPrice" class="price" style="font-size:18px;"></div>
-        <div class="qty"><button id="qtyMinus">−</button><div id="qtyVal">1</div><button id="qtyPlus">+</button></div>
+      <div class="row-between">
+        <h3 id="sheetTitle">Item</h3>
+        <div class="ghost" id="sheetClose">Close</div>
       </div>
-      <div class="actions"><button class="ghost" id="sheetCancel">Cancel</button><button class="primary" id="sheetAdd">Add</button></div>
+      <div class="preview"><img id="sheetImg" alt=""></div>
+      <div class="row-between">
+        <div id="sheetPrice" class="price" style="font-size:18px;"></div>
+        <div class="qty">
+          <button id="qtyMinus">−</button>
+          <div id="qtyVal">1</div>
+          <button id="qtyPlus">+</button>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="ghost" id="sheetCancel">Cancel</button>
+        <button class="primary" id="sheetAdd">Add</button>
+      </div>
     </div>
   </div>
 
@@ -168,7 +180,7 @@
       </div>
 
       <div id="panelAdmin" role="tabpanel" aria-labelledby="tabAdmin" style="display:none">
-        <!-- Always start locked -->
+        <!-- Locked view -->
         <div id="adminLogin">
           <div style="margin-top:6px;">Admin password:</div>
           <input id="adminPassword" type="password" autocomplete="off" autocapitalize="none" spellcheck="false"
@@ -177,8 +189,7 @@
           <div id="adminCooldown" style="display:none;color:#ffcc00;margin-top:6px;">Too many attempts. Try again soon.</div>
           <div class="actions" style="margin-top:12px;"><button class="primary" id="adminSubmit">Unlock</button></div>
         </div>
-
-        <!-- Orders (visible only after successful unlock) -->
+        <!-- Unlocked view -->
         <div id="adminContent" style="display:none">
           <div style="margin-top:12px;font-weight:700">Orders</div>
           <div id="ordersList" class="admin-list">No orders yet</div>
@@ -192,7 +203,7 @@
   </div>
 
   <script>
-    // Register SW
+    /* ===== PWA ===== */
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
     }
@@ -200,18 +211,18 @@
     const $  = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
 
-    /* ========== Search ========== */
+    /* ===== Search ===== */
     $('#search').addEventListener('input', e => {
       const q = e.target.value.toLowerCase();
       $$('.card').forEach(c => c.style.display = c.dataset.name.toLowerCase().includes(q) ? '' : 'none');
     });
 
-    /* ========== Carousel pause/resume ========== */
+    /* ===== Carousel pause/resume ===== */
     const track = document.querySelector('.track');
     ['touchstart','mousedown','pointerdown'].forEach(ev=>track.addEventListener(ev,()=>track.style.animationPlayState='paused',{passive:true}));
     ['touchend','mouseup','pointerup','mouseleave'].forEach(ev=>track.addEventListener(ev,()=>track.style.animationPlayState='running'));
 
-    /* ========== Cart & Orders (persistent) ========== */
+    /* ===== Persistence keys ===== */
     const CART_KEY   = 'fitsnacks.cart.v1';
     const ORDERS_KEY = 'fitsnacks.orders';
     const LOW_STOCK_KEY = 'fitsnacks.lowstock';
@@ -219,15 +230,14 @@
 
     function loadCart(){ try{ return new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]')); }catch{ return new Map(); } }
     function saveCart(m){ try{ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(m.entries())));}catch{} }
-
     function loadOrders(){ try{return JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');}catch(e){return [];} }
     function saveOrders(list){ localStorage.setItem(ORDERS_KEY, JSON.stringify(list||[])); }
-
     function loadLowStock(){ try{ return JSON.parse(localStorage.getItem(LOW_STOCK_KEY)||'{}'); }catch(e){ return {}; } }
     function saveLowStock(obj){ localStorage.setItem(LOW_STOCK_KEY, JSON.stringify(obj||{})); }
 
     let cart = loadCart();
 
+    /* ===== Cart badge & render ===== */
     function refreshBadge(){
       let n=0; for (const v of cart.values()) n+=v.qty;
       const b = $('#cartBadge'); if (!b) return;
@@ -264,32 +274,68 @@
       }
     }, {passive:true});
 
-    // Product quick add
+    /* ===== Product sheet (open from + AND card tap) ===== */
     let current=null;
-    $$('.add').forEach(b => b.addEventListener('click', e => {
-      const card = e.target.closest('.card'); current = {name:card.dataset.name, price:parseFloat(card.dataset.price)};
-      $('#sheetTitle').textContent=current.name; $('#sheetPrice').textContent=fmt(current.price); $('#qtyVal').textContent=1; $('#sheetAdd').textContent='Add • '+fmt(current.price);
+
+    function openProductSheetFromCard(card){
+      current = {
+        name: card.dataset.name,
+        price: parseFloat(card.dataset.price),
+        img: card.querySelector('.thumb img')?.getAttribute('src') || ''
+      };
+      $('#sheetTitle').textContent = current.name;
+      $('#sheetPrice').textContent = fmt(current.price);
+      $('#qtyVal').textContent = 1;
+      $('#sheetAdd').textContent = 'Add • ' + fmt(current.price);
+      const img = $('#sheetImg');
+      img.alt = current.name;
+      img.src = current.img;
       $('#productSheet').classList.add('show');
+    }
+
+    // Click on "+" opens sheet
+    $$('.add').forEach(btn => btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openProductSheetFromCard(e.target.closest('.card'));
     }));
-    $('#qtyPlus').addEventListener('click', ()=>{ let n=Math.min(99,parseInt($('#qtyVal').textContent)+1); $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price*n); });
-    $('#qtyMinus').addEventListener('click', ()=>{ let n=Math.max(1,parseInt($('#qtyVal').textContent)-1); $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price*n); });
+
+    // Click anywhere on the card (image/title/price) opens sheet too
+    $$('.card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        // ignore if the direct target was the "+" button (handled above)
+        if (e.target.closest('.add')) return;
+        openProductSheetFromCard(card);
+      });
+    });
+
+    $('#qtyPlus').addEventListener('click', ()=>{
+      let n = Math.min(99, parseInt($('#qtyVal').textContent) + 1);
+      $('#qtyVal').textContent = n;
+      $('#sheetAdd').textContent = 'Add • ' + fmt(current.price * n);
+    });
+    $('#qtyMinus').addEventListener('click', ()=>{
+      let n = Math.max(1, parseInt($('#qtyVal').textContent) - 1);
+      $('#qtyVal').textContent = n;
+      $('#sheetAdd').textContent = 'Add • ' + fmt(current.price * n);
+    });
     function closeSheet(){ $('#productSheet').classList.remove('show'); }
     $('#sheetCancel').addEventListener('click', closeSheet);
     $('#sheetClose').addEventListener('click', closeSheet);
+
     $('#sheetAdd').addEventListener('click', ()=>{
-      const n=parseInt($('#qtyVal').textContent);
-      const e=cart.get(current.name)||{price:current.price,qty:0};
-      e.qty+=n; cart.set(current.name,e);
+      const n = parseInt($('#qtyVal').textContent);
+      const e = cart.get(current.name) || {price:current.price, qty:0};
+      e.qty += n; cart.set(current.name, e);
       closeSheet();
       renderCart();
       $('#cartOverlay').classList.add('show');
     });
 
-    /* ========== Overlays open/close ========== */
+    /* ===== Overlays open/close ===== */
     function openCart(){ $('#cartOverlay').classList.add('show'); }
     function closeCart(){ $('#cartOverlay').classList.remove('show'); }
     function openSettings(defaultToAdmin=false){ $('#settingsOverlay').classList.add('show'); switchTab(defaultToAdmin?'admin':'general'); }
-    function closeSettings(){ $('#settingsOverlay').classList.remove('show'); lockAdmin(); } // clear password on close
+    function closeSettings(){ $('#settingsOverlay').classList.remove('show'); lockAdmin(); }
 
     document.addEventListener('click', (e)=>{
       if(e.target.closest('#cartBtn')) openCart();
@@ -298,7 +344,7 @@
       if(e.target.closest('#settingsClose')) closeSettings();
     }, {passive:true});
 
-    /* ========== Orders helpers ========== */
+    /* ===== Orders helpers ===== */
     function addOrderFromCart(name, location){
       const lines=[]; let total=0;
       for(const [n,info] of cart){ const line=info.price*info.qty; total+=line; lines.push({name:n, price:info.price, qty:info.qty, line}); }
@@ -321,20 +367,20 @@
       }).join('');
     }
 
-    /* ========== Low-stock editor (Admin) ========== */
-    function getProductNames(){
-      return $$('.card').map ? $$('.card').map(c=>c.dataset.name) : Array.from($$('.card')).map(c=>c.dataset.name);
-    }
+    /* ===== Low-stock editor ===== */
+    function cssId(name){ return name.toLowerCase().replace(/[^a-z0-9]+/g,'-'); }
+    function getProductNames(){ return Array.from($$('.card')).map(c=>c.dataset.name); }
 
     function renderLowStockEditor(){
       const listEl = $('#lowStockList'); if(!listEl) return;
       const cur = loadLowStock();
       const names = getProductNames();
       listEl.innerHTML = names.map(name=>{
-        const val = (cur && Number.isFinite(cur[name])) ? cur[name] : '';
-        return `<div class="field-row">
-          <label for="ls_${cssId(name)}">${name}</label>
-          <input id="ls_${cssId(name)}" type="number" min="0" step="1" placeholder="e.g., 5" value="${val}">
+        const val = (cur && Number.isFinite(cur[name])) ? cur[name] : (cur[name] ?? '');
+        return `<div class="row-between" style="padding:6px 4px;border-bottom:1px solid #2a2a30">
+          <div style="flex:1">${name}</div>
+          <input id="ls_${cssId(name)}" type="number" min="0" step="1" placeholder="e.g., 5"
+                 value="${val}" style="width:88px;padding:8px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec">
         </div>`;
       }).join('');
       // Hook inputs
@@ -350,12 +396,10 @@
       });
     }
 
-    function cssId(name){ return name.toLowerCase().replace(/[^a-z0-9]+/g,'-'); }
-
-    /* ========== Settings tabs + Admin lock (no persistence) ========== */
+    /* ===== Settings tabs + Admin lock (no persistence) ===== */
     const ADMIN_PASSWORD = '8TSB077';
     const MAX_TRIES = 5;
-    const COOLDOWN_MS = 30_000; // 30s cooldown after too many wrong tries
+    const COOLDOWN_MS = 30000; // 30s
     let tries = 0;
     let coolingUntil = 0;
     const now = ()=>Date.now();
@@ -371,7 +415,7 @@
       $('#adminLogin').style.display='none';
       $('#adminContent').style.display='block';
       renderOrders();
-      renderLowStockEditor(); // <-- build the low-stock editor on unlock
+      renderLowStockEditor();
     }
 
     function switchTab(which){
@@ -380,7 +424,7 @@
         tabG.classList.remove('active'); tabG.setAttribute('aria-selected','false');
         tabA.classList.add('active');    tabA.setAttribute('aria-selected','true');
         panG.style.display='none'; panA.style.display='block';
-        lockAdmin(); // always start locked when entering Admin
+        lockAdmin(); // show password immediately on Admin
       } else {
         tabA.classList.remove('active'); tabA.setAttribute('aria-selected','false');
         tabG.classList.add('active');    tabG.setAttribute('aria-selected','true');
@@ -413,7 +457,7 @@
       }
     });
 
-    /* ========== Checkout: save order, clear cart, stay on main ========== */
+    /* ===== Checkout flow (stay on main) ===== */
     $('#cartCheckout').addEventListener('click', ()=>{
       $('#checkoutName').value=''; $('#checkoutLocation').value=''; $('#checkoutError').style.display='none';
       closeCart(); $('#checkoutOverlay').classList.add('show');
@@ -424,10 +468,10 @@
       if(!name || !loc){ $('#checkoutError').style.display='block'; return; }
       addOrderFromCart(name, loc);
       cart.clear(); renderCart();
-      $('#checkoutOverlay').classList.remove('show'); // back to main, no auto-admin
+      $('#checkoutOverlay').classList.remove('show'); // back to main
     });
 
-    /* ========== a11y keys ========== */
+    /* ===== a11y keyboard ===== */
     $$('.btn,.add,.ghost,.primary,.tab').forEach(el=>{
       el.tabIndex=0;
       el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
