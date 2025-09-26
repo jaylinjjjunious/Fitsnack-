@@ -12,7 +12,7 @@
     .app{max-width:393px;min-height:100svh;margin:0 auto;padding:12px 12px 32px;box-sizing:border-box}
 
     /* Header */
-    .row{position:relative; display:flex; align-items:center; gap:0}
+    .row{position:relative; display:flex; align-items:center; gap:0; z-index:10}
     .search-wrap{flex:none; width:calc(100% - 200px);}
     .search{width:100%;background:#1b1b20;border-radius:999px;border:1px solid #2a2a2e;padding:12px 44px 12px 44px;color:var(--text);outline:none}
     .search::placeholder{color:#6c6c70}
@@ -40,9 +40,16 @@
     .price{color:#c7c7cc;font-weight:600;margin-top:auto}
     .add{position:absolute;right:12px;bottom:12px;background:var(--accent);border:none;color:#001230;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer}
 
-    /* Overlays base */
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
-    .overlay.show{display:flex}
+    /* Overlays: never block clicks when hidden */
+    .overlay{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.5);
+      display:flex; align-items:center; justify-content:center;
+      padding:20px; z-index:9999;
+      opacity:0; pointer-events:none; transition:opacity .18s ease;
+    }
+    .overlay.show{ opacity:1; pointer-events:auto }
+
     .sheet{width:92%;max-width:360px;background:var(--card);border:1px solid #2a2a30;border-radius:20px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
 
     /* Bottom-sheet style */
@@ -157,12 +164,18 @@
   </div>
 
   <script>
+    // PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
     }
-    const $ = s => document.querySelector(s);
+
+    const $  = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
     const fmt = n => '$' + n.toFixed(2);
+
+    // Safety: ensure overlays start closed and cannot block clicks
+    ['#cartOverlay','#checkoutOverlay','#settingsOverlay']
+      .forEach(sel => document.querySelector(sel)?.classList.remove('show'));
 
     // Search
     $('#search').addEventListener('input', e => {
