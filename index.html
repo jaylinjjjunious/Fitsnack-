@@ -13,17 +13,14 @@
 
     /* Header */
     .row{position:relative; display:flex; align-items:center; gap:0}
-    .search-wrap{flex:none; width:calc(100% - 200px);}
+    .search-wrap{flex:none; width:calc(100% - 200px);} /* leaves room for two buttons */
     .search{width:100%;background:#1b1b20;border-radius:999px;border:1px solid #2a2a2e;padding:12px 44px 12px 44px;color:var(--text);outline:none}
     .search::placeholder{color:#6c6c70}
     .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
     .icon-rights{position:absolute; right:8px; top:50%; transform:translateY(-50%); display:flex; gap:10px; margin-left:0}
     .btn{-webkit-appearance:none;appearance:none;background:#24242a;border:1px solid #2d2d33;border-radius:14px;width:44px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
-    #cartBtn { position:relative; display:flex; align-items:center; justify-content:center }
-    .badge{
-      position:absolute; top:-6px; right:-8px; background:var(--badge); color:white; border-radius:999px;
-      padding:1px 6px; font-size:12px; font-weight:700; display:none; align-items:center; justify-content:center;
-    }
+    #cartBtn{position:relative;display:flex;align-items:center;justify-content:center}
+    .badge{position:absolute;top:-6px;right:-8px;background:var(--badge);color:#fff;border-radius:999px;padding:1px 6px;font-size:12px;font-weight:700;display:none;align-items:center;justify-content:center}
 
     /* Carousel */
     .carousel{position:relative;margin:14px 0 8px;overflow:hidden;border-radius:16px;height:120px;background:#101014}
@@ -44,20 +41,18 @@
     .add{position:absolute;right:12px;bottom:12px;background:var(--accent);border:none;color:#001230;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer}
 
     /* Overlays base */
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999;pointer-events:auto}
     .overlay.show{display:flex}
     .sheet{width:92%;max-width:360px;background:var(--card);border:1px solid #2a2a30;border-radius:20px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
-    .overlay, .sheet, .sheet * { pointer-events:auto } /* ensure everything inside is clickable */
+    .sheet *{pointer-events:auto}
 
     /* Bottom-sheet style (cart, checkout, settings) */
     #cartOverlay{align-items:flex-end}
     #cartOverlay .sheet,
     #checkoutOverlay .sheet,
     #settingsOverlay .sheet{
-      width:100%; max-width:480px; border-top-left-radius:24px;border-top-right-radius:24px;
-      border-bottom-left-radius:0;border-bottom-right-radius:0; margin:0 auto;
-      padding-bottom:calc(16px + env(safe-area-inset-bottom)); transform:translateY(100%);
-      animation:slideUp 220ms ease-out forwards;
+      width:100%;max-width:480px;border-top-left-radius:24px;border-top-right-radius:24px;border-bottom-left-radius:0;border-bottom-right-radius:0;
+      margin:0 auto;padding-bottom:calc(16px + env(safe-area-inset-bottom));transform:translateY(100%);animation:slideUp 220ms ease-out forwards;
     }
     @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
@@ -75,6 +70,7 @@
 </head>
 <body>
   <div class="app" role="application">
+    <!-- Header -->
     <div class="row">
       <div class="search-wrap">
         <span class="icon-left" aria-hidden="true">🔍</span>
@@ -88,18 +84,19 @@
       </div>
     </div>
 
+    <!-- Carousel -->
     <div class="carousel" aria-label="School photos">
       <div class="track">
-        <div class="slide" style="background-image:url(assets/carousel-1.jpg)" role="img" aria-label="Campus aerial"></div>
-        <div class="slide" style="background-image:url(assets/carousel-2.jpg)" role="img" aria-label="Front of school"></div>
-        <div class="slide" style="background-image:url(assets/carousel-3.jpg)" role="img" aria-label="Pep rally"></div>
+        <div class="slide" style="background-image:url(assets/carousel-1.jpg)"></div>
+        <div class="slide" style="background-image:url(assets/carousel-2.jpg)"></div>
+        <div class="slide" style="background-image:url(assets/carousel-3.jpg)"></div>
       </div>
     </div>
 
     <div class="chips"><div class="chip">vegan</div><div class="chip">gluten-free</div><div class="chip">protein</div></div>
 
+    <!-- Product Grid -->
     <div id="grid" class="grid" role="list">
-      <!-- Sample products -->
       <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50">
         <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Potato Chips"></div>
         <div class="title">Potato Chips</div><div class="price">$2.50</div>
@@ -129,7 +126,7 @@
     </div>
   </div>
 
-  <!-- Cart bottom-sheet -->
+  <!-- Cart mini sheet -->
   <div id="cartOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Cart">
     <div class="sheet" role="document">
       <div class="row-between"><h3>Cart</h3><button class="ghost" id="cartBack">Back</button></div>
@@ -139,7 +136,7 @@
     </div>
   </div>
 
-  <!-- Checkout bottom-sheet -->
+  <!-- Checkout mini sheet -->
   <div id="checkoutOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Checkout">
     <div class="sheet" role="document">
       <div class="row-between"><h3>Checkout</h3><div class="ghost" id="checkoutClose">Close</div></div>
@@ -152,7 +149,7 @@
     </div>
   </div>
 
-  <!-- Settings bottom-sheet -->
+  <!-- Settings mini sheet -->
   <div id="settingsOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Settings">
     <div class="sheet" role="document">
       <div class="row-between"><h3>Settings</h3><div class="ghost" id="settingsClose">Close</div></div>
@@ -167,25 +164,27 @@
       </div>
 
       <div id="panelAdmin" role="tabpanel" aria-labelledby="tabAdmin" style="display:none">
-        <!-- This login block shows until unlocked -->
-        <div id="adminLogin" style="display:none">
+        <!-- Always start locked -->
+        <div id="adminLogin">
           <div style="margin-top:6px;">Admin password:</div>
-          <input id="adminPassword" type="password" style="width:100%;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec;margin-top:6px">
+          <input id="adminPassword" type="password" autocomplete="off" autocapitalize="none" spellcheck="false"
+                 style="width:100%;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec;margin-top:6px">
           <div id="adminError" style="display:none;color:#ff6b6b;margin-top:6px;">Wrong password.</div>
+          <div id="adminCooldown" style="display:none;color:#ffcc00;margin-top:6px;">Too many attempts. Try again soon.</div>
           <div class="actions" style="margin-top:12px;"><button class="primary" id="adminSubmit">Unlock</button></div>
         </div>
-        <!-- Orders only show when unlocked -->
+
+        <!-- Orders (visible only after successful unlock) -->
         <div id="adminContent" style="display:none">
           <div style="margin-top:12px;font-weight:700">Orders</div>
           <div id="ordersList" class="admin-list">No orders yet</div>
-          <div class="actions" style="margin-top:12px;"><button class="ghost" id="adminLock">Lock</button></div>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    // PWA
+    // Register SW
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
     }
@@ -193,21 +192,20 @@
     const $  = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
 
-    // Search filter
+    /* ========== Search ========== */
     $('#search').addEventListener('input', e => {
       const q = e.target.value.toLowerCase();
       $$('.card').forEach(c => c.style.display = c.dataset.name.toLowerCase().includes(q) ? '' : 'none');
     });
 
-    // Carousel pause/resume
+    /* ========== Carousel pause/resume ========== */
     const track = document.querySelector('.track');
     ['touchstart','mousedown','pointerdown'].forEach(ev=>track.addEventListener(ev,()=>track.style.animationPlayState='paused',{passive:true}));
     ['touchend','mouseup','pointerup','mouseleave'].forEach(ev=>track.addEventListener(ev,()=>track.style.animationPlayState='running'));
 
-    // ===== Cart & Orders (persistent) =====
+    /* ========== Cart & Orders (persistent) ========== */
     const CART_KEY   = 'fitsnacks.cart.v1';
     const ORDERS_KEY = 'fitsnacks.orders';
-    const UNLOCK_KEY = 'fitsnacks.admin.unlocked';
     const fmt = n => '$' + n.toFixed(2);
 
     function loadCart(){ try{ return new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]')); }catch{ return new Map(); } }
@@ -274,11 +272,11 @@
       $('#cartOverlay').classList.add('show');
     });
 
-    // Open/close overlays
+    /* ========== Overlays open/close ========== */
     function openCart(){ $('#cartOverlay').classList.add('show'); }
     function closeCart(){ $('#cartOverlay').classList.remove('show'); }
     function openSettings(defaultToAdmin=false){ $('#settingsOverlay').classList.add('show'); switchTab(defaultToAdmin?'admin':'general'); }
-    function closeSettings(){ $('#settingsOverlay').classList.remove('show'); }
+    function closeSettings(){ $('#settingsOverlay').classList.remove('show'); lockAdmin(); } // clear password on close
 
     document.addEventListener('click', (e)=>{
       if(e.target.closest('#cartBtn')) openCart();
@@ -287,7 +285,7 @@
       if(e.target.closest('#settingsClose')) closeSettings();
     }, {passive:true});
 
-    // Orders helpers
+    /* ========== Orders helpers ========== */
     function addOrderFromCart(name, location){
       const lines=[]; let total=0;
       for(const [n,info] of cart){ const line=info.price*info.qty; total+=line; lines.push({name:n, price:info.price, qty:info.qty, line}); }
@@ -310,9 +308,26 @@
       }).join('');
     }
 
-    // Settings tabs + admin lock
-    function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY) === '1'; }
-    function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v ? '1':'0'); }
+    /* ========== Settings tabs + Admin lock (no persistence) ========== */
+    const ADMIN_PASSWORD = '8TSB077';
+    const MAX_TRIES = 5;
+    const COOLDOWN_MS = 30_000; // 30s cooldown after too many wrong tries
+    let tries = 0;
+    let coolingUntil = 0;
+    const now = ()=>Date.now();
+
+    function lockAdmin(){
+      $('#adminLogin').style.display='block';
+      $('#adminContent').style.display='none';
+      $('#adminPassword').value='';
+      $('#adminError').style.display='none';
+      $('#adminCooldown').style.display='none';
+    }
+    function unlockAdmin(){
+      $('#adminLogin').style.display='none';
+      $('#adminContent').style.display='block';
+      renderOrders();
+    }
 
     function switchTab(which){
       const tabG=$('#tabGeneral'), tabA=$('#tabAdmin'), panG=$('#panelGeneral'), panA=$('#panelAdmin');
@@ -320,10 +335,7 @@
         tabG.classList.remove('active'); tabG.setAttribute('aria-selected','false');
         tabA.classList.add('active');    tabA.setAttribute('aria-selected','true');
         panG.style.display='none'; panA.style.display='block';
-        const loggedIn=isUnlocked();
-        $('#adminLogin').style.display= loggedIn?'none':'block';
-        $('#adminContent').style.display= loggedIn?'block':'none';
-        if(loggedIn) renderOrders();
+        lockAdmin(); // always start locked when entering Admin
       } else {
         tabA.classList.remove('active'); tabA.setAttribute('aria-selected','false');
         tabG.classList.add('active');    tabG.setAttribute('aria-selected','true');
@@ -331,18 +343,32 @@
       }
     }
 
-    document.addEventListener('click',(e)=>{
-      if(e.target.closest('#tabGeneral')) switchTab('general');
-      if(e.target.closest('#tabAdmin'))   switchTab('admin');
-      if(e.target.closest('#adminSubmit')){
-        const ok = $('#adminPassword').value === '8TSB077';
-        if(ok){ setUnlocked(true); $('#adminError').style.display='none'; switchTab('admin'); }
-        else { $('#adminError').style.display='block'; }
-      }
-      if(e.target.closest('#adminLock')){ setUnlocked(false); switchTab('admin'); }
-    }, {passive:true});
+    $('#tabGeneral').addEventListener('click', ()=>switchTab('general'));
+    $('#tabAdmin').addEventListener('click',   ()=>switchTab('admin'));
 
-    // Checkout flow: stay on main, store order, do not open Admin automatically
+    $('#adminSubmit').addEventListener('click', ()=>{
+      if (now() < coolingUntil){
+        $('#adminCooldown').style.display='block';
+        $('#adminError').style.display='none';
+        return;
+      }
+      const ok = $('#adminPassword').value === ADMIN_PASSWORD;
+      if (ok){
+        tries = 0;
+        $('#adminCooldown').style.display='none';
+        $('#adminError').style.display='none';
+        unlockAdmin();
+      } else {
+        tries++;
+        $('#adminError').style.display='block';
+        if (tries >= MAX_TRIES){
+          coolingUntil = now() + COOLDOWN_MS;
+          $('#adminCooldown').style.display='block';
+        }
+      }
+    });
+
+    /* ========== Checkout: save order, clear cart, stay on main ========== */
     $('#cartCheckout').addEventListener('click', ()=>{
       $('#checkoutName').value=''; $('#checkoutLocation').value=''; $('#checkoutError').style.display='none';
       closeCart(); $('#checkoutOverlay').classList.add('show');
@@ -353,16 +379,16 @@
       if(!name || !loc){ $('#checkoutError').style.display='block'; return; }
       addOrderFromCart(name, loc);
       cart.clear(); renderCart();
-      $('#checkoutOverlay').classList.remove('show'); // stays on main page
+      $('#checkoutOverlay').classList.remove('show'); // back to main, no auto-admin
     });
 
-    // a11y keys
+    /* ========== a11y keys ========== */
     $$('.btn,.add,.ghost,.primary,.tab').forEach(el=>{
       el.tabIndex=0;
       el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
     });
 
-    // initial render
+    // Initial render
     renderCart(); refreshBadge();
   </script>
 </body>
