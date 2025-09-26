@@ -1,13 +1,14 @@
 // --- FitSnacks Service Worker ---
 // Bump this when you change any cached files:
 const CACHE = 'fitsnacks-v4';
+
 const ASSETS = [
   // Pages
   './',
   './index.html',
   './checkout.html',
 
-  // PWA
+  // PWA manifest + icons
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
@@ -49,7 +50,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   if (url.origin !== location.origin) return;
 
-  // Keep HTML (documents) fresh: network-first with cache fallback
+  // Keep HTML fresh: network-first with cache fallback
   const acceptsHTML =
     event.request.destination === 'document' ||
     (event.request.headers.get('accept') || '').includes('text/html');
@@ -67,7 +68,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Everything else: cache-first with network fallback
+  // Other assets: cache-first with network fallback
   event.respondWith(
     caches.match(event.request).then(
       (cached) =>
