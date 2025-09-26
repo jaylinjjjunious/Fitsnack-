@@ -34,8 +34,9 @@
     /* Grid */
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
     .card{background:var(--card);border:1px solid #26262b;border-radius:var(--radius);padding:12px;position:relative;display:flex;flex-direction:column;min-height:190px;cursor:pointer}
-    .thumb{height:90px;border-radius:12px;overflow:hidden;margin-bottom:8px}
+    .thumb{position:relative;height:90px;border-radius:12px;overflow:hidden;margin-bottom:8px}
     .thumb img{width:100%;height:100%;object-fit:cover}
+    .stock-chip{position:absolute;left:8px;top:8px;background:#1e1e22;border:1px solid #2a2a30;color:#e9e9ec;padding:4px 8px;border-radius:999px;font-size:12px;line-height:1;font-weight:600}
     .title{font-weight:700;margin:4px 0 2px;letter-spacing:0.2px}
     .price{color:#c7c7cc;font-weight:600;margin-top:auto}
     .add{position:absolute;right:12px;bottom:12px;background:var(--accent);border:none;color:#001230;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer}
@@ -70,6 +71,7 @@
     /* Product sheet preview image */
     .preview{height:170px;border-radius:12px;overflow:hidden;margin:10px 0}
     .preview img{width:100%;height:100%;object-fit:cover}
+    .muted{color:#c9c9d1}
   </style>
 </head>
 <body>
@@ -102,24 +104,31 @@
     <!-- Product Grid -->
     <div id="grid" class="grid" role="list">
       <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50">
-        <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Potato Chips"></div>
+        <div class="thumb">
+          <img src="assets/product-funyuns.jpg" alt="Potato Chips">
+          <!-- stock chip will be injected here -->
+        </div>
         <div class="title">Potato Chips</div><div class="price">$2.50</div>
         <button class="add" aria-label="Add Potato Chips">+</button>
       </div>
       <div class="card" role="listitem" data-name="Protein Bar" data-price="2.99">
-        <div class="thumb"><img src="assets/product-chesters.jpg" alt="Protein Bar"></div>
+        <div class="thumb">
+          <img src="assets/product-chesters.jpg" alt="Protein Bar">
+        </div>
         <div class="title">Protein Bar</div><div class="price">$2.99</div>
         <button class="add" aria-label="Add Protein Bar">+</button>
       </div>
       <div class="card" role="listitem" data-name="Trail Mix" data-price="3.49">
-        <div class="thumb"><img src="assets/product-cheetos.jpg" alt="Trail Mix"></div>
+        <div class="thumb">
+          <img src="assets/product-cheetos.jpg" alt="Trail Mix">
+        </div>
         <div class="title">Trail Mix</div><div class="price">$3.49</div>
         <button class="add" aria-label="Add Trail Mix">+</button>
       </div>
     </div>
   </div>
 
-  <!-- Product mini sheet (photo + qty + add) -->
+  <!-- Product mini sheet (photo + qty + add + low-stock info) -->
   <div id="productSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Add item">
     <div class="sheet" role="document">
       <div class="row-between">
@@ -127,6 +136,10 @@
         <div class="ghost" id="sheetClose">Close</div>
       </div>
       <div class="preview"><img id="sheetImg" alt=""></div>
+
+      <!-- Low-stock line from Admin -->
+      <div id="sheetLowStock" class="muted" style="margin:4px 0 6px; display:none"></div>
+
       <div class="row-between">
         <div id="sheetPrice" class="price" style="font-size:18px;"></div>
         <div class="qty">
@@ -290,6 +303,19 @@
       const img = $('#sheetImg');
       img.alt = current.name;
       img.src = current.img;
+
+      // Show low-stock value from Admin
+      const ls = loadLowStock();
+      const v = ls[current.name];
+      const row = $('#sheetLowStock');
+      if (v !== undefined && v !== ''){
+        row.style.display = 'block';
+        row.textContent = `Low-stock threshold: ${v}`;
+      } else {
+        row.style.display = 'none';
+        row.textContent = '';
+      }
+
       $('#productSheet').classList.add('show');
     }
 
@@ -299,10 +325,9 @@
       openProductSheetFromCard(e.target.closest('.card'));
     }));
 
-    // Click anywhere on the card (image/title/price) opens sheet too
+    // Click anywhere on the card opens sheet too (except the +)
     $$('.card').forEach(card => {
       card.addEventListener('click', (e) => {
-        // ignore if the direct target was the "+" button (handled above)
         if (e.target.closest('.add')) return;
         openProductSheetFromCard(card);
       });
@@ -367,9 +392,30 @@
       }).join('');
     }
 
-    /* ===== Low-stock editor ===== */
+    /* ===== Low-stock editor (Admin) + chips on cards ===== */
     function cssId(name){ return name.toLowerCase().replace(/[^a-z0-9]+/g,'-'); }
     function getProductNames(){ return Array.from($$('.card')).map(c=>c.dataset.name); }
+
+    function renderStockChips(){
+      const ls = loadLowStock();
+      $$('.card').forEach(card=>{
+        const name = card.dataset.name;
+        const v = ls[name];
+        const thumb = card.querySelector('.thumb');
+        let chip = thumb.querySelector('.stock-chip');
+        if (v !== undefined && v !== '' ){
+          if (!chip){
+            chip = document.createElement('div');
+            chip.className = 'stock-chip';
+            thumb.appendChild(chip);
+          }
+          chip.textContent = `Stock: ${v}`;
+          chip.style.display = 'inline-block';
+        } else if (chip){
+          chip.remove();
+        }
+      });
+    }
 
     function renderLowStockEditor(){
       const listEl = $('#lowStockList'); if(!listEl) return;
@@ -392,6 +438,17 @@
           const store = loadLowStock();
           store[name] = v==='' ? '' : Math.max(0, parseInt(v||'0',10));
           saveLowStock(store);
+          renderStockChips();               // update chips live
+          if (current && current.name === name){ // update mini page if it's open for this product
+            const row = $('#sheetLowStock');
+            if (store[name] !== '' && store[name] !== undefined){
+              row.style.display='block';
+              row.textContent = `Low-stock threshold: ${store[name]}`;
+            } else {
+              row.style.display='none';
+              row.textContent = '';
+            }
+          }
         });
       });
     }
@@ -402,7 +459,6 @@
     const COOLDOWN_MS = 30000; // 30s
     let tries = 0;
     let coolingUntil = 0;
-    const now = ()=>Date.now();
 
     function lockAdmin(){
       $('#adminLogin').style.display='block';
@@ -436,7 +492,7 @@
     $('#tabAdmin').addEventListener('click',   ()=>switchTab('admin'));
 
     $('#adminSubmit').addEventListener('click', ()=>{
-      if (now() < coolingUntil){
+      if (Date.now() < coolingUntil){
         $('#adminCooldown').style.display='block';
         $('#adminError').style.display='none';
         return;
@@ -451,7 +507,7 @@
         tries++;
         $('#adminError').style.display='block';
         if (tries >= MAX_TRIES){
-          coolingUntil = now() + COOLDOWN_MS;
+          coolingUntil = Date.now() + COOLDOWN_MS;
           $('#adminCooldown').style.display='block';
         }
       }
@@ -478,7 +534,7 @@
     });
 
     // Initial render
-    renderCart(); refreshBadge();
+    renderCart(); refreshBadge(); renderStockChips();
   </script>
 </body>
 </html>
