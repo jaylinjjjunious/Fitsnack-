@@ -6,183 +6,148 @@
   <title>FitSnacks</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#0b0b0d">
-
   <style>
-    /* ===== THEME ===== */
-    :root{
-      --bg:#0b0b0d;
-      --card:#141418cc;             /* translucent for glass */
-      --card-opaque:#141418;        /* solid fallback */
-      --text:#e9e9ec;
-      --muted:#aaa;
-      --accent:#6ea8fe;
-      --badge:#ff3b30;
-      --radius:18px;
-      --glow:#00e28a;               /* green glow */
-      --glass-blur: 14px;
-      --glass-border: rgba(255,255,255,.08);
-      --glow-soft: 0 0 0 1px rgba(0,226,138,.25), 0 0 30px rgba(0,226,138,.12);
-      --glow-strong: 0 0 0 1px rgba(0,226,138,.35), 0 0 40px rgba(0,226,138,.22);
+    :root {
+      --bg:#0b0b0d; --card:#141418; --text:#e9e9ec; --muted:#aaa; --accent:#6ea8fe; --badge:#ff3b30; --radius:18px;
+      --glass:rgba(28,28,34,.55); --glass-stroke:rgba(255,255,255,.08); --neon:#1ef77a;
     }
-
-    html,body{margin:0;height:100%;background:radial-gradient(1000px 600px at 50% -200px, rgba(0,226,138,.05), transparent 60%), var(--bg);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
+    html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
     .app{max-width:393px;min-height:100svh;margin:0 auto;padding:12px 12px 32px;box-sizing:border-box}
 
-    /* ===== GLASS + GLOW UTIL ===== */
-    .glass{
-      background: var(--card);
-      backdrop-filter: blur(var(--glass-blur));
-      -webkit-backdrop-filter: blur(var(--glass-blur));
-      border:1px solid var(--glass-border);
-      box-shadow: var(--glow-soft);
-    }
-    .glass:hover{ box-shadow: var(--glow-strong); }
-
-    /* ===== Header ===== */
+    /* Header */
     .row{position:relative; display:flex; align-items:center; gap:0}
     .search-wrap{flex:none; width:calc(100% - 200px);}
     .search{
-      width:100%;
-      background:#121216cc;
-      border-radius:999px;
-      border:1px solid var(--glass-border);
-      padding:12px 44px 12px 44px;
-      color:var(--text);
-      outline:none;
-      box-shadow: var(--glow-soft);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      width:100%;background:#1b1b20;border-radius:999px;border:1px solid #2a2a2e;
+      padding:12px 44px;color:var(--text);outline:none;
+      box-shadow:0 0 0 1px rgba(30,247,122,.15), 0 6px 18px rgba(30,247,122,.07) inset;
     }
     .search::placeholder{color:#6c6c70}
     .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
     .icon-rights{position:absolute; right:8px; top:50%; transform:translateY(-50%); display:flex; gap:10px; margin-left:0}
-    .btn{
-      -webkit-appearance:none;appearance:none;
-      background:#16161bcc;border:1px solid var(--glass-border);
-      border-radius:14px;width:44px;height:44px;padding:0;
-      display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
-      box-shadow: var(--glow-soft); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-    }
-    #cartBtn{ position:relative; display:flex; align-items:center; justify-content:center }
-    .badge{
-      position:absolute; top:-6px; right:-8px; background:var(--badge); color:white;
-      border-radius:999px; padding:1px 6px; font-size:12px; font-weight:700; display:none;
-    }
+    .btn{-webkit-appearance:none;appearance:none;background:#24242a;border:1px solid #2d2d33;border-radius:14px;width:44px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+    #cartBtn{position:relative;display:flex;align-items:center;justify-content:center}
+    .badge{position:absolute;top:-6px;right:-8px;background:var(--badge);color:white;border-radius:999px;padding:1px 6px;font-size:12px;font-weight:700;display:none;align-items:center;justify-content:center}
 
-    /* ===== Carousel (fixed height + contain image, never oversized) ===== */
-    .carousel{position:relative;margin:14px 0 12px;overflow:hidden;border-radius:16px;height:120px;background:#0e0e12}
+    /* Carousel -- fixed height, cover, rounded, glass + subtle neon rim */
+    .carousel{
+      position:relative;margin:14px 0 8px;overflow:hidden;border-radius:16px;height:160px;background:#101014;
+      outline:1px solid rgba(255,255,255,.06);
+      box-shadow: 0 0 0 1px rgba(30,247,122,.08), 0 12px 28px rgba(0,0,0,.45);
+    }
     .track{display:flex;width:300%;height:100%;animation:slide 15s infinite}
-    .slide{
-      flex:0 0 100%;
-      height:120px;
-      background-size:contain;     /* keep banners fully visible */
-      background-position:center;
-      background-repeat:no-repeat;
-      filter: saturate(1.05) contrast(1.04);
+    .slide{flex:0 0 100%;height:100%;background-size:cover;background-position:center center}
+    @keyframes slide{
+      0%,28%{transform:translateX(0)}
+      33%,61%{transform:translateX(-100%)}
+      66%,94%{transform:translateX(-200%)}
+      100%{transform:translateX(0)}
     }
-    @keyframes slide{0%,28%{transform:translateX(0)}33%,61%{transform:translateX(-100%)}66%,94%{transform:translateX(-200%)}100%{transform:translateX(0)}}
 
-    /* ===== Chips ===== */
-    .chips{display:flex;gap:10px;margin:6px 0 12px;flex-wrap:wrap}
-    .chip{background:#141419cc;border:1px solid var(--glass-border);color:#c9c9d1;padding:6px 10px;border-radius:999px;font-size:13px;box-shadow: var(--glow-soft)}
+    .chips{display:flex;gap:10px;margin:10px 0 12px;flex-wrap:wrap}
+    .chip{
+      background:var(--glass);border:1px solid var(--glass-stroke);color:#c9c9d1;padding:6px 10px;border-radius:999px;font-size:13px;
+      box-shadow:0 1px 12px rgba(0,0,0,.35), inset 0 0 0 1px rgba(30,247,122,.06);
+    }
 
-    /* ===== Grid ===== */
+    /* Grid */
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
     .card{
-      background: var(--card); border:1px solid var(--glass-border);
-      border-radius:var(--radius); padding:12px; position:relative; display:flex; flex-direction:column; min-height:190px;
-      box-shadow: var(--glow-soft); backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
+      background:var(--card);border:1px solid #26262b;border-radius:var(--radius);padding:12px;position:relative;display:flex;flex-direction:column;min-height:190px;
+      box-shadow:0 0 0 1px rgba(30,247,122,.05), 0 10px 28px rgba(0,0,0,.35);
     }
-    .thumb{height:90px;border-radius:12px;overflow:hidden;margin-bottom:8px;display:flex;align-items:center;justify-content:center;background:#0f0f13}
-    .thumb img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+    .thumb{height:90px;border-radius:12px;overflow:hidden;margin-bottom:8px;background:#0e0e12}
+    .thumb img{width:100%;height:100%;object-fit:cover}
     .title{font-weight:700;margin:4px 0 2px;letter-spacing:0.2px}
     .price{color:#c7c7cc;font-weight:600;margin-top:auto}
-    .add{position:absolute;right:12px;bottom:12px;background:var(--accent);border:none;color:#001230;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer;box-shadow:0 8px 18px rgba(110,168,254,.25)}
+    .add{
+      position:absolute;right:12px;bottom:12px;background:var(--accent);border:none;color:#001230;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer
+    }
 
-    /* ===== Overlays base ===== */
+    /* Overlays base */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
     .overlay.show{display:flex}
     .sheet{
-      width:92%;max-width:360px;border-radius:20px;padding:16px;
-      background: var(--card); border:1px solid var(--glass-border);
-      box-shadow: var(--glow-strong);
-      backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur));
+      width:92%;max-width:360px;background:rgba(22,22,27,.78);backdrop-filter: blur(14px);
+      border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:16px;box-shadow:0 12px 34px rgba(0,0,0,.5), 0 0 0 1px rgba(30,247,122,.09);
     }
 
-    /* Bottom-sheet for Cart / Checkout / Settings */
+    /* Bottom-sheet style (cart, checkout, settings) */
     #cartOverlay{align-items:flex-end}
     #cartOverlay .sheet,
     #checkoutOverlay .sheet,
     #settingsOverlay .sheet{
-      width:100%; max-width:480px;
-      border-top-left-radius:24px;border-top-right-radius:24px;
-      border-bottom-left-radius:0;border-bottom-right-radius:0;
-      margin:0 auto;
-      padding-bottom:calc(16px + env(safe-area-inset-bottom));
-      transform:translateY(100%);
+      width:100%; max-width:480px; border-top-left-radius:24px;border-top-right-radius:24px;
+      border-bottom-left-radius:0;border-bottom-right-radius:0; margin:0 auto;
+      padding-bottom:calc(16px + env(safe-area-inset-bottom)); transform:translateY(100%);
       animation:slideUp 220ms ease-out forwards;
     }
     @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
     .row-between{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .qty{display:flex;align-items:center;gap:10px}
-    .qty button{width:36px;height:36px;border-radius:10px;border:1px solid var(--glass-border);background:#1c1c22cc;color:var(--text);font-size:20px;font-weight:700}
+    .qty button{width:36px;height:36px;border-radius:10px;border:1px solid #2a2a30;background:#1c1c22;color:var(--text);font-size:20px;font-weight:700}
     .primary{background:var(--accent);border:0;color:#081425;font-weight:800;border-radius:12px;padding:12px 14px}
-    .ghost{background:#1b1b20cc;border:1px solid var(--glass-border);color:#e7e7eb;border-radius:12px;padding:10px 12px}
+    .ghost{background:#1b1b20;border:1px solid #2a2a30;color:#e7e7eb;border-radius:12px;padding:10px 12px}
     .actions{display:flex;gap:10px;margin-top:12px}
     .tabs{display:flex;gap:8px;margin:6px 0 12px}
-    .tab{padding:8px 10px;border-radius:10px;border:1px solid var(--glass-border);background:#18181dcc;cursor:pointer}
-    .tab.active{background:#24242acc;box-shadow: var(--glow-soft)}
-    .admin-list{max-height:240px;overflow:auto;border:1px solid var(--glass-border);border-radius:12px;padding:8px;margin-top:8px;background:#101015cc}
+    .tab{padding:8px 10px;border-radius:10px;border:1px solid #2a2a30;background:#18181d;cursor:pointer}
+    .tab.active{background:#24242a}
+    .admin-list{max-height:240px;overflow:auto;border:1px solid #2a2a30;border-radius:12px;padding:8px;margin-top:8px}
+    /* Admin inner tabs */
+    .admin-tabs{display:flex;gap:8px;margin:8px 0 10px}
+    .admin-tab{padding:6px 10px;border-radius:10px;border:1px solid #2a2a30;background:#19191f;cursor:pointer;font-size:13px}
+    .admin-tab.active{background:#23232a}
+    .admin-panel{display:none}
+    .admin-panel.show{display:block}
+    /* Heatmap grid scrollable */
+    #panelAdmin .sheet-like{max-height:50vh;overflow:auto}
+
+    /* Low-stock small pill */
+    .low-pill{font-size:12px;color:#9ae6b4;background:rgba(26,95,60,.25);border:1px solid rgba(76,175,80,.25);padding:2px 8px;border-radius:999px;margin-left:auto}
   </style>
 </head>
 <body>
   <div class="app" role="application">
-    <!-- Header -->
     <div class="row">
       <div class="search-wrap">
         <span class="icon-left" aria-hidden="true">🔍</span>
         <input id="search" class="search" placeholder="Search snacks…" autocomplete="off">
       </div>
       <div class="icon-rights">
-        <button type="button" class="btn glass" id="cartBtn" aria-label="Open cart">
-          🛒 <span id="cartBadge" class="badge">0</span>
-        </button>
-        <button type="button" class="btn glass" id="settingsBtn" aria-label="Open settings">⚙️</button>
+        <button type="button" class="btn" id="cartBtn" aria-label="Open cart">🛒<span id="cartBadge" class="badge">0</span></button>
+        <button type="button" class="btn" id="settingsBtn" aria-label="Open settings">⚙️</button>
       </div>
     </div>
 
-    <!-- Carousel -->
-    <div class="carousel glass" aria-label="Snack banners">
+    <!-- Updated carousel using your photos -->
+    <div class="carousel" aria-label="School photos">
       <div class="track">
-        <div class="slide" style="background-image:url(assets/carousel-1.jpg)" role="img" aria-label="Banner 1"></div>
-        <div class="slide" style="background-image:url(assets/carousel-2.jpg)" role="img" aria-label="Banner 2"></div>
-        <div class="slide" style="background-image:url(assets/carousel-3.jpg)" role="img" aria-label="Banner 3"></div>
+        <div class="slide" style="background-image:url(assets/highland-aerial.jpg)" role="img" aria-label="Campus aerial"></div>
+        <div class="slide" style="background-image:url(assets/front-entrance.jpg)" role="img" aria-label="Front of school"></div>
+        <div class="slide" style="background-image:url(assets/pep-rally.jpg)" role="img" aria-label="Pep rally"></div>
       </div>
     </div>
 
-    <!-- Chips -->
-    <div class="chips">
-      <div class="chip glass">vegan</div>
-      <div class="chip glass">gluten-free</div>
-      <div class="chip glass">protein</div>
-    </div>
+    <div class="chips"><div class="chip">vegan</div><div class="chip">gluten-free</div><div class="chip">protein</div></div>
 
-    <!-- Products -->
     <div id="grid" class="grid" role="list">
-      <div class="card glass" role="listitem" data-name="Potato Chips" data-price="2.50">
+      <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50">
         <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Potato Chips"></div>
-        <div class="title">Potato Chips</div><div class="price">$2.50</div>
+        <div class="title">Potato Chips <span class="low-pill" data-low="Potato Chips" style="display:none">Low</span></div>
+        <div class="price">$2.50</div>
         <button class="add" aria-label="Add Potato Chips">+</button>
       </div>
-      <div class="card glass" role="listitem" data-name="Protein Bar" data-price="2.99">
+      <div class="card" role="listitem" data-name="Protein Bar" data-price="2.99">
         <div class="thumb"><img src="assets/product-chesters.jpg" alt="Protein Bar"></div>
-        <div class="title">Protein Bar</div><div class="price">$2.99</div>
+        <div class="title">Protein Bar <span class="low-pill" data-low="Protein Bar" style="display:none">Low</span></div>
+        <div class="price">$2.99</div>
         <button class="add" aria-label="Add Protein Bar">+</button>
       </div>
-      <div class="card glass" role="listitem" data-name="Trail Mix" data-price="3.49">
+      <div class="card" role="listitem" data-name="Trail Mix" data-price="3.49">
         <div class="thumb"><img src="assets/product-cheetos.jpg" alt="Trail Mix"></div>
-        <div class="title">Trail Mix</div><div class="price">$3.49</div>
+        <div class="title">Trail Mix <span class="low-pill" data-low="Trail Mix" style="display:none">Low</span></div>
+        <div class="price">$3.49</div>
         <button class="add" aria-label="Add Trail Mix">+</button>
       </div>
     </div>
@@ -190,18 +155,20 @@
 
   <!-- Product mini sheet -->
   <div id="productSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Add item">
-    <div class="sheet">
+    <div class="sheet" role="document">
       <div class="row-between"><h3 id="sheetTitle">Item</h3><div class="ghost" id="sheetClose">Close</div></div>
-      <div class="row-between"><div id="sheetPrice" class="price" style="font-size:18px;"></div>
+      <div class="row-between">
+        <div id="sheetPrice" class="price" style="font-size:18px;"></div>
         <div class="qty"><button id="qtyMinus">−</button><div id="qtyVal">1</div><button id="qtyPlus">+</button></div>
       </div>
+      <div id="sheetStock" style="margin:8px 0 0;color:#9ae6b4;font-size:13px;display:none"></div>
       <div class="actions"><button class="ghost" id="sheetCancel">Cancel</button><button class="primary" id="sheetAdd">Add</button></div>
     </div>
   </div>
 
   <!-- Cart bottom-sheet -->
   <div id="cartOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Cart">
-    <div class="sheet">
+    <div class="sheet" role="document">
       <div class="row-between"><h3>Cart</h3><button class="ghost" id="cartBack">Back</button></div>
       <div id="cartContent"></div>
       <div class="row-between" style="margin-top:10px;"><strong>Total</strong><strong id="cartTotal">$0.00</strong></div>
@@ -211,12 +178,12 @@
 
   <!-- Checkout bottom-sheet -->
   <div id="checkoutOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Checkout">
-    <div class="sheet">
+    <div class="sheet" role="document">
       <div class="row-between"><h3>Checkout</h3><div class="ghost" id="checkoutClose">Close</div></div>
       <div style="margin-top:6px;">Your name:</div>
-      <input id="checkoutName" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--glass-border);background:#101014cc;color:#e9e9ec;margin-top:6px">
+      <input id="checkoutName" style="width:100%;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec;margin-top:6px">
       <div style="margin-top:10px;">Where are you on campus?</div>
-      <input id="checkoutLocation" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--glass-border);background:#101014cc;color:#e9e9ec;margin-top:6px">
+      <input id="checkoutLocation" style="width:100%;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec;margin-top:6px">
       <div id="checkoutError" style="display:none;color:#ff6b6b;margin-top:10px;">Please fill both fields.</div>
       <div class="actions" style="margin-top:12px;"><button class="primary" id="checkoutSubmit">Place Order</button></div>
     </div>
@@ -224,7 +191,7 @@
 
   <!-- Settings bottom-sheet -->
   <div id="settingsOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Settings">
-    <div class="sheet">
+    <div class="sheet" role="document">
       <div class="row-between">
         <h3>Settings</h3>
         <div class="ghost" id="settingsClose">Close</div>
@@ -240,23 +207,50 @@
       </div>
 
       <div id="panelAdmin" role="tabpanel" aria-labelledby="tabAdmin" style="display:none">
+        <!-- Password gate always shown first -->
         <div id="adminLogin">
           <div style="margin-top:6px;">Admin password:</div>
-          <input id="adminPassword" type="password" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--glass-border);background:#101014cc;color:#e9e9ec;margin-top:6px">
+          <input id="adminPassword" type="password" style="width:100%;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec;margin-top:6px">
           <div id="adminError" style="display:none;color:#ff6b6b;margin-top:6px;">Wrong password.</div>
           <div class="actions" style="margin-top:12px;"><button class="primary" id="adminSubmit">Unlock</button></div>
         </div>
 
+        <!-- Admin content -->
         <div id="adminContent" style="display:none">
-          <div style="margin-top:12px;font-weight:700">Orders</div>
-          <div id="ordersList" class="admin-list">No orders yet</div>
+          <div class="admin-tabs">
+            <button class="admin-tab active" data-admin-tab="orders">Orders</button>
+            <button class="admin-tab" data-admin-tab="inventory">Inventory</button>
+            <button class="admin-tab" data-admin-tab="heat">Heat Map</button>
+          </div>
+
+          <div id="adminOrders" class="admin-panel show">
+            <div style="margin-top:12px;font-weight:700">Orders</div>
+            <div id="ordersList" class="admin-list">No orders yet</div>
+          </div>
+
+          <div id="adminInventory" class="admin-panel">
+            <div style="margin-top:12px;font-weight:700">Low-stock thresholds</div>
+            <div style="color:#c9c9d1;margin:4px 0 10px;font-size:14px">Set the quantity at which each item should be considered "low stock".</div>
+            <div id="lowForm"></div>
+          </div>
+
+          <div id="adminHeat" class="admin-panel">
+            <div style="margin-top:12px;font-weight:700">Heat Map of Demand</div>
+            <div style="font-size:13px;color:#c9c9d1;margin:4px 0 10px">
+              Low <span style="display:inline-block;width:16px;height:10px;background:#122430;border-radius:3px;margin:0 6px 0 4px"></span>
+              <span style="display:inline-block;width:16px;height:10px;background:#1a2f49;border-radius:3px;margin-right:6px"></span>
+              <span style="display:inline-block;width:16px;height:10px;background:#224a7a;border-radius:3px;margin-right:6px"></span>
+              <span style="display:inline-block;width:16px;height:10px;background:#2a66ab;border-radius:3px;margin-right:6px"></span> High
+            </div>
+            <div id="heatWrap" class="sheet-like"></div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    /* PWA */
+    // Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
     }
@@ -264,34 +258,38 @@
     const $ = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
 
-    /* Search */
+    // Search
     $('#search').addEventListener('input', e => {
       const q = e.target.value.toLowerCase();
       $$('.card').forEach(c => c.style.display = c.dataset.name.toLowerCase().includes(q) ? '' : 'none');
     });
 
-    /* Carousel pause/resume */
+    // Carousel pause when interacting
     const track = document.querySelector('.track');
     ['touchstart','mousedown','pointerdown'].forEach(ev=>track.addEventListener(ev,()=>track.style.animationPlayState='paused',{passive:true}));
     ['touchend','mouseup','pointerup','mouseleave'].forEach(ev=>track.addEventListener(ev,()=>track.style.animationPlayState='running'));
 
-    /* ===== CART (persistent) ===== */
+    // Keys
     const CART_KEY = 'fitsnacks.cart.v1';
     const ORDERS_KEY = 'fitsnacks.orders';
     const UNLOCK_KEY = 'fitsnacks.admin.unlocked';
+    const STOCK_KEY = 'fitsnacks.stock.thresholds';
+    const HEAT_KEY = 'fitsnacks.heat.v1';
+
     const fmt = n => '$' + n.toFixed(2);
 
     function loadCart(){ try{ return new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]')); }catch{ return new Map(); } }
-    function saveCart(m){ try{ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(m.entries())));}catch{} }
-
+    function saveCart(m){ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(m.entries()))); }
     let cart = loadCart();
 
+    // Badge
     function refreshBadge(){
       let n=0; for (const v of cart.values()) n+=v.qty;
-      const b = $('#cartBadge'); if (!b) return;
-      if (n>0){ b.textContent=n; b.style.display='inline-flex'; } else { b.style.display='none'; }
+      const b = $('#cartBadge'); if(!b) return;
+      if(n>0){ b.textContent=n; b.style.display='inline-flex'; } else { b.style.display='none'; }
     }
 
+    // Cart render
     function renderCart(){
       let total=0, html='';
       for (const [name,info] of cart){
@@ -310,7 +308,6 @@
       $('#cartTotal').textContent = fmt(total);
       saveCart(cart); refreshBadge();
     }
-
     document.addEventListener('click', (e)=>{
       const b = e.target.closest('button'); if(!b) return;
       if (b.matches('[data-act][data-name]')) {
@@ -322,11 +319,33 @@
       }
     }, {passive:true});
 
-    /* Product quick add */
+    // Product mini-sheet
     let current=null;
+    const thresholds = loadThresholds();
+    function showLowPills(){
+      $$('.low-pill').forEach(p=>{
+        const name = p.getAttribute('data-low'); const t = thresholds[name];
+        const inv = getInventoryFor(name);
+        p.style.display = (t && inv!==null && inv <= t) ? 'inline-block' : 'none';
+      });
+    }
+    function getInventoryFor(name){
+      // This example uses the threshold as "remaining" if you haven’t wired a real stock counter.
+      // If you later track true inventory, swap this logic.
+      return thresholds[name]!=null ? thresholds[name] : null;
+    }
+
     $$('.add').forEach(b => b.addEventListener('click', e => {
-      const card = e.target.closest('.card'); current = {name:card.dataset.name, price:parseFloat(card.dataset.price)};
-      $('#sheetTitle').textContent=current.name; $('#sheetPrice').textContent=fmt(current.price); $('#qtyVal').textContent=1; $('#sheetAdd').textContent='Add • '+fmt(current.price);
+      const card = e.target.closest('.card');
+      current = {name:card.dataset.name, price:parseFloat(card.dataset.price)};
+      $('#sheetTitle').textContent=current.name;
+      $('#sheetPrice').textContent=fmt(current.price);
+      $('#qtyVal').textContent=1;
+      $('#sheetAdd').textContent='Add • '+fmt(current.price);
+      // surface "low stock" if threshold exists
+      const t = thresholds[current.name];
+      if(t!=null){ $('#sheetStock').style.display='block'; $('#sheetStock').textContent = `Low-stock threshold: ${t}`; }
+      else { $('#sheetStock').style.display='none'; }
       $('#productSheet').classList.add('show');
     }));
     $('#qtyPlus').addEventListener('click', ()=>{ let n=Math.min(99,parseInt($('#qtyVal').textContent)+1); $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price*n); });
@@ -338,17 +357,14 @@
       const n=parseInt($('#qtyVal').textContent);
       const e=cart.get(current.name)||{price:current.price,qty:0};
       e.qty+=n; cart.set(current.name,e);
-      closeSheet();
-      renderCart();
-      $('#cartOverlay').classList.add('show');
+      closeSheet(); renderCart(); $('#cartOverlay').classList.add('show');
     });
 
-    /* Open/close overlays */
+    // Open/close overlays
     function openCart(){ $('#cartOverlay').classList.add('show'); }
     function closeCart(){ $('#cartOverlay').classList.remove('show'); }
     function openSettings(defaultToAdmin=false){ $('#settingsOverlay').classList.add('show'); switchTab(defaultToAdmin?'admin':'general'); }
     function closeSettings(){ $('#settingsOverlay').classList.remove('show'); }
-
     document.addEventListener('click', (e)=>{
       if(e.target.closest('#cartBtn')) openCart();
       if(e.target.closest('#cartBack')) closeCart();
@@ -356,7 +372,7 @@
       if(e.target.closest('#settingsClose')) closeSettings();
     }, {passive:true});
 
-    /* Orders helpers */
+    // Orders
     function loadOrders(){ try{return JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');}catch(e){return [];} }
     function saveOrders(list){ localStorage.setItem(ORDERS_KEY, JSON.stringify(list||[])); }
     function addOrderFromCart(name, location){
@@ -372,7 +388,7 @@
       box.innerHTML = list.map(o=>{
         const items = o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
         const when = new Date(o.when).toLocaleString();
-        return `<div style="padding:8px;border-bottom:1px solid rgba(255,255,255,.08)">
+        return `<div style="padding:8px;border:1px solid #2a2a30;border-radius:12px;margin-bottom:10px">
           <div style="font-weight:700">${when}</div>
           <div style="margin-top:4px">${items}</div>
           <div style="margin-top:6px;font-weight:700">Total: ${fmt(o.total)}</div>
@@ -381,7 +397,7 @@
       }).join('');
     }
 
-    /* Settings tabs + admin lock */
+    // Admin lock
     function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY) === '1'; }
     function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v ? '1':'0'); }
 
@@ -391,10 +407,11 @@
         tabG.classList.remove('active'); tabG.setAttribute('aria-selected','false');
         tabA.classList.add('active');    tabA.setAttribute('aria-selected','true');
         panG.style.display='none'; panA.style.display='block';
+        // Always show login first unless unlocked
         const loggedIn=isUnlocked();
         $('#adminLogin').style.display= loggedIn?'none':'block';
         $('#adminContent').style.display= loggedIn?'block':'none';
-        if(loggedIn) renderOrders();
+        if(loggedIn){ renderOrders(); buildLowForm(); buildHeat(); }
       } else {
         tabA.classList.remove('active'); tabA.setAttribute('aria-selected','false');
         tabG.classList.add('active');    tabG.setAttribute('aria-selected','true');
@@ -410,9 +427,19 @@
         if(ok){ setUnlocked(true); $('#adminError').style.display='none'; switchTab('admin'); }
         else { $('#adminError').style.display='block'; }
       }
+      const aTab = e.target.closest('.admin-tab');
+      if(aTab){
+        $$('.admin-tab').forEach(t=>t.classList.remove('active'));
+        aTab.classList.add('active');
+        const which = aTab.getAttribute('data-admin-tab');
+        $$('.admin-panel').forEach(p=>p.classList.remove('show'));
+        if(which==='orders'){ $('#adminOrders').classList.add('show'); }
+        if(which==='inventory'){ $('#adminInventory').classList.add('show'); }
+        if(which==='heat'){ $('#adminHeat').classList.add('show'); }
+      }
     }, {passive:true});
 
-    /* Checkout: stay on main */
+    // Checkout (stay on main)
     $('#cartCheckout').addEventListener('click', ()=>{
       $('#checkoutName').value=''; $('#checkoutLocation').value=''; $('#checkoutError').style.display='none';
       closeCart(); $('#checkoutOverlay').classList.add('show');
@@ -423,17 +450,90 @@
       if(!name || !loc){ $('#checkoutError').style.display='block'; return; }
       addOrderFromCart(name, loc);
       cart.clear(); renderCart();
-      $('#checkoutOverlay').classList.remove('show'); // back to main
+      $('#checkoutOverlay').classList.remove('show');
     });
 
-    /* a11y keyboard click */
-    $$('.btn,.add,.ghost,.primary,.tab').forEach(el=>{
+    // Inventory thresholds
+    function loadThresholds(){ try{return JSON.parse(localStorage.getItem(STOCK_KEY)||'{}');}catch(e){return{};} }
+    function saveThresholds(obj){ localStorage.setItem(STOCK_KEY, JSON.stringify(obj||{})); }
+    function buildLowForm(){
+      const box = $('#lowForm'); if(!box) return;
+      const items = $$('.card').map(c=>c.dataset.name);
+      const t = loadThresholds();
+      box.innerHTML = items.map(n=>{
+        const v = t[n] ?? '';
+        return `<div class="row-between" style="margin:8px 0;border:1px solid #2a2a30;border-radius:12px;padding:10px 12px">
+          <div>${n}</div>
+          <input data-lowname="${n}" placeholder="e.g., 5" value="${v}" style="width:80px;padding:8px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec;text-align:center">
+        </div>`;
+      }).join('');
+      // Save on input
+      box.querySelectorAll('input[data-lowname]').forEach(inp=>{
+        inp.addEventListener('input', e=>{
+          const name=e.target.getAttribute('data-lowname'); const val=e.target.value.trim();
+          const t2 = loadThresholds();
+          t2[name] = val===''? null : Math.max(0, parseInt(val,10) || 0);
+          saveThresholds(t2);
+          Object.assign(thresholds, t2);
+          showLowPills();
+        });
+      });
+      showLowPills();
+    }
+
+    // Heat map (very lightweight demo that bins by hour-of-day)
+    function loadHeat(){ try{return JSON.parse(localStorage.getItem(HEAT_KEY)||'{}');}catch(e){return{};} }
+    function saveHeat(obj){ localStorage.setItem(HEAT_KEY, JSON.stringify(obj||{})); }
+    function recordHeat(){
+      const h = loadHeat();
+      const d = new Date();
+      const day = d.getDay(); // 0..6
+      const hour = d.getHours(); // 0..23
+      const key = `${day}-${hour}`;
+      h[key] = (h[key]||0)+1;
+      saveHeat(h);
+    }
+    function buildHeat(){
+      const wrap = $('#heatWrap'); if(!wrap) return;
+      const h = loadHeat();
+      // labels every 4h
+      const hours=[0,4,8,12,16,20];
+      const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      let html = `<div style="display:flex;gap:12px;margin:6px 0 8px;font-size:12px;opacity:.9">
+        ${hours.map(x=>`<div style="width:44px;text-align:center">${x===0?'12–4a':x===4?'4–8a':x===8?'8–12p':x===12?'12–4p':x===16?'4–8p':'8–12a'}</div>`).join('')}
+      </div>`;
+      html += days.map((d,i)=>{
+        const cells = Array.from({length:6}, (_,b)=> {
+          const start = b*4;
+          const count = [0,1,2,3].reduce((sum,off)=> sum + (h[`${i}-${start+off}`]||0), 0);
+          // scale to color
+          const level = Math.min(1, count/6);
+          const col = `rgba(${34+120*level}, ${74+60*level}, ${122+10*level}, 1)`;
+          return `<div style="width:44px;height:44px;border-radius:10px;background:${col};border:1px solid rgba(255,255,255,.06)"></div>`;
+        }).join('');
+        return `<div style="display:flex;align-items:center;gap:8px;margin:6px 0">
+          <div style="width:36px;color:#c9c9d1;font-size:13px">${d}</div>
+          <div style="display:grid;grid-template-columns:repeat(6,44px);gap:8px">${cells}</div>
+        </div>`;
+      }).join('');
+      wrap.innerHTML = html;
+    }
+
+    // Hook heat on checkout to reflect demand
+    const _origCheckoutSubmit = $('#checkoutSubmit').onclick;
+    $('#checkoutSubmit').addEventListener('click', ()=>{
+      // If successful order was placed, record after short microtask
+      setTimeout(()=>{ recordHeat(); buildHeat(); }, 0);
+    });
+
+    // a11y
+    $$('.btn,.add,.ghost,.primary,.tab,.admin-tab').forEach(el=>{
       el.tabIndex=0;
       el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
     });
 
-    /* initial render */
-    renderCart(); refreshBadge();
+    // Initial
+    renderCart(); refreshBadge(); showLowPills();
   </script>
 </body>
 </html>
