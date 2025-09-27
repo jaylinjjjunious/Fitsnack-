@@ -7,20 +7,25 @@
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#0b0b0d">
 
-  <!-- === Glassmorphism Theme (merged) === -->
+  <!-- === Glassmorphism Theme with Emerald Glow === -->
   <style>
     :root{
-      /* Base */
+      /* Base / text */
       --text:#ececf1;
       --muted:#b6b6bf;
-      --accent:#6ea8fe;
+
+      /* Accent (emerald) */
+      --accent:#34d399;        /* emerald 400 */
+      --accent-strong:#10b981; /* emerald 500 */
+
+      /* Status */
       --badge:#ff3b30;
 
       /* Glass tokens */
-      --glass-bg: rgba(22,24,31,.42);          /* surface tint */
-      --glass-strong: rgba(22,24,31,.58);      /* deeper surface (sheets) */
-      --glass-border: rgba(255,255,255,.14);   /* light border */
-      --glass-inner: rgba(255,255,255,.05);    /* inner highlight */
+      --glass-bg: rgba(22,24,31,.42);
+      --glass-strong: rgba(22,24,31,.58);
+      --glass-border: rgba(255,255,255,.14);
+      --glass-inner: rgba(255,255,255,.05);
       --radius:18px;
       --shadow: 0 10px 30px rgba(0,0,0,.45);
     }
@@ -83,7 +88,7 @@
       box-shadow: 0 4px 12px rgba(255,59,48,.35);
     }
 
-    /* Carousel (kept simple; framed by glass app) */
+    /* Carousel */
     .carousel{position:relative;margin:14px 0 8px;overflow:hidden;border-radius:16px;height:120px;background:rgba(0,0,0,.25);border:1px solid var(--glass-border)}
     .track{display:flex;width:300%;height:100%;animation:slide 15s infinite}
     .slide{flex:0 0 100%;height:100%;background-size:cover;background-position:center; filter:saturate(.95)}
@@ -108,6 +113,7 @@
       padding:12px;position:relative;display:flex;flex-direction:column;min-height:190px;
       -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
       box-shadow: var(--shadow), inset 0 1px 0 var(--glass-inner);
+      transition:transform .12s ease, box-shadow .2s ease;
     }
     .thumb{height:90px;border-radius:12px;overflow:hidden;margin-bottom:8px}
     .thumb img{width:100%;height:100%;object-fit:cover; transform:translateZ(0)}
@@ -115,13 +121,13 @@
     .price{color:#c7c7cc;font-weight:600;margin-top:auto}
     .add{
       position:absolute;right:12px;bottom:12px;
-      background:linear-gradient(180deg, var(--accent), #4c8df6);
-      border:none;color:#001230;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer;
-      box-shadow: 0 6px 18px rgba(110,168,254,.35);
+      background:linear-gradient(180deg, var(--accent), var(--accent-strong));
+      border:none;color:#052015;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer;
+      box-shadow: 0 8px 20px rgba(16,185,129,.30);
     }
 
-    /* Overlays base (glass sheets) */
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
+    /* Overlays (glass sheets) */
+    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999; pointer-events:auto}
     .overlay.show{display:flex}
     .sheet{
       width:92%;max-width:360px;
@@ -131,6 +137,7 @@
       box-shadow: var(--shadow), inset 0 1px 0 var(--glass-inner);
       -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
     }
+    .sheet * { pointer-events:auto }
 
     /* Bottom-sheet style (cart / checkout / settings) */
     #cartOverlay{align-items:flex-end}
@@ -146,7 +153,7 @@
     }
     @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
-    /* Make settings scrollable when long */
+    /* Settings scrollable when long */
     #settingsOverlay .sheet{
       max-height: 90svh;
       overflow: auto;
@@ -162,8 +169,8 @@
       box-shadow: inset 0 1px 0 var(--glass-inner);
     }
     .primary{
-      background:linear-gradient(180deg, var(--accent), #4c8df6); border:0;color:#081425;font-weight:800;border-radius:12px;padding:12px 14px;
-      box-shadow: 0 8px 20px rgba(110,168,254,.35);
+      background: linear-gradient(180deg, var(--accent), var(--accent-strong)); border:0;color:#07251a;font-weight:800;border-radius:12px;padding:12px 14px;
+      box-shadow: 0 8px 22px rgba(16,185,129,.28), 0 1px 0 rgba(255,255,255,.08) inset;
     }
     .ghost{
       background:var(--glass-bg); border:1px solid var(--glass-border); color:#e7e7eb; border-radius:12px;padding:10px 12px;
@@ -176,7 +183,7 @@
     .tab.active{background:rgba(255,255,255,.08)}
     .admin-list{max-height:240px;overflow:auto;border:1px solid var(--glass-border);border-radius:12px;padding:8px;margin-top:8px;background:var(--glass-bg);-webkit-backdrop-filter: blur(10px);backdrop-filter: blur(10px);box-shadow: inset 0 1px 0 var(--glass-inner)}
 
-    /* Admin sub-tabs (glass) */
+    /* Admin sub-tabs */
     .admin-subtabs{display:flex;gap:8px;margin:6px 0 12px}
     .subtab{padding:8px 10px;border-radius:10px;border:1px solid var(--glass-border);background:var(--glass-bg);cursor:pointer;-webkit-backdrop-filter: blur(10px);backdrop-filter: blur(10px);box-shadow: inset 0 1px 0 var(--glass-inner)}
     .subtab.active{background:rgba(255,255,255,.08)}
@@ -194,6 +201,19 @@
     .hm-cell.f3{background:#2f63b7}
     .hm-head{font-size:12px;color:#b9bcc3;text-align:center}
     .hm-rowlbl{display:flex;align-items:center;justify-content:flex-start;color:#c9c9d1;font-size:12px;padding-left:4px}
+
+    /* Focus rings */
+    .btn:focus-visible,
+    .add:focus-visible,
+    .tab:focus-visible,
+    .subtab:focus-visible,
+    .ghost:focus-visible,
+    .primary:focus-visible{
+      outline:2px solid rgba(52,211,153,.8);
+      outline-offset:2px;
+      box-shadow: 0 0 0 4px rgba(52,211,153,.18);
+    }
+    .badge{ background:#ff3b30; }
   </style>
 </head>
 <body>
@@ -241,16 +261,33 @@
     </div>
   </div>
 
-  <!-- Product mini sheet -->
+  <!-- Product mini sheet (with image) -->
   <div id="productSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Add item">
     <div class="sheet" role="document">
-      <div class="row-between"><h3 id="sheetTitle">Item</h3><div class="ghost" id="sheetClose">Close</div></div>
+      <div class="row-between">
+        <h3 id="sheetTitle">Item</h3>
+        <div class="ghost" id="sheetClose">Close</div>
+      </div>
+
+      <div class="thumb" style="height:140px;margin:8px 0 10px;border-radius:14px;overflow:hidden">
+        <img id="sheetImg" src="" alt="" style="width:100%;height:100%;object-fit:cover">
+      </div>
+
       <div class="row-between">
         <div id="sheetPrice" class="price" style="font-size:18px;"></div>
-        <div class="qty"><button id="qtyMinus">−</button><div id="qtyVal">1</div><button id="qtyPlus">+</button></div>
+        <div class="qty">
+          <button id="qtyMinus">−</button>
+          <div id="qtyVal">1</div>
+          <button id="qtyPlus">+</button>
+        </div>
       </div>
+
       <div id="sheetStockNote" style="margin:8px 0;color:#c9c9d1;font-size:13px;display:none"></div>
-      <div class="actions"><button class="ghost" id="sheetCancel">Cancel</button><button class="primary" id="sheetAdd">Add</button></div>
+
+      <div class="actions">
+        <button class="ghost" id="sheetCancel">Cancel</button>
+        <button class="primary" id="sheetAdd">Add</button>
+      </div>
     </div>
   </div>
 
@@ -367,7 +404,7 @@
   </div>
 
   <script>
-    // Service worker
+    // PWA: service worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
     }
@@ -437,35 +474,71 @@
       }
     }, {passive:true});
 
-    // ===== Product quick add =====
+    // ===== Thresholds (Inventory) =====
+    function loadThresholds(){ try{return JSON.parse(localStorage.getItem(THRESH_KEY)||'{}');}catch(_){return {}} }
+    function saveThresholds(obj){ localStorage.setItem(THRESH_KEY, JSON.stringify(obj||{})); }
+
+    // ===== Product mini sheet (card tap or +) =====
     let current=null;
     const thresholds = loadThresholds();
 
-    $$('.add').forEach(b => b.addEventListener('click', e => {
-      const card = e.target.closest('.card'); 
-      current = {name:card.dataset.name, price:parseFloat(card.dataset.price)};
-      $('#sheetTitle').textContent=current.name; 
-      $('#sheetPrice').textContent=fmt(current.price); 
-      $('#qtyVal').textContent=1; 
-      $('#sheetAdd').textContent='Add • '+fmt(current.price);
+    function openProductSheetFromCard(card){
+      const name  = card.dataset.name;
+      const price = parseFloat(card.dataset.price);
+      const imgEl = card.querySelector('.thumb img');
+      const imgSrc = imgEl ? imgEl.getAttribute('src') : '';
+      const imgAlt = imgEl ? (imgEl.getAttribute('alt') || name) : name;
 
-      // show low-stock note if threshold exists (informational)
+      current = {name, price, imgSrc, imgAlt};
+
+      $('#sheetTitle').textContent = current.name;
+      $('#sheetPrice').textContent = fmt(current.price);
+      $('#qtyVal').textContent = 1;
+      $('#sheetAdd').textContent = 'Add • ' + fmt(current.price);
+      const sheetImg = $('#sheetImg');
+      if(sheetImg){ sheetImg.src = imgSrc; sheetImg.alt = imgAlt; }
+
+      // optional low-stock note
       const t = thresholds[current.name];
       const note = $('#sheetStockNote');
-      if (t && Number(t)>0){
-        note.textContent = `Low stock threshold set to ${t}.`;
-        note.style.display = 'block';
-      } else {
-        note.style.display = 'none';
+      if (note){
+        if (t && Number(t)>0){ note.textContent = `Low stock threshold set to ${t}.`; note.style.display='block'; }
+        else { note.style.display='none'; }
       }
 
       $('#productSheet').classList.add('show');
+    }
+
+    // Tap + button
+    $$('.add').forEach(b => b.addEventListener('click', e => {
+      const card = e.target.closest('.card');
+      if(card) openProductSheetFromCard(card);
     }));
-    $('#qtyPlus').addEventListener('click', ()=>{ let n=Math.min(99,parseInt($('#qtyVal').textContent)+1); $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price*n); });
-    $('#qtyMinus').addEventListener('click', ()=>{ let n=Math.max(1,parseInt($('#qtyVal').textContent)-1); $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price*n); });
+    // Tap anywhere on card
+    $$('.card').forEach(card => {
+      card.addEventListener('click', e => {
+        if (e.target.closest('.add')) return; // handled above
+        openProductSheetFromCard(card);
+      });
+    });
+
+    // Quantity +/-
+    $('#qtyPlus').addEventListener('click', ()=>{
+      let n=Math.min(99,parseInt($('#qtyVal').textContent)+1);
+      $('#qtyVal').textContent=n;
+      $('#sheetAdd').textContent='Add • '+fmt(current.price*n);
+    });
+    $('#qtyMinus').addEventListener('click', ()=>{
+      let n=Math.max(1,parseInt($('#qtyVal').textContent)-1);
+      $('#qtyVal').textContent=n;
+      $('#sheetAdd').textContent='Add • '+fmt(current.price*n);
+    });
+
+    // Close & Add
     function closeSheet(){ $('#productSheet').classList.remove('show'); }
     $('#sheetCancel').addEventListener('click', closeSheet);
     $('#sheetClose').addEventListener('click', closeSheet);
+
     $('#sheetAdd').addEventListener('click', ()=>{
       const n=parseInt($('#qtyVal').textContent);
       const e=cart.get(current.name)||{price:current.price,qty:0};
@@ -491,7 +564,7 @@
       if(e.target.closest('#settingsClose')) closeSettings();
     }, {passive:true});
 
-    // ===== Orders + Admin lock =====
+    // ===== Orders =====
     function loadOrders(){ try{return JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');}catch(e){return [];} }
     function saveOrders(list){ localStorage.setItem(ORDERS_KEY, JSON.stringify(list||[])); }
 
@@ -519,6 +592,7 @@
       }).join('');
     }
 
+    // ===== Admin lock & tabs =====
     function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY) === '1'; }
     function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v ? '1':'0'); }
 
@@ -539,19 +613,7 @@
       }
     }
 
-    // admin unlock
-    document.addEventListener('click',(e)=>{
-      if(e.target.closest('#tabGeneral')) switchTab('general');
-      if(e.target.closest('#tabAdmin'))   switchTab('admin');
-
-      if(e.target.closest('#adminSubmit')){
-        const ok = $('#adminPassword').value === '8TSB077';
-        if(ok){ setUnlocked(true); $('#adminError').style.display='none'; $('#adminPassword').value=''; switchTab('admin'); }
-        else { $('#adminError').style.display='block'; }
-      }
-    }, {passive:true});
-
-    // ===== Admin sub-tabs =====
+    // Admin subtabs
     function switchAdminSub(which){
       const subO=$('#subOrders'), subI=$('#subInventory'), subA=$('#subAnalytics');
       const panO=$('#panelOrders'), panI=$('#panelInventory'), panH=$('#panelAnalytics');
@@ -562,16 +624,24 @@
       if(which==='inventory'){ subI.classList.add('active'); panI.style.display='block'; renderThresholdInputs(); }
       if(which==='analytics'){ subA.classList.add('active'); panH.style.display='block'; renderHeatGrid(); }
     }
+
+    // Admin UI events
     document.addEventListener('click',(e)=>{
+      if(e.target.closest('#tabGeneral')) switchTab('general');
+      if(e.target.closest('#tabAdmin'))   switchTab('admin');
+
+      if(e.target.closest('#adminSubmit')){
+        const ok = $('#adminPassword').value === '8TSB077';
+        if(ok){ setUnlocked(true); $('#adminError').style.display='none'; $('#adminPassword').value=''; switchTab('admin'); }
+        else { $('#adminError').style.display='block'; }
+      }
+
       if(e.target.closest('#subOrders')) switchAdminSub('orders');
       if(e.target.closest('#subInventory')) switchAdminSub('inventory');
       if(e.target.closest('#subAnalytics')) switchAdminSub('analytics');
     }, {passive:true});
 
-    // ===== Thresholds (Inventory) =====
-    function loadThresholds(){ try{return JSON.parse(localStorage.getItem(THRESH_KEY)||'{}');}catch(_){return {}} }
-    function saveThresholds(obj){ localStorage.setItem(THRESH_KEY, JSON.stringify(obj||{})); }
-
+    // Inventory inputs bind
     function renderThresholdInputs(){
       const t = loadThresholds();
       ['Potato Chips','Protein Bar','Trail Mix'].forEach(name=>{
@@ -598,7 +668,6 @@
       if(!Array.isArray(m) || m.length!==7){ m = Array.from({length:7},()=>Array(6).fill(0)); saveHeat(m); }
       return m;
     }
-    // add counts from order timestamp
     function bumpHeatMapFromOrder(order){
       const d = new Date(order.when);
       const dow = d.getDay(); // 0=Sun
@@ -608,12 +677,10 @@
     }
     function renderHeatGrid(){
       const grid = $('#heatGrid'); if(!grid) return;
-      // remove old rows (keep header 7 cells already there)
       grid.querySelectorAll('.hm-row').forEach(n=>n.remove());
 
       const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
       const m = ensureHeat();
-      // find max to scale
       let max=0; m.forEach(r=>r.forEach(v=>{ if(v>max) max=v; }));
       const level = (v)=> v===0 ? '' : (v > (max*0.66) ? 'f3' : v > (max*0.33) ? 'f2' : 'f1');
 
