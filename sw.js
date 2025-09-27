@@ -1,14 +1,13 @@
 // --- FitSnacks Service Worker ---
 // Bump this when you change any cached files:
-const CACHE = 'fitsnacks-v4';
+const CACHE = 'fitsnacks-v5-2025-09-26';
 
 const ASSETS = [
   // Pages
   './',
   './index.html',
-  './checkout.html',
 
-  // PWA manifest + icons
+  // PWA
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
@@ -26,7 +25,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE).then((cache) => cache.addAll(ASSETS))
   );
-  // Activate this SW immediately after install
+  // Take control ASAP after install
   self.skipWaiting();
 });
 
@@ -40,21 +39,21 @@ self.addEventListener('activate', (event) => {
       )
     )
   );
-  // Control all open clients without a reload
+  // Control all open tabs
   self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only handle same-origin GETs
+  // Only same-origin GETs
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
   if (url.origin !== location.origin) return;
 
-  // Keep HTML fresh: network-first with cache fallback
   const acceptsHTML =
     event.request.destination === 'document' ||
     (event.request.headers.get('accept') || '').includes('text/html');
 
+  // Keep HTML fresh: network-first, cache fallback
   if (acceptsHTML) {
     event.respondWith(
       fetch(event.request)
@@ -68,7 +67,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Other assets: cache-first with network fallback
+  // Everything else: cache-first, then network (and cache it)
   event.respondWith(
     caches.match(event.request).then(
       (cached) =>
@@ -80,4 +79,9 @@ self.addEventListener('fetch', (event) => {
         })
     )
   );
+});
+
+// Optional: let pages tell the SW to activate immediately
+self.addEventListener('message', (event) => {
+  if (event.data === 'SKIP_WAITING') self.skipWaiting();
 });
