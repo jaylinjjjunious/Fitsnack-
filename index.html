@@ -72,6 +72,15 @@
     .preview{height:170px;border-radius:12px;overflow:hidden;margin:10px 0}
     .preview img{width:100%;height:100%;object-fit:cover}
     .muted{color:#c9c9d1}
+
+    /* Heatmap */
+    .heat-wrap{margin-top:12px}
+    .heat-legend{display:flex;align-items:center;gap:6px;font-size:12px;color:#c9c9d1;margin-bottom:6px}
+    .swatch{width:20px;height:12px;border-radius:3px;border:1px solid #2a2a30}
+    .heat{display:grid;grid-template-columns:80px repeat(6, 1fr); gap:4px}
+    .heat .head{font-size:12px;color:#c9c9d1}
+    .heat .cell{height:28px;border:1px solid #2a2a30;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px}
+    .heat .rowlab{display:flex;align-items:center;justify-content:flex-start;padding-left:4px}
   </style>
 </head>
 <body>
@@ -106,7 +115,6 @@
       <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50">
         <div class="thumb">
           <img src="assets/product-funyuns.jpg" alt="Potato Chips">
-          <!-- stock chip will be injected here -->
         </div>
         <div class="title">Potato Chips</div><div class="price">$2.50</div>
         <button class="add" aria-label="Add Potato Chips">+</button>
@@ -128,7 +136,7 @@
     </div>
   </div>
 
-  <!-- Product mini sheet (photo + qty + add + low-stock info) -->
+  <!-- Product mini sheet -->
   <div id="productSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Add item">
     <div class="sheet" role="document">
       <div class="row-between">
@@ -136,10 +144,7 @@
         <div class="ghost" id="sheetClose">Close</div>
       </div>
       <div class="preview"><img id="sheetImg" alt=""></div>
-
-      <!-- Low-stock line from Admin -->
       <div id="sheetLowStock" class="muted" style="margin:4px 0 6px; display:none"></div>
-
       <div class="row-between">
         <div id="sheetPrice" class="price" style="font-size:18px;"></div>
         <div class="qty">
@@ -210,6 +215,20 @@
           <div style="margin-top:12px;font-weight:700">Low-stock thresholds</div>
           <div class="hint">Set the quantity at which each item should be considered "low stock".</div>
           <div id="lowStockList" class="admin-list"></div>
+
+          <!-- NEW: Heat Map of Demand -->
+          <div class="heat-wrap">
+            <div style="font-weight:700;margin-top:12px">Heat Map of Demand</div>
+            <div class="heat-legend">
+              <span>Low</span>
+              <span class="swatch" style="background:#1b2a44"></span>
+              <span class="swatch" style="background:#244a7a"></span>
+              <span class="swatch" style="background:#2d67ad"></span>
+              <span class="swatch" style="background:#3a86ff"></span>
+              <span>High</span>
+            </div>
+            <div id="heatGrid" class="heat" aria-label="Orders by day and time"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -223,6 +242,7 @@
 
     const $  = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
+    const fmt = n => '$' + n.toFixed(2);
 
     /* ===== Search ===== */
     $('#search').addEventListener('input', e => {
@@ -239,7 +259,6 @@
     const CART_KEY   = 'fitsnacks.cart.v1';
     const ORDERS_KEY = 'fitsnacks.orders';
     const LOW_STOCK_KEY = 'fitsnacks.lowstock';
-    const fmt = n => '$' + n.toFixed(2);
 
     function loadCart(){ try{ return new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]')); }catch{ return new Map(); } }
     function saveCart(m){ try{ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(m.entries())));}catch{} }
@@ -300,32 +319,25 @@
       $('#sheetPrice').textContent = fmt(current.price);
       $('#qtyVal').textContent = 1;
       $('#sheetAdd').textContent = 'Add • ' + fmt(current.price);
-      const img = $('#sheetImg');
-      img.alt = current.name;
-      img.src = current.img;
+      const img = $('#sheetImg'); img.alt = current.name; img.src = current.img;
 
-      // Show low-stock value from Admin
-      const ls = loadLowStock();
-      const v = ls[current.name];
+      // Low-stock line from Admin
+      const ls = loadLowStock(); const v = ls[current.name];
       const row = $('#sheetLowStock');
       if (v !== undefined && v !== ''){
         row.style.display = 'block';
         row.textContent = `Low-stock threshold: ${v}`;
-      } else {
-        row.style.display = 'none';
-        row.textContent = '';
-      }
+      } else { row.style.display = 'none'; row.textContent = ''; }
 
       $('#productSheet').classList.add('show');
     }
 
-    // Click on "+" opens sheet
+    // + button opens
     $$('.add').forEach(btn => btn.addEventListener('click', (e) => {
       e.stopPropagation();
       openProductSheetFromCard(e.target.closest('.card'));
     }));
-
-    // Click anywhere on the card opens sheet too (except the +)
+    // Card tap opens
     $$('.card').forEach(card => {
       card.addEventListener('click', (e) => {
         if (e.target.closest('.add')) return;
@@ -346,7 +358,6 @@
     function closeSheet(){ $('#productSheet').classList.remove('show'); }
     $('#sheetCancel').addEventListener('click', closeSheet);
     $('#sheetClose').addEventListener('click', closeSheet);
-
     $('#sheetAdd').addEventListener('click', ()=>{
       const n = parseInt($('#qtyVal').textContent);
       const e = cart.get(current.name) || {price:current.price, qty:0};
@@ -392,7 +403,7 @@
       }).join('');
     }
 
-    /* ===== Low-stock editor (Admin) + chips on cards ===== */
+    /* ===== Low-stock editor + chips on cards ===== */
     function cssId(name){ return name.toLowerCase().replace(/[^a-z0-9]+/g,'-'); }
     function getProductNames(){ return Array.from($$('.card')).map(c=>c.dataset.name); }
 
@@ -404,16 +415,10 @@
         const thumb = card.querySelector('.thumb');
         let chip = thumb.querySelector('.stock-chip');
         if (v !== undefined && v !== '' ){
-          if (!chip){
-            chip = document.createElement('div');
-            chip.className = 'stock-chip';
-            thumb.appendChild(chip);
-          }
+          if (!chip){ chip = document.createElement('div'); chip.className = 'stock-chip'; thumb.appendChild(chip); }
           chip.textContent = `Stock: ${v}`;
           chip.style.display = 'inline-block';
-        } else if (chip){
-          chip.remove();
-        }
+        } else if (chip){ chip.remove(); }
       });
     }
 
@@ -429,7 +434,6 @@
                  value="${val}" style="width:88px;padding:8px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec">
         </div>`;
       }).join('');
-      // Hook inputs
       names.forEach(name=>{
         const input = document.getElementById(`ls_${cssId(name)}`);
         if(!input) return;
@@ -438,8 +442,8 @@
           const store = loadLowStock();
           store[name] = v==='' ? '' : Math.max(0, parseInt(v||'0',10));
           saveLowStock(store);
-          renderStockChips();               // update chips live
-          if (current && current.name === name){ // update mini page if it's open for this product
+          renderStockChips();
+          if (current && current.name === name){
             const row = $('#sheetLowStock');
             if (store[name] !== '' && store[name] !== undefined){
               row.style.display='block';
@@ -451,6 +455,55 @@
           }
         });
       });
+    }
+
+    /* ===== Demand Heatmap (Admin) ===== */
+    const DAY_LABELS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const BLOCKS = [
+      {label:'12–4a',  start:0,  end:3},
+      {label:'4–8a',   start:4,  end:7},
+      {label:'8–12p',  start:8,  end:11},
+      {label:'12–4p',  start:12, end:15},
+      {label:'4–8p',   start:16, end:19},
+      {label:'8–12a',  start:20, end:23},
+    ];
+    function colorFor(value, max){
+      if(max<=0) return '#1b2a44';
+      const t = Math.min(1, value/max);
+      // interpolate from dark navy to bright blue
+      const c1=[27,42,68], c2=[58,134,255];
+      const mix = (a,b)=>Math.round(a+(b-a)*t);
+      return `rgb(${mix(c1[0],c2[0])},${mix(c1[1],c2[1])},${mix(c1[2],c2[2])})`;
+    }
+    function buildHeatCounts(){
+      const counts = Array.from({length:7}, ()=>Array(6).fill(0));
+      const orders = loadOrders();
+      for(const o of orders){
+        const d = new Date(o.when);
+        if(isNaN(d)) continue;
+        const day = d.getDay();
+        const hr = d.getHours();
+        const b = BLOCKS.findIndex(b=>hr>=b.start && hr<=b.end);
+        if(b>=0) counts[day][b] += 1;
+      }
+      return counts;
+    }
+    function renderHeatmap(){
+      const grid = $('#heatGrid'); if(!grid) return;
+      const counts = buildHeatCounts();
+      // Find max for scaling
+      let max=0; counts.forEach(row=>row.forEach(v=>{ if(v>max) max=v; }));
+      // Header row
+      let html = `<div></div>` + BLOCKS.map(b=>`<div class="head" style="text-align:center">${b.label}</div>`).join('');
+      // Rows
+      for(let day=0; day<7; day++){
+        html += `<div class="rowlab head">${DAY_LABELS[day]}</div>`;
+        for(let b=0; b<6; b++){
+          const v = counts[day][b];
+          html += `<div class="cell" style="background:${colorFor(v,max)}">${v? v : ''}</div>`;
+        }
+      }
+      grid.innerHTML = html;
     }
 
     /* ===== Settings tabs + Admin lock (no persistence) ===== */
@@ -472,6 +525,8 @@
       $('#adminContent').style.display='block';
       renderOrders();
       renderLowStockEditor();
+      renderStockChips();
+      renderHeatmap();              // <-- populate demand heat map on unlock
     }
 
     function switchTab(which){
