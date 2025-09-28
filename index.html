@@ -52,7 +52,6 @@
 
     /* Greeting */
     .greet{margin:8px 2px 2px;color:#c7c7cc;font-size:14px}
-
     /* Promo – card-snap carousel */
     .carousel{margin:10px 0 6px}
     .snapper{
@@ -89,7 +88,6 @@
     .add{position:absolute;right:12px;bottom:12px;background:var(--accent);border:none;color:#001230;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer}
     .fav{position:absolute;right:12px;top:12px;width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);cursor:pointer}
     .fav.active{background:rgba(255,215,0,.15);box-shadow:0 0 0 1px rgba(255,215,0,.35) inset}
-
     /* Overlays */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
     .overlay.show{display:flex}
@@ -234,9 +232,8 @@
         <div class="price">$3.49</div>
         <button class="add" aria-label="Add Trail Mix">+</button>
       </div>
-    </div>
+    </div>  
   </div> <!-- /.app -->
-
   <!-- Product mini sheet -->
   <div id="productSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Add item">
     <div class="sheet" role="document">
@@ -469,7 +466,7 @@
     </div>
   </div>
   <div id="toastHost"></div>
-    <script>
+   <script>
     /* Schema + SW */
     const APP_SCHEMA_VERSION=3, SCHEMA_KEY='fitsnacks.schema';
     try{
@@ -498,6 +495,9 @@
     const ANALYTICS_KEY='fitsnacks.analytics.products';
     const PROFILE_NAME_KEY='fitsnacks.profile.name';
     const PROFILE_LOC_KEY='fitsnacks.profile.location';
+
+    /* 🔔 IFTTT SMS webhook */
+    const IFTTT_WEBHOOK_URL='https://maker.ifttt.com/trigger/Fitsnack_order/with/key/MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA';
 
     const ADMIN_PASSWORD='8TSB077';
     const fmt=n=>'$'+n.toFixed(2);
@@ -803,7 +803,6 @@
       e.qty+=n; cart.set(current.name,e);
       closeSheet(); renderCart(); $('#cartOverlay').classList.add('show'); haptic(12);
     });
-
     /* ----- Overlays open/close ----- */
     function openCart(){ $('#cartOverlay').classList.add('show'); }
     function closeCart(){ $('#cartOverlay').classList.remove('show'); }
@@ -824,23 +823,47 @@
       saveCart(cart); renderCart(); openCart(); haptic(12);
     }
     $('#reorderLast').addEventListener('click', reorderLast);
-    /* ----- Orders, Delivered/History, Sales ----- */
+
+    /* ----- Orders (with webhook), Delivered/History, Sales ----- */
+    async function sendOrderWebhook(order){
+      try{
+        // Build concise text for SMS via IFTTT (value1/value2/value3)
+        const listText = order.lines.map(l=>`${l.name}×${l.qty}`).join(', ');
+        const meta = `${order.name} @ ${order.location}`;
+        const total = fmt(order.total);
+        await fetch(IFTTT_WEBHOOK_URL, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({
+            value1: `${listText}`,
+            value2: `${meta}`,
+            value3: `Total ${total}`
+          })
+        });
+      }catch(err){
+        console.warn('IFTTT webhook failed:', err);
+      }
+    }
+
     function addOrderFromCart(name, location, notes, discount, tip){
-      const lines=[]; let total=0;
+      const lines=[]; let subtotal=0;
       for(const [n,info] of cart){
-        const line=info.price*info.qty; total+=line; lines.push({name:n, price:info.price, qty:info.qty, line});
+        const line=info.price*info.qty; subtotal+=line; lines.push({name:n, price:info.price, qty:info.qty, line});
         ensureMetrics(n).purchasedQty += info.qty;
         ensureMetrics(n).revenue += line;
       }
       saveObj(ANALYTICS_KEY, prodAnalytics);
 
-      total = Math.max(0, total - (discount||0)) + (tip||0);
+      const total = Math.max(0, subtotal - (discount||0)) + (tip||0);
 
       const order={when:new Date().toISOString(), name, location, notes:notes||'', lines, total, discount:discount||0, tip:tip||0};
       const list=loadOrders(); list.unshift(order); saveOrders(list);
 
       const d=new Date(), dow=d.getDay(), hr=d.getHours();
       sales[dow][hr]=(sales[dow][hr]||0)+1; saveSales(sales);
+
+      // Fire-and-forget webhook (no blocking UI)
+      sendOrderWebhook(order);
 
       return order;
     }
@@ -1002,13 +1025,13 @@
       if(keep.length!==list.length) saveDelivered(keep);
     }
 
-    // Tab clicks
+    // Main tab clicks
     document.addEventListener('click',(e)=>{
       if(e.target.closest('#tabGeneral')) switchTab('general');
       if(e.target.closest('#tabAdmin'))   switchTab('admin');
     }, {passive:true});
 
-    // Admin auth + history clear
+    // Admin auth + history clear + lock
     document.addEventListener('click',(e)=>{
       if(e.target.closest('#adminSubmit')){
         const ok = $('#adminPassword').value===ADMIN_PASSWORD;
@@ -1035,7 +1058,7 @@
       if(id==='history'){  pruneDelivered(72); renderHistory(); }
     }, {passive:true});
 
-    /* ----- Order sheet open/deliver ----- */
+    /* ----- Order sheet open/deliver (z-index above settings) ----- */
     document.addEventListener('click', e=>{
       const row=e.target.closest('.order-item'); if(!row) return;
       openOrderSheet(parseInt(row.getAttribute('data-idx'),10));
@@ -1053,7 +1076,10 @@
       $('#orderMeta').textContent = `${new Date(o.when).toLocaleString()} • ${o.name} @ ${o.location}`;
       $('#orderLines').innerHTML = o.lines.map(l=>`<div class="row-between" style="padding:6px 0"><div>${l.name} × ${l.qty}</div><div style="font-weight:700">${fmt(l.line)}</div></div>`).join('');
       $('#orderTotal').textContent = fmt(o.total);
-      const os=$('#orderSheet'); document.body.appendChild(os); os.classList.add('show'); $('#orderClose')?.focus();
+      const os=$('#orderSheet');
+      document.body.appendChild(os);            // ensure above settings
+      os.classList.add('show');
+      $('#orderClose')?.focus();
     }
     function closeOrderSheet(){ $('#orderSheet').classList.remove('show'); currentOrderIndex=null; }
     $('#orderClose').addEventListener('click', closeOrderSheet);
@@ -1070,7 +1096,6 @@
       }
       closeOrderSheet();
     });
-
     /* ===== Checkout + Profile + Sticky bar (with Promo & Tips/Notes) ===== */
     // promo table: type 'percent' value 0..1  OR  type 'amount' flat $
     const PROMO_TABLE = {
@@ -1078,8 +1103,8 @@
       'BAR1':   {type:'amount',  value:1.00, label:'$1 off protein items', rule:'tag:protein'}
     };
 
-    let activePromo = null;        // {code,type,value,label,rule}
-    let activeTip = {kind:'none', amount:0};
+    let activePromo = null;        // {code,type,value,label,rule,discount}
+    let activeTip   = {kind:'none', amount:0};
 
     function evalPromoDiscount(code){
       code=(code||'').trim().toUpperCase();
@@ -1093,7 +1118,6 @@
       let discount=0;
       if(p.rule && p.rule.startsWith('tag:')){
         const t = p.rule.slice(4).toLowerCase();
-        // compute eligible
         let eligible = 0;
         $$('.card').forEach(c=>{
           const name=c.dataset.name;
@@ -1198,7 +1222,7 @@
     // Tip quick buttons
     document.getElementById('tipGroup').addEventListener('click', e=>{
       const btn=e.target.closest('.tip-btn'); if(!btn) return;
-      selectQuickTip(btn); 
+      selectQuickTip(btn);
     }, {passive:true});
 
     // Tip custom amount
@@ -1231,7 +1255,7 @@
       showToast('Order placed 🎉');
     });
 
-    /* Inputs from inventory */
+    /* Inputs from inventory (update badges + mini) */
     document.addEventListener('input', (e)=>{
       const row=e.target.closest('.field[data-prod]'); if(!row) return;
       const name=row.getAttribute('data-prod');
@@ -1257,6 +1281,7 @@
       el.tabIndex=0;
       el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
     });
+
     /* ----- Analytics render ----- */
     function renderAnalytics(){
       const orders=loadOrders(), delivered=loadDelivered(), all=orders.concat(delivered);
@@ -1343,7 +1368,7 @@
     /* ----- Init ----- */
     function pruneDeliveredInit(){
       const list=loadDelivered();
-      const cutoff=Date.now()-72*3600*1000; // 72h
+      const cutoff=Date.now()-72*3600*1000; // 72h (3 days)
       const keep=list.filter(o=>{
         const t=Date.parse(o.deliveredWhen||o.when||0);
         return isFinite(t)&&t>=cutoff;
@@ -1355,7 +1380,6 @@
     initCarousel();
     pruneDeliveredInit();
     renderCart(); refreshBadge(); updateStockBadges(); syncFavStars(); updateGreeting();
-
   </script>
 </body>
 </html>
