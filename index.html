@@ -409,7 +409,7 @@
     const DELIVERED_KEY='fitsnacks.orders.delivered';
     const FAVORITES_KEY='fitsnacks.favorites';
     const PROMOS_KEY='fitsnacks.promos';
-    const ANALYTICS_KEY='fitsnacks.analytics.products'; // per-product: {opens,adds,purchasedQty,revenue}
+    const ANALYTICS_KEY='fitsnacks.analytics.products'; // per-product: {opens,adds,addedQty,purchasedQty,revenue}
     const ADMIN_PASSWORD='8TSB077';
     const fmt = n => '$' + n.toFixed(2);
 
@@ -434,15 +434,15 @@
     }
     function saveSales(mat){ localStorage.setItem(SALES_KEY, JSON.stringify(mat)); }
 
-    /* State */
+    /* ---------- State (SINGLE source of truth) ---------- */
     let cart = loadCart();
     let stockQty = loadObj(STOCK_KEY);
     let stockLow = loadObj(LOW_KEY);
     let stockSet = loadObj(STOCK_SET_KEY);
     if(!Object.keys(stockSet).length){ stockSet={}; saveObj(STOCK_SET_KEY, stockSet); }
     let sales = loadSales();
-    let favorites = new Set(loadArr(FAVORITES_KEY));
-    let prodAnalytics = loadObj(ANALYTICS_KEY); // name -> metrics
+    let favorites = new Set(loadArr(FAVORITES_KEY));  // <-- keep ONLY this declaration
+    let prodAnalytics = loadObj(ANALYTICS_KEY);       // name -> metrics
 
     function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY) === '1'; }
     function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v ? '1':'0'); }
@@ -555,10 +555,10 @@
       $$('.card').forEach(c => c.style.display = c.dataset.name.toLowerCase().includes(q) ? '' : 'none');
     });
 
-    /* Chips (incl favorites) */
-    let favorites = new Set(loadArr(FAVORITES_KEY));
+    /* Chip filtering (incl favorites) */
     function activateChip(val){
       $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch.dataset.filter===val));
+      const showFavs = (val==='favorites');
       $$('.card').forEach(c=>{
         const tags=(c.dataset.tags||'').toLowerCase();
         const name=c.dataset.name;
@@ -669,7 +669,8 @@
     }));
     $('#qtyPlus').addEventListener('click', ()=>{
       const n=Math.min(99,parseInt($('#qtyVal').textContent)+1);
-      $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price*n);
+      $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price+n*0+current.price*(n-1)); // keep same result
+      $('#sheetAdd').textContent='Add • '+fmt(current.price*n);
     });
     $('#qtyMinus').addEventListener('click', ()=>{
       const n=Math.max(1,parseInt($('#qtyVal').textContent)-1);
@@ -889,6 +890,9 @@
         else { $('#adminError').style.display='block'; }
       }
       if(e.target && e.target.id==='adminLock'){ setUnlocked(false); ensureAdminLoginVisible(); }
+      if(e.target && e.target.id==='historyClear'){
+        saveDelivered([]); renderHistory();
+      }
     }, {passive:true});
     document.addEventListener('click',(e)=>{
       const btn = e.target.closest('.subtab'); if(!btn) return;
@@ -1000,7 +1004,6 @@
 
     /* ---- Analytics rendering ---- */
     function renderAnalytics(){
-      // KPIs + 7-day revenue + top products + funnels
       const orders = loadOrders();
       const delivered = loadDelivered();
       const allOrders = orders.concat(delivered);
@@ -1021,27 +1024,24 @@
       allOrders.forEach(o=>{
         const d = new Date(o.when);
         const diff = Math.floor((now - d)/(24*3600*1000));
-        if(diff>=0 && diff<7) days[6-diff]+=o.total; // oldest -> index0, newest -> index6
+        if(diff>=0 && diff<7) days[6-diff]+=o.total;
       });
       drawSpark(days);
 
-      // Aggregate by product (from prodAnalytics & orders)
-      // Ensure every product in grid has an entry so it shows up
+      // Per-product metrics (ensure every product exists)
       getProducts().forEach(p=>ensureMetrics(p.name));
       saveObj(ANALYTICS_KEY, prodAnalytics);
 
-      const rows = Object.entries(prodAnalytics).map(([name,m])=>{
-        return {
-          name,
-          opens: m.opens||0,
-          adds: m.adds||0,
-          addedQty: m.addedQty||0,
-          purchasedQty: m.purchasedQty||0,
-          revenue: m.revenue||0
-        };
-      });
+      const rows = Object.entries(prodAnalytics).map(([name,m])=>({
+        name,
+        opens: m.opens||0,
+        adds: m.adds||0,
+        addedQty: m.addedQty||0,
+        purchasedQty: m.purchasedQty||0,
+        revenue: m.revenue||0
+      }));
 
-      // Top products (by revenue)
+      // Top products
       const top = rows.slice().sort((a,b)=>b.revenue-a.revenue).slice(0,8);
       const maxRev = Math.max(1, ...top.map(r=>r.revenue));
       const maxQty = Math.max(1, ...top.map(r=>r.purchasedQty));
@@ -1096,7 +1096,7 @@
       const max = Math.max(1, ...buckets);
       const stepX = 100/(buckets.length-1||1);
       const pts = buckets.map((v,i)=>{
-        const y = 40 - (v/max)*36 - 2; // padding
+        const y = 40 - (v/max)*36 - 2;
         const x = i*stepX;
         return `${x},${y}`;
       }).join(' ');
