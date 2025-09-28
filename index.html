@@ -7,7 +7,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#0b0b0d">
 
-  <!-- Preload carousel images -->
+  <!-- Preload banner images (fallbacks) -->
   <link rel="preload" as="image" href="assets/carousel-1.jpg">
   <link rel="preload" as="image" href="assets/carousel-2.jpg">
   <link rel="preload" as="image" href="assets/carousel-3.jpg">
@@ -50,7 +50,11 @@
     #cartBtn{position:relative;display:flex;align-items:center;justify-content:center}
     .badge{position:absolute;top:-6px;right:-8px;background:var(--badge);color:#fff;border-radius:999px;padding:1px 6px;font-size:12px;font-weight:700;display:none;align-items:center;justify-content:center}
 
-    /* Card-snap carousel (100px tall) */
+    /* Bump anim for cart */
+    #cartBtn.bump { animation: bump 300ms ease; }
+    @keyframes bump { 0%{transform:scale(1)} 50%{transform:scale(1.1)} 100%{transform:scale(1)} }
+
+    /* Promo carousel (card-snap, 100px tall) */
     .carousel{margin:14px 0 8px}
     .snapper{
       height:100px;
@@ -62,26 +66,40 @@
     }
     .snapper::-webkit-scrollbar{display:none}
     .snap-spacer{flex:0 0 7.5%}
-    .snap-card{flex:0 0 85%;scroll-snap-align:center;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;height:100%}
+    .snap-card{
+      position:relative;
+      flex:0 0 85%;scroll-snap-align:center;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;height:100%;
+    }
     .banner{width:100%;height:100%;object-fit:contain;display:block}
-    .banner.is-loading{opacity:.001}
-    .banner.is-error{background:repeating-linear-gradient(45deg,#300,#300 10px,#500 10px,#500 20px)}
+    .snap-meta{
+      position:absolute;left:10px;bottom:8px;right:10px;
+      display:flex;justify-content:space-between;align-items:end;gap:8px;
+      pointer-events:none;
+    }
+    .snap-title{font-weight:800;text-shadow:0 1px 6px rgba(0,0,0,.6)}
+    .snap-cta{pointer-events:auto}
     .snap-dots{display:flex;justify-content:center;gap:6px;margin-top:6px}
     .snap-dot{width:6px;height:6px;border-radius:999px;background:#2c3447;border:1px solid rgba(255,255,255,.18)}
     .snap-dot.active{background:#7fb1ff}
 
     /* Chips */
     .chips{display:flex;gap:10px;margin:6px 0 12px;flex-wrap:wrap}
-    .chip{padding:6px 10px;border-radius:999px;font-size:13px}
+    .chip{padding:6px 10px;border-radius:999px;font-size:13px;cursor:pointer}
+    .chip.active{outline:2px solid rgba(110,168,254,.5)}
 
     /* Grid */
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
     .card{border-radius:var(--radius);padding:12px;position:relative;display:flex;flex-direction:column;min-height:190px}
-    .thumb{height:90px;border-radius:12px;overflow:hidden;margin-bottom:8px}
+    .thumb{height:90px;border-radius:12px;overflow:hidden;margin-bottom:8px;display:flex;align-items:center;justify-content:center;background:#0e0e12}
     .thumb img{width:100%;height:100%;object-fit:contain}
     .title{font-weight:700;margin:4px 0 2px;letter-spacing:0.2px}
     .price{color:#c7c7cc;font-weight:600;margin-top:auto}
     .add{position:absolute;right:12px;bottom:12px;background:var(--accent);border:none;color:#001230;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer}
+    /* Favorite star */
+    .fav{position:absolute;right:12px;top:12px;width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);cursor:pointer}
+    .fav.active{background:rgba(255,215,0,.15);box-shadow:0 0 0 1px rgba(255,215,0,.35) inset}
+    .fav span{filter:drop-shadow(0 2px 6px rgba(0,0,0,.35))}
 
     /* Overlays */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
@@ -91,8 +109,7 @@
     #cartOverlay .sheet,#checkoutOverlay .sheet,#settingsOverlay .sheet,#orderSheet .sheet{
       width:100%;border-top-left-radius:24px;border-top-right-radius:24px;border-bottom-left-radius:0;border-bottom-right-radius:0;
       padding-bottom:calc(16px + env(safe-area-inset-bottom));
-      transform:translateY(100%);
-      animation:slideUp 220ms ease-out forwards;
+      transform:translateY(100%);animation:slideUp 220ms ease-out forwards;
     }
     @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
     .row-between{display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -128,7 +145,7 @@
     #ordersList { position: relative; }
     .order-item { pointer-events: auto; }
 
-    /* NEW: ensure order sheet stacks above Settings */
+    /* Ensure order sheet above Settings */
     #orderSheet { z-index: 10050; }
   </style>
 </head>
@@ -148,38 +165,43 @@
       </div>
     </div>
 
-    <!-- Carousel -->
-    <div class="carousel" aria-label="School photos">
+    <!-- Promo Carousel (dynamic) -->
+    <div class="carousel" aria-label="Promotions">
       <div id="snapper" class="snapper" aria-roledescription="carousel">
         <div class="snap-spacer" aria-hidden="true"></div>
-        <div class="snap-card"><img class="banner" src="assets/carousel-1.jpg" alt="Campus aerial"></div>
-        <div class="snap-card"><img class="banner" src="assets/carousel-2.jpg" alt="Front of school"></div>
-        <div class="snap-card"><img class="banner" src="assets/carousel-3.jpg" alt="Pep rally"></div>
+        <!-- Dynamic promo cards injected here -->
         <div class="snap-spacer" aria-hidden="true"></div>
       </div>
       <div id="snapDots" class="snap-dots" aria-hidden="true"></div>
     </div>
 
     <!-- Chips -->
-    <div class="chips">
-      <div class="chip">vegan</div>
-      <div class="chip">gluten-free</div>
-      <div class="chip">protein</div>
+    <div class="chips" id="chips">
+      <div class="chip" data-filter="">all</div>
+      <div class="chip" data-filter="vegan">vegan</div>
+      <div class="chip" data-filter="gluten-free">gluten-free</div>
+      <div class="chip" data-filter="protein">protein</div>
+      <div class="chip" data-filter="favorites">favorites</div>
     </div>
 
     <!-- Product Grid -->
     <div id="grid" class="grid" role="list">
-      <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50" data-img="assets/product-funyuns.jpg">
+      <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50" data-img="assets/product-funyuns.jpg" data-tags="snack">
+        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Potato Chips"></div>
         <div class="title">Potato Chips</div><div class="price">$2.50</div>
         <button class="add" aria-label="Add Potato Chips">+</button>
       </div>
-      <div class="card" role="listitem" data-name="Protein Bar" data-price="2.99" data-img="assets/product-chesters.jpg">
+
+      <div class="card" role="listitem" data-name="Protein Bar" data-price="2.99" data-img="assets/product-chesters.jpg" data-tags="protein">
+        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-chesters.jpg" alt="Protein Bar"></div>
         <div class="title">Protein Bar</div><div class="price">$2.99</div>
         <button class="add" aria-label="Add Protein Bar">+</button>
       </div>
-      <div class="card" role="listitem" data-name="Trail Mix" data-price="3.49" data-img="assets/product-cheetos.jpg">
+
+      <div class="card" role="listitem" data-name="Trail Mix" data-price="3.49" data-img="assets/product-cheetos.jpg" data-tags="vegan,gluten-free">
+        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-cheetos.jpg" alt="Trail Mix"></div>
         <div class="title">Trail Mix</div><div class="price">$3.49</div>
         <button class="add" aria-label="Add Trail Mix">+</button>
@@ -215,7 +237,7 @@
     </div>
   </div>
 
-  <!-- Order mini sheet (will be re-appended to <body> on open) -->
+  <!-- Order mini sheet -->
   <div id="orderSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Order details">
     <div class="sheet" role="document">
       <div class="row-between">
@@ -240,7 +262,10 @@
       <div class="row-between"><h3>Cart</h3><div class="ghost" id="cartBack">Back</div></div>
       <div id="cartContent" class="sheet-body">Cart is empty</div>
       <div class="row-between" style="margin-top:10px;"><strong>Total</strong><strong id="cartTotal">$0.00</strong></div>
-      <div class="actions"><button class="primary" id="cartCheckout">Checkout</button></div>
+      <div class="actions">
+        <button class="ghost" id="reorderLast">Re-order last</button>
+        <button class="primary" id="cartCheckout">Checkout</button>
+      </div>
     </div>
   </div>
 
@@ -276,7 +301,6 @@
 
         <!-- Admin -->
         <div id="panelAdmin" role="tabpanel" aria-labelledby="tabAdmin" style="display:none">
-          <!-- Login prompt shows immediately when tab is opened -->
           <div id="adminLogin">
             <div style="margin-top:6px;">Admin password:</div>
             <input id="adminPassword" type="password" class="field" style="width:100%;padding:10px;border-radius:10px">
@@ -309,7 +333,7 @@
               <div id="inventoryList" class="admin-list">Loading…</div>
             </div>
 
-            <!-- Analytics (Heat Map) -->
+            <!-- Analytics -->
             <div id="subtab-analytics" style="display:none">
               <div style="margin-top:6px;font-weight:700">Heat Map (Checkouts by Hour)</div>
               <div class="heat-wrap">
@@ -333,13 +357,24 @@
               <div id="historyList" class="admin-list" style="margin-top:8px">No delivered orders</div>
             </div>
 
-          </div> <!-- /adminContent -->
-        </div> <!-- /panelAdmin -->
-      </div> <!-- /sheet-body -->
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
+    /* Schema versioning */
+    const APP_SCHEMA_VERSION = 2;
+    const SCHEMA_KEY='fitsnacks.schema';
+    try{
+      const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY)||'0')||0;
+      if(cur < APP_SCHEMA_VERSION){
+        // Place migrations here if keys ever change.
+        localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
+      }
+    }catch{ localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION)); }
+
     /* Service Worker */
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
@@ -352,6 +387,8 @@
     const CART_KEY='fitsnacks.cart.v1', ORDERS_KEY='fitsnacks.orders', UNLOCK_KEY='fitsnacks.admin.unlocked';
     const STOCK_KEY='fitsnacks.stock.qty', LOW_KEY='fitsnacks.stock.low', SALES_KEY='fitsnacks.sales.buckets', STOCK_SET_KEY='fitsnacks.stock.set';
     const DELIVERED_KEY='fitsnacks.orders.delivered';
+    const FAVORITES_KEY='fitsnacks.favorites';
+    const PROMOS_KEY='fitsnacks.promos';
     const ADMIN_PASSWORD='8TSB077';
     const fmt = n => '$' + n.toFixed(2);
 
@@ -359,10 +396,11 @@
     function saveCart(m){ try{ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(m.entries())));}catch{} }
     function loadObj(key){ try{ return JSON.parse(localStorage.getItem(key) || '{}'); }catch{ return {}; } }
     function saveObj(key, obj){ localStorage.setItem(key, JSON.stringify(obj||{})); }
+    function loadArr(key){ try{ return JSON.parse(localStorage.getItem(key)||'[]'); }catch{ return []; } }
+    function saveArr(key, arr){ localStorage.setItem(key, JSON.stringify(arr||[])); }
 
     function loadOrders(){ try{return JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');}catch(e){return [];} }
     function saveOrders(list){ localStorage.setItem(ORDERS_KEY, JSON.stringify(list||[])); }
-
     function loadDelivered(){ try{return JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]');}catch(e){return [];} }
     function saveDelivered(list){ localStorage.setItem(DELIVERED_KEY, JSON.stringify(list||[])); }
 
@@ -382,10 +420,20 @@
     let stockSet = loadObj(STOCK_SET_KEY);
     if(!Object.keys(stockSet).length){ stockSet={}; saveObj(STOCK_SET_KEY, stockSet); }
     let sales = loadSales();
+    let favorites = new Set(loadArr(FAVORITES_KEY));
 
     function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY) === '1'; }
     function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v ? '1':'0'); }
     setUnlocked(false);
+
+    /* Promo defaults (editable via devtools/localStorage) */
+    if(!localStorage.getItem(PROMOS_KEY)){
+      saveArr(PROMOS_KEY, [
+        {img:'assets/carousel-1.jpg', title:'Fuel your study grind', cta:'Shop snacks', action:'scrollGrid'},
+        {img:'assets/carousel-2.jpg', title:'Protein picks', cta:'Filter: protein', action:'filter', value:'protein'},
+        {img:'assets/carousel-3.jpg', title:'Need help?', cta:'Open settings', action:'openSettings'}
+      ]);
+    }
 
     /* Prune delivered > 72h */
     function pruneDelivered(maxAgeHours){
@@ -398,8 +446,42 @@
       if (keep.length !== list.length) saveDelivered(keep);
     }
 
+    /* Build promo carousel from PROMOS_KEY */
+    function buildPromos(){
+      const data = loadArr(PROMOS_KEY);
+      const snapper = $('#snapper'); if(!snapper) return;
+      // remove existing cards between spacers
+      snapper.querySelectorAll('.snap-card').forEach(n=>n.remove());
+      const before = snapper.firstElementChild;
+      const after  = snapper.lastElementChild;
+      data.forEach(p=>{
+        const card = document.createElement('div');
+        card.className='snap-card';
+        card.innerHTML = `
+          <img class="banner" src="${p.img}" alt="${p.title||'promo'}">
+          <div class="snap-meta">
+            <div class="snap-title">${p.title||''}</div>
+            ${p.cta?`<button class="ghost snap-cta">${p.cta}</button>`:''}
+          </div>`;
+        snapper.insertBefore(card, after);
+        if(p.action){
+          card.addEventListener('click',(e)=>{
+            // Only trigger if background area (not the CTA) is tapped
+            if(e.target.closest('.snap-cta')) return;
+            promoAction(p);
+          }, {passive:true});
+          card.querySelector('.snap-cta')?.addEventListener('click',(e)=>{ e.stopPropagation(); promoAction(p); }, {passive:true});
+        }
+      });
+    }
+    function promoAction(p){
+      if(p.action==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
+      if(p.action==='filter'){ activateChip(p.value||''); }
+      if(p.action==='scrollGrid'){ document.getElementById('grid')?.scrollIntoView({behavior:'smooth',block:'start'}); }
+    }
+
     /* Card-snap carousel autoplay */
-    (function(){
+    function initCarousel(){
       const snapper=$('#snapper'); if(!snapper) return;
       const cards=$$('.snap-card'), dotsWrap=$('#snapDots');
       dotsWrap.innerHTML=cards.map(()=>'<div class="snap-dot"></div>').join('');
@@ -440,12 +522,13 @@
       ['pointerup','touchend','mouseup','mouseleave'].forEach(ev=>snapper.addEventListener(ev,()=>start()));
       snapper.addEventListener('scroll',()=>{
         const c=containerCenter(); let best=Infinity, bestI=0;
-        cards.forEach((card,i)=>{const d=Math.abs(c-centerOf(card)); if(d<best){best=d;bestI=i;}});
+        const cardsNow=$$('.snap-card');
+        cardsNow.forEach((card,i)=>{const d=Math.abs(c-centerOf(card)); if(d<best){best=d;bestI=i;}});
         if(bestI!==idx){idx=bestI; setDot(idx);}
       });
       dots.forEach((dot,i)=>dot.addEventListener('click',()=>{stop(); snapTo(i,400); start();}));
       setDot(0); snapTo(0,0);
-    })();
+    }
 
     /* Search filter */
     $('#search').addEventListener('input', e => {
@@ -453,7 +536,28 @@
       $$('.card').forEach(c => c.style.display = c.dataset.name.toLowerCase().includes(q) ? '' : 'none');
     });
 
-    /* Cart UI */
+    /* Chip filtering (incl. Favorites) */
+    function activateChip(val){
+      $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch.dataset.filter===val));
+      const showFavs = (val==='favorites');
+      $$('.card').forEach(c=>{
+        const tags=(c.dataset.tags||'').toLowerCase();
+        const name=c.dataset.name;
+        const hit = !val || val==='' || (val==='favorites' ? favorites.has(name) : tags.includes(val));
+        c.style.display = hit ? '' : 'none';
+      });
+    }
+    document.getElementById('chips').addEventListener('click',(e)=>{
+      const chip=e.target.closest('.chip'); if(!chip) return;
+      activateChip(chip.dataset.filter||'');
+    }, {passive:true});
+    activateChip(''); // default "all"
+
+    /* Cart UI + micro haptics */
+    function haptic(ms=15){ try{ if(navigator.vibrate) navigator.vibrate(ms);}catch{} }
+    function bumpCart(){ const el=$('#cartBtn'); if(!el) return; el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
+
+    function fmtTotal(){ let t=0; for(const [_,info] of cart) t+=info.price*info.qty; return t; }
     function refreshBadge(){
       let n=0; for (const v of cart.values()) n+=v.qty;
       const b = $('#cartBadge'); if (!b) return;
@@ -488,6 +592,23 @@
       }
     });
 
+    /* Favorites */
+    function syncFavStars(){
+      $$('.card').forEach(c=>{
+        const f=c.querySelector('.fav');
+        if(!f) return;
+        f.classList.toggle('active', favorites.has(c.dataset.name));
+      });
+    }
+    document.addEventListener('click',(e)=>{
+      const btn=e.target.closest('.fav'); if(!btn) return;
+      const card=btn.closest('.card'); if(!card) return;
+      const name=card.dataset.name;
+      favorites.has(name) ? favorites.delete(name) : favorites.add(name);
+      saveArr(FAVORITES_KEY, Array.from(favorites));
+      syncFavStars();
+    }, {passive:true});
+
     /* Product sheet */
     let current=null;
     function openProductSheet(card){
@@ -513,7 +634,7 @@
     }
     $$('.card').forEach(card=>{
       card.addEventListener('click', (e)=>{
-        if (e.target.closest('.add')) return;
+        if (e.target.closest('.add') || e.target.closest('.fav')) return;
         openProductSheet(card);
       });
     });
@@ -536,6 +657,7 @@
       e.qty+=n; cart.set(current.name,e);
       closeSheet();
       renderCart();
+      bumpCart(); haptic(12);
       $('#cartOverlay').classList.add('show');
     });
 
@@ -553,6 +675,22 @@
     $('#settingsBtn').addEventListener('click', ()=>openSettings(false));
     $('#settingsClose').addEventListener('click', closeSettings);
 
+    /* Re-order last */
+    function reorderLast(){
+      const active=loadOrders(), hist=loadDelivered();
+      const src = active[0] || hist[0];
+      if(!src){ alert('No previous orders to re-order.'); return; }
+      cart = new Map();
+      for(const line of src.lines){
+        cart.set(line.name, {price:line.price, qty:line.qty});
+      }
+      saveCart(cart);
+      renderCart(); refreshBadge();
+      $('#cartOverlay').classList.add('show');
+      bumpCart(); haptic(12);
+    }
+    document.getElementById('reorderLast').addEventListener('click', reorderLast);
+
     /* Orders + analytics */
     function addOrderFromCart(name, location){
       const lines=[]; let total=0;
@@ -568,12 +706,7 @@
       const list = loadOrders();
       const box = document.getElementById('ordersList');
       if (!box) return;
-
-      if (!list.length){
-        box.innerHTML = 'No orders yet';
-        return;
-      }
-
+      if (!list.length){ box.innerHTML = 'No orders yet'; return; }
       box.innerHTML = list.map((o, i) => {
         const items = o.lines.map(l => `${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
         const when  = new Date(o.when).toLocaleString();
@@ -593,9 +726,7 @@
     }
 
     /* Inventory panel */
-    function getProducts(){
-      return $$('.card').map(c=>({name:c.dataset.name, price:+c.dataset.price, img:c.dataset.img}));
-    }
+    function getProducts(){ return $$('.card').map(c=>({name:c.dataset.name, price:+c.dataset.price, img:c.dataset.img})); }
     function renderInventory(){
       const wrap = $('#inventoryList'); if(!wrap) return;
       const products = getProducts();
@@ -623,7 +754,7 @@
       for(let d=0; d<7; d++){
         for(let h=0; h<24; h++){
           const v = sales[d][h];
-          const alpha = max ? (0.08 + 0.62 * (v/max)) : 0.10; // 0.10..0.70
+          const alpha = max ? (0.08 + 0.62 * (v/max)) : 0.10;
           const cell = document.createElement('div');
           cell.className = 'heat-cell';
           cell.title = `Day ${d}, ${h}:00 -- ${v}`;
@@ -642,7 +773,7 @@
         if(!stockSet[name]) return;
         const qty=Number(stockQty[name]||0), low=Number(stockLow[name]||0);
         const b=document.createElement('div'); b.className='stock-badge'; b.textContent='Stock: '+qty; wrap.appendChild(b);
-        if(low>0 && qty<=low){ const l=document.createElement('div'); l.className='stock-badge low-badge'; l.textContent='Low'; wrap.appendChild(l); }
+        if(low>0 && qty<=low){ const l=document.createElement('div'); l.className='stock-badge low-badge'; l.textContent=`Only ${qty} left`; wrap.appendChild(l); }
       });
     }
     function refreshMiniIfOpen(){
@@ -680,12 +811,8 @@
       $('#adminLogin').style.display= logged?'none':'block';
       $('#adminContent').style.display= logged?'block':'none';
       if(logged){
-        renderOrders();
-        renderInventory();
-        renderHeat();
-        updateStockBadges();
-        pruneDelivered(72);
-        renderHistory();
+        renderOrders(); renderInventory(); renderHeat(); updateStockBadges();
+        pruneDelivered(72); renderHistory();
       } else {
         setTimeout(focusAdminPassword,0);
       }
@@ -694,12 +821,11 @@
 
     /* Sub-tabs + history */
     function renderHistory(){
-      const list = loadDelivered();
       const box = $('#historyList'); if(!box) return;
       pruneDelivered(72);
-      const pruned = loadDelivered();
-      if (!pruned.length){ box.textContent = 'No delivered orders'; return; }
-      box.innerHTML = pruned.map(o=>{
+      const list = loadDelivered();
+      if (!list.length){ box.textContent = 'No delivered orders'; return; }
+      box.innerHTML = list.map(o=>{
         const items = o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
         const whenPlaced = new Date(o.when).toLocaleString();
         const whenDelivered = o.deliveredWhen ? new Date(o.deliveredWhen).toLocaleString() : '--';
@@ -716,27 +842,18 @@
         </div>`;
       }).join('');
     }
-
     document.addEventListener('click',(e)=>{
       if(e.target.closest('#tabGeneral')) switchTab('general');
       if(e.target.closest('#tabAdmin'))   switchTab('admin');
     }, {passive:true});
-
     document.addEventListener('click',(e)=>{
       if(e.target.closest('#adminSubmit')){
         const ok = $('#adminPassword').value === ADMIN_PASSWORD;
-        if(ok){
-          setUnlocked(true); $('#adminError').style.display='none';
-          ensureAdminLoginVisible();
-        } else {
-          $('#adminError').style.display='block';
-        }
+        if(ok){ setUnlocked(true); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
+        else { $('#adminError').style.display='block'; }
       }
-      if(e.target && e.target.id==='adminLock'){
-        setUnlocked(false); ensureAdminLoginVisible();
-      }
+      if(e.target && e.target.id==='adminLock'){ setUnlocked(false); ensureAdminLoginVisible(); }
     }, {passive:true});
-
     document.addEventListener('click',(e)=>{
       const btn = e.target.closest('.subtab'); if(!btn) return;
       $$('.subtab').forEach(b=>b.classList.remove('active'));
@@ -752,7 +869,7 @@
       if (id==='history'){ pruneDelivered(72); renderHistory(); }
     }, {passive:true});
 
-    /* Open order mini-sheet on click OR keyboard */
+    /* Click / keys to open order sheet */
     document.addEventListener('click', function(e){
       const row = e.target.closest('.order-item');
       if (!row) return;
@@ -770,14 +887,12 @@
       openOrderSheet(idx);
     });
 
-    /* Orders mini-sheet */
+    /* Order sheet */
     let currentOrderIndex = null;
     function openOrderSheet(idx){
       const orders = loadOrders();
       const o = orders[idx]; if(!o) return;
-
       currentOrderIndex = idx;
-
       $('#orderMeta').textContent = `${new Date(o.when).toLocaleString()} • ${o.name} @ ${o.location}`;
       $('#orderLines').innerHTML = o.lines.map(l =>
         `<div class="row-between" style="padding:6px 0">
@@ -786,28 +901,15 @@
          </div>`
       ).join('');
       $('#orderTotal').textContent = fmt(o.total);
-
-      // NEW: Move overlay to end of <body> so it paints above Settings
-      const os = document.getElementById('orderSheet');
-      if (os) document.body.appendChild(os);
-
+      const os = document.getElementById('orderSheet'); if (os) document.body.appendChild(os);
       os.classList.add('show');
-
-      // optional a11y focus
-      const closeBtn = document.getElementById('orderClose');
-      if (closeBtn) setTimeout(()=>closeBtn.focus(), 0);
+      document.getElementById('orderClose')?.focus();
     }
-    function closeOrderSheet(){
-      $('#orderSheet').classList.remove('show');
-      currentOrderIndex = null;
-    }
+    function closeOrderSheet(){ $('#orderSheet').classList.remove('show'); currentOrderIndex = null; }
     $('#orderClose').addEventListener('click', closeOrderSheet);
     $('#orderCancel').addEventListener('click', closeOrderSheet);
-
-    // Delivered: move to History
     $('#orderDelivered').addEventListener('click', ()=>{
-      const idx = currentOrderIndex;
-      if(idx==null) return;
+      const idx = currentOrderIndex; if(idx==null) return;
       const active = loadOrders();
       if(idx>=0 && idx<active.length){
         const delivered = active.splice(idx, 1)[0];
@@ -822,19 +924,10 @@
       closeOrderSheet();
     });
 
-    // Clear history now
-    document.addEventListener('click',(e)=>{
-      if(e.target && e.target.id==='historyClear'){
-        if(!confirm('Clear all delivered orders from history?')) return;
-        saveDelivered([]); renderHistory();
-      }
-    });
-
-    /* Checkout flow */
+    /* Checkout */
     $('#cartCheckout').addEventListener('click', ()=>{
       $('#checkoutName').value=''; $('#checkoutLocation').value=''; $('#checkoutError').style.display='none';
-      $('#cartOverlay').classList.remove('show');
-      $('#checkoutOverlay').classList.add('show');
+      $('#cartOverlay').classList.remove('show'); $('#checkoutOverlay').classList.add('show');
     });
     $('#checkoutClose').addEventListener('click', ()=>$('#checkoutOverlay').classList.remove('show'));
     $('#checkoutSubmit').addEventListener('click', ()=>{
@@ -863,15 +956,19 @@
       }
     });
 
-    /* a11y keys for controls */
+    /* a11y for controls */
     $$('.btn,.add,.ghost,.primary,.tab,.subtab').forEach(el=>{
       el.tabIndex=0;
       el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
     });
 
+    /* Build promos and init carousel AFTER DOM ready bits */
+    buildPromos();
+    initCarousel();
+
     /* Initial render */
     pruneDelivered(72);
-    renderCart(); refreshBadge(); updateStockBadges();
+    renderCart(); refreshBadge(); updateStockBadges(); syncFavStars();
   </script>
 </body>
 </html>
