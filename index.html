@@ -801,16 +801,7 @@
   $('#reorderLast').addEventListener('click', reorderLast);
 
   /* ================= Orders + webhook ================= */
-  // Sales buckets
-  function loadSales(){
-    try{
-      const raw=JSON.parse(localStorage.getItem(SALES_KEY)||'null');
-      if(raw && raw.length===7 && raw[0].length===24) return raw;
-    }catch{}
-    return Array.from({length:7},()=>Array(24).fill(0));
-  }
-  function saveSales(mat){ localStorage.setItem(SALES_KEY, JSON.stringify(mat)); }
-  let sales = loadSales();
+  // Reuse loadSales/saveSales from earlier (do NOT redeclare `sales` here)
 
   // IFTTT maker webhook (non-blocking)
   const IFTTT_EVENT = 'Fitsnack_order';
@@ -823,17 +814,16 @@
       const value3 = `Total ${fmt(order.total)} • ${new Date(order.when).toLocaleString()}`;
       const body = JSON.stringify({ value1, value2, value3 });
 
-      // Use keepalive to avoid page nav cancelling it
       fetch(`https://maker.ifttt.com/trigger/${encodeURIComponent(IFTTT_EVENT)}/with/key/${encodeURIComponent(IFTTT_KEY)}`, {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body,
         keepalive:true,
-      }).catch(()=>{ /* swallow errors to avoid UI disruption */ });
+      }).catch(()=>{});
     }catch(e){ /* ignore */ }
   }
 
-  // product analytics helper (already declared earlier ensureMetrics)
+  // product analytics helper (ensureMetrics already declared earlier)
   function addOrderFromCart(name, location, notes, discount, tip){
     const lines=[]; let subtotal=0;
     for(const [n,info] of cart){
@@ -855,8 +845,6 @@
 
     return order;
   }
-
-  /* ================= Search already above; now checkout triggers will use addOrderFromCart later ================= */
 
   /* ================= Orders list (clickable) ================= */
   function renderOrders(){
