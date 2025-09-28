@@ -50,7 +50,7 @@
     #cartBtn{position:relative;display:flex;align-items:center;justify-content:center}
     .badge{position:absolute;top:-6px;right:-8px;background:var(--badge);color:#fff;border-radius:999px;padding:1px 6px;font-size:12px;font-weight:700;display:none;align-items:center;justify-content:center}
 
-    /* Card-snap carousel (100px tall, 85% card, centered via spacers) */
+    /* Card-snap carousel (100px tall) */
     .carousel{margin:14px 0 8px}
     .snapper{
       height:100px;
@@ -62,13 +62,7 @@
     }
     .snapper::-webkit-scrollbar{display:none}
     .snap-spacer{flex:0 0 7.5%}
-    .snap-card{
-      flex:0 0 85%;scroll-snap-align:center;
-      border-radius:14px;overflow:hidden;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.25);
-      display:flex;align-items:center;justify-content:center;height:100%;
-    }
+    .snap-card{flex:0 0 85%;scroll-snap-align:center;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;height:100%}
     .banner{width:100%;height:100%;object-fit:contain;display:block}
     .banner.is-loading{opacity:.001}
     .banner.is-error{background:repeating-linear-gradient(45deg,#300,#300 10px,#500 10px,#500 20px)}
@@ -94,10 +88,8 @@
     .overlay.show{display:flex}
     .sheet{width:92%;max-width:480px;border-radius:20px;padding:16px}
     #cartOverlay,#checkoutOverlay,#settingsOverlay,#orderSheet{align-items:flex-end}
-    #cartOverlay .sheet, #checkoutOverlay .sheet, #settingsOverlay .sheet, #orderSheet .sheet {
-      width:100%;
-      border-top-left-radius:24px;border-top-right-radius:24px;
-      border-bottom-left-radius:0;border-bottom-right-radius:0;
+    #cartOverlay .sheet,#checkoutOverlay .sheet,#settingsOverlay .sheet,#orderSheet .sheet{
+      width:100%;border-top-left-radius:24px;border-top-right-radius:24px;border-bottom-left-radius:0;border-bottom-right-radius:0;
       padding-bottom:calc(16px + env(safe-area-inset-bottom));
       transform:translateY(100%);
       animation:slideUp 220ms ease-out forwards;
@@ -131,6 +123,10 @@
     .badge-wrap{position:absolute;left:12px;bottom:12px;display:flex;gap:6px;align-items:center}
     .stock-badge{background:#0f172acc;color:#dbeafe;border:1px solid #1f2a44;padding:4px 8px;border-radius:10px;font-size:12px}
     .low-badge{background:#2a1a10cc;color:#ffd8b0;border:1px solid #3b2412}
+
+    /* Ensure orders rows are clickable */
+    #ordersList { position: relative; }
+    .order-item { pointer-events: auto; }
   </style>
 </head>
 <body>
@@ -554,7 +550,7 @@
     $('#settingsBtn').addEventListener('click', ()=>openSettings(false));
     $('#settingsClose').addEventListener('click', closeSettings);
 
-    /* Orders helpers + analytics */
+    /* Orders + analytics */
     function addOrderFromCart(name, location){
       const lines=[]; let total=0;
       for(const [n,info] of cart){ const line=info.price*info.qty; total+=line; lines.push({name:n, price:info.price, qty:info.qty, line}); }
@@ -564,23 +560,33 @@
       sales[dow][hr] = (sales[dow][hr]||0) + 1; saveSales(sales);
       return order;
     }
+
+    /* UPDATED: renderOrders (clickable rows) */
     function renderOrders(){
       const list = loadOrders();
-      const box = $('#ordersList'); if(!box) return;
-      if(!list.length){ box.textContent='No orders yet'; return; }
-      box.innerHTML = list.map((o,i)=>{
-        const items = o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
-        const when = new Date(o.when).toLocaleString();
-        return `<div class="order-item" data-idx="${i}" style="padding:8px;border-bottom:1px solid #2a2a30; cursor:pointer">
-          <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-            <div>
-              <div style="font-weight:700">${when}</div>
-              <div style="color:#bbb;margin-top:4px">${o.name} @ ${o.location}</div>
+      const box = document.getElementById('ordersList');
+      if (!box) return;
+
+      if (!list.length){
+        box.innerHTML = 'No orders yet';
+        return;
+      }
+
+      box.innerHTML = list.map((o, i) => {
+        const items = o.lines.map(l => `${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
+        const when  = new Date(o.when).toLocaleString();
+        return `
+          <div class="order-item" data-idx="${i}" role="button" tabindex="0"
+               style="padding:8px;border-bottom:1px solid #2a2a30;cursor:pointer">
+            <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+              <div>
+                <div style="font-weight:700">${when}</div>
+                <div style="color:#bbb;margin-top:4px">${o.name} @ ${o.location}</div>
+              </div>
+              <div style="font-weight:700">${fmt(o.total)}</div>
             </div>
-            <div style="font-weight:700">${fmt(o.total)}</div>
-          </div>
-          <div style="margin-top:6px">${items}</div>
-        </div>`;
+            <div style="margin-top:6px">${items}</div>
+          </div>`;
       }).join('');
     }
 
@@ -652,8 +658,6 @@
     }
 
     /* Admin tabs + login */
-    function isUnlockedUI(){ return isUnlocked(); }
-    function setUnlockedUI(v){ setUnlocked(v); }
     function switchTab(which){
       const tabG=$('#tabGeneral'), tabA=$('#tabAdmin'), panG=$('#panelGeneral'), panA=$('#panelAdmin');
       if(which==='admin'){
@@ -720,14 +724,14 @@
       if(e.target.closest('#adminSubmit')){
         const ok = $('#adminPassword').value === ADMIN_PASSWORD;
         if(ok){
-          setUnlockedUI(true); $('#adminError').style.display='none';
+          setUnlocked(true); $('#adminError').style.display='none';
           ensureAdminLoginVisible();
         } else {
           $('#adminError').style.display='block';
         }
       }
       if(e.target && e.target.id==='adminLock'){
-        setUnlockedUI(false); ensureAdminLoginVisible();
+        setUnlocked(false); ensureAdminLoginVisible();
       }
     }, {passive:true});
 
@@ -745,6 +749,24 @@
       if (id==='analytics') renderHeat();
       if (id==='history'){ pruneDelivered(72); renderHistory(); }
     }, {passive:true});
+
+    /* Open order mini-sheet on click OR keyboard */
+    document.addEventListener('click', function(e){
+      const row = e.target.closest('.order-item');
+      if (!row) return;
+      const idx = parseInt(row.getAttribute('data-idx'), 10);
+      if (!Number.isFinite(idx)) return;
+      openOrderSheet(idx);
+    });
+    document.addEventListener('keydown', function(e){
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const row = e.target.closest('.order-item');
+      if (!row) return;
+      e.preventDefault();
+      const idx = parseInt(row.getAttribute('data-idx'), 10);
+      if (!Number.isFinite(idx)) return;
+      openOrderSheet(idx);
+    });
 
     /* Orders mini-sheet */
     let currentOrderIndex = null;
@@ -766,13 +788,6 @@
       $('#orderSheet').classList.remove('show');
       currentOrderIndex = null;
     }
-    document.addEventListener('click', (e)=>{
-      const row = e.target.closest('.order-item');
-      if(row){
-        const idx = parseInt(row.getAttribute('data-idx'), 10);
-        openOrderSheet(idx);
-      }
-    });
     $('#orderClose').addEventListener('click', closeOrderSheet);
     $('#orderCancel').addEventListener('click', closeOrderSheet);
 
@@ -835,7 +850,7 @@
       }
     });
 
-    /* a11y keys */
+    /* a11y keys for controls */
     $$('.btn,.add,.ghost,.primary,.tab,.subtab').forEach(el=>{
       el.tabIndex=0;
       el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
@@ -844,7 +859,6 @@
     /* Initial render */
     pruneDelivered(72);
     renderCart(); refreshBadge(); updateStockBadges();
-    // If you want Admin to open by default in Admin tab on page load, call ensureAdminLoginVisible() here
   </script>
 </body>
 </html>
