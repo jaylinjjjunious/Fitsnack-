@@ -1307,7 +1307,7 @@
       </defs>`;
   }
 
-  /* ================= Checkout open/close ================= */
+    /* ================= Checkout open/close ================= */
   function openCheckout(){
     const p = loadProfile();
     $('#checkoutName').value     = p.name || '';
@@ -1329,6 +1329,97 @@
   if (ccBtn) ccBtn.addEventListener('click', openCheckout);
   const closeCk = $('#checkoutClose');
   if (closeCk) closeCk.addEventListener('click', ()=>$('#checkoutOverlay').classList.remove('show'));
+
+  /* ================= Accessibility: keyboard click ================= */
+  $$('.btn,.add,.ghost,.primary,.tab,.subtab,.order-item').forEach(el=>{
+    if(!el) return;
+    el.tabIndex = el.tabIndex || 0;
+    el.addEventListener('keydown', e=>{
+      if(e.key==='Enter' || e.key===' '){ e.preventDefault(); el.click(); }
+    });
+  });
+
+  /* ================= First-run housekeeping ================= */
+  function pruneDeliveredInit(){
+    const list = loadDelivered();
+    const cutoff = Date.now() - 72*3600*1000; // 72h
+    const keep = list.filter(o=>{
+      const t = Date.parse(o.deliveredWhen || o.when || 0);
+      return isFinite(t) && t >= cutoff;
+    });
+    if(keep.length !== list.length) saveDelivered(keep);
+  }
+
+  /* === HOTFIX: reliable product add flow + direct checkout === */
+  (function(){
+    function bindProductInteractions(){
+      const cards = $$('.card');
+      if (!cards.length) return;
+
+      cards.forEach(card=>{
+        // card click -> open sheet (except on fav/add)
+        card.addEventListener('click', e=>{
+          if (e.target.closest('.fav') || e.target.closest('.add')) return;
+          openProductSheet(card);
+        });
+
+        // '+' button -> open sheet
+        const addBtn = card.querySelector('.add');
+        if (addBtn){
+          const clone = addBtn.cloneNode(true);
+          addBtn.replaceWith(clone);
+          clone.addEventListener('click', e=>{
+            e.stopPropagation();
+            openProductSheet(card);
+          });
+        }
+      });
+    }
+
+    // Override mini-sheet "Add" to go straight to checkout
+    (function overrideSheetAdd(){
+      const btn = document.getElementById('sheetAdd');
+      if (!btn) return;
+      const newBtn = btn.cloneNode(true);
+      btn.replaceWith(newBtn);
+      newBtn.addEventListener('click', ()=>{
+        try{
+          const n = Math.max(1, parseInt(document.getElementById('qtyVal').textContent)||1);
+          if (!current || !current.name) return;
+
+          const m = ensureMetrics(current.name);
+          if (m){ m.adds=(m.adds||0)+1; m.addedQty=(m.addedQty||0)+n; saveObj(ANALYTICS_KEY, prodAnalytics); }
+
+          const e = cart.get(current.name) || {price:current.price, qty:0};
+          e.qty += n; cart.set(current.name, e);
+          saveCart(cart); renderCart();
+
+          document.getElementById('productSheet')?.classList.remove('show');
+          openCheckout();
+        }catch(err){ console.error('sheetAdd override error', err); }
+      });
+    })();
+
+    if (document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', bindProductInteractions);
+    } else {
+      bindProductInteractions();
+    }
+  })();
+
+  /* ================= Final init ================= */
+  buildPromos();
+  initCarousel();
+  pruneDeliveredInit();
+  renderCart();
+  refreshBadge();
+  updateStockBadges();
+  syncFavStars();
+  updateGreeting();
+
+  </script>
+</body>
+</html>('#checkoutOverlay').classList.remove('show'));
 
   /* ================= Accessibility: keyboard click ================= */
   $$('.btn,.add,.ghost,.primary,.tab,.subtab,.order-item').forEach(el=>{
