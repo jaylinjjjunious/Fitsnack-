@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -154,6 +155,7 @@
     /* NOTE: Sticky cart bar styles REMOVED */
   </style>
 </head>
+
 <body>
   <div class="app" role="application">
     <!-- Header -->
@@ -219,226 +221,7 @@
       </div>
     </div>
   </div> <!-- /.app -->
-   <!-- Product mini sheet -->
-  <div id="productSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Add item">
-    <div class="sheet" role="document">
-      <div class="row-between">
-        <h3 id="sheetTitle">Item</h3>
-        <div class="ghost" id="sheetClose">Close</div>
-      </div>
-      <div style="display:flex; gap:12px; align-items:center; margin-top:8px;">
-        <div style="width:88px;height:88px;border-radius:12px;overflow:hidden;border:1px solid #2a2a30;">
-          <img id="sheetImg" alt="" style="width:100%;height:100%;object-fit:cover">
-        </div>
-        <div style="flex:1">
-          <div id="sheetPrice" class="price" style="font-size:18px;"></div>
-          <div id="sheetStock" style="margin-top:6px;color:#c7c7cc;font-size:13px;">Stock: --</div>
-          <div id="sheetLowWarn" style="display:none;margin-top:6px;color:#ff6b6b;font-weight:600;font-size:13px;">Low stock</div>
-        </div>
-      </div>
-      <div class="row-between" style="margin-top:10px;">
-        <div class="qty">
-          <button id="qtyMinus">−</button>
-          <div id="qtyVal">1</div>
-          <button id="qtyPlus">+</button>
-        </div>
-        <button class="primary" id="sheetAdd">Add</button>
-      </div>
-    </div>
-  </div>
 
-  <!-- Order details sheet -->
-  <div id="orderSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Order details">
-    <div class="sheet" role="document">
-      <div class="row-between">
-        <h3>Order</h3>
-        <div class="ghost" id="orderClose">Close</div>
-      </div>
-      <div id="orderMeta" style="margin-top:6px;color:#c7c7cc;font-size:13px">–</div>
-      <div id="orderLines" class="admin-list" style="margin-top:8px">–</div>
-      <div class="row-between" style="margin-top:10px;">
-        <strong>Total</strong><strong id="orderTotal">$0.00</strong>
-      </div>
-      <div class="actions" style="margin-top:12px;">
-        <button class="ghost" id="orderCancel">Cancel</button>
-        <button class="primary" id="orderDelivered">Mark Delivered</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Cart bottom-sheet -->
-  <div id="cartOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Cart">
-    <div class="sheet" role="document">
-      <div class="row-between">
-        <h3>Cart</h3>
-        <div class="ghost" id="cartBack">Back</div>
-      </div>
-      <div id="cartContent" class="sheet-body">Cart is empty</div>
-      <div class="row-between" style="margin-top:10px;">
-        <strong>Total</strong><strong id="cartTotal">$0.00</strong>
-      </div>
-      <div class="actions">
-        <button class="ghost" id="reorderLast">Re-order last</button>
-        <button class="primary" id="cartCheckout">Checkout</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Checkout bottom-sheet (with Promo, Tips, Notes) -->
-  <div id="checkoutOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Checkout">
-    <div class="sheet" role="document">
-      <div class="row-between">
-        <h3>Checkout</h3>
-        <div class="ghost" id="checkoutClose">Close</div>
-      </div>
-
-      <div class="sheet-body">
-        <!-- Profile -->
-        <div style="margin-top:6px;">Your name:</div>
-        <input id="checkoutName" class="field" style="width:100%;padding:10px;border-radius:10px">
-        <div style="margin-top:10px;">Where are you on campus?</div>
-        <input id="checkoutLocation" class="field" style="width:100%;padding:10px;border-radius:10px">
-
-        <!-- Promo -->
-        <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px">
-          <div class="field-inline" style="flex:1">
-            <input id="checkoutPromo" placeholder="Promo code" class="field" style="flex:1;min-width:0;padding:10px;border-radius:10px">
-            <button class="ghost" id="checkoutApplyPromo">Apply</button>
-          </div>
-          <div id="promoStatus" class="badge-pill" style="display:none"></div>
-        </div>
-
-        <!-- Tip -->
-        <div style="margin-top:12px;">Tip (optional)</div>
-        <div class="tip-group" id="tipGroup">
-          <button class="tip-btn" data-tip="none">No tip</button>
-          <button class="tip-btn" data-tip="amount:1">$1</button>
-          <button class="tip-btn" data-tip="amount:2">$2</button>
-          <button class="tip-btn" data-tip="percent:10">10%</button>
-          <div class="field-inline" style="margin-left:auto">
-            <input id="tipCustomAmount" type="number" min="0" step="0.5" placeholder="Custom $" class="field" style="width:110px">
-            <button class="ghost" id="tipApplyCustom">Set</button>
-          </div>
-        </div>
-
-        <!-- Notes -->
-        <div style="margin-top:12px;">Delivery notes (optional)</div>
-        <textarea id="checkoutNotes" class="notes" placeholder="e.g., Meet at library entrance, 2nd floor."></textarea>
-
-        <!-- Breakdown -->
-        <div class="breakdown" style="margin-top:12px">
-          <div class="break-row"><div class="muted">Subtotal</div><div id="ckSub">$0.00</div></div>
-          <div class="break-row"><div class="muted">Discount</div><div id="ckDisc">-$0.00</div></div>
-          <div class="break-row"><div class="muted">Tip</div><div id="ckTip">$0.00</div></div>
-          <div class="break-row" style="font-weight:800"><div>Total</div><div id="ckTotal">$0.00</div></div>
-        </div>
-
-        <div id="checkoutError" style="display:none;color:#ff6b6b;margin-top:10px;">Please fill both fields.</div>
-      </div>
-
-      <div class="actions" style="margin-top:12px;">
-        <button class="primary" id="checkoutSubmit">Place Order</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Settings bottom-sheet -->
-  <div id="settingsOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Settings">
-    <div class="sheet" role="document">
-      <div class="row-between">
-        <h3>Settings</h3>
-        <div class="ghost" id="settingsClose">Close</div>
-      </div>
-
-      <div class="tabs" role="tablist" aria-label="Settings Tabs">
-        <button id="tabGeneral" class="tab active" role="tab" aria-selected="true" aria-controls="panelGeneral">General</button>
-        <button id="tabAdmin" class="tab" role="tab" aria-selected="false" aria-controls="panelAdmin">Admin</button>
-      </div>
-
-      <div class="sheet-body">
-        <!-- General -->
-        <div id="panelGeneral" role="tabpanel" aria-labelledby="tabGeneral">
-          <div style="display:flex;gap:12px">
-            <div class="ghost">Dark Mode (disabled)</div>
-            <div class="ghost">Notifications (disabled)</div>
-          </div>
-        </div>
-
-        <!-- Admin -->
-        <div id="panelAdmin" role="tabpanel" aria-labelledby="tabAdmin" style="display:none">
-          <!-- Login -->
-          <div id="adminLogin">
-            <div style="margin-top:6px;">Admin password:</div>
-            <input id="adminPassword" type="password" class="field" style="width:100%;padding:10px;border-radius:10px">
-            <div id="adminError" style="display:none;color:#ff6b6b;margin-top:6px;">Wrong password.</div>
-            <div class="actions" style="margin-top:12px;">
-              <button class="primary" id="adminSubmit">Unlock</button>
-            </div>
-          </div>
-
-          <!-- Content (locked until unlock) -->
-          <div id="adminContent" style="display:none">
-            <div class="admin-subtabs">
-              <button class="subtab active" data-subtab="orders">Orders</button>
-              <button class="subtab" data-subtab="inventory">Inventory</button>
-              <button class="subtab" data-subtab="analytics">Analytics</button>
-              <button class="subtab" data-subtab="history">History</button>
-            </div>
-
-            <div style="margin:4px 0 8px;display:flex;gap:8px;align-items:center;">
-              <button class="ghost" id="adminLock" style="padding:6px 10px">Lock Admin</button>
-              <div id="adminState" style="font-size:12px;color:#c7c7cc">
-                State: <strong id="adminStateVal">unknown</strong>
-              </div>
-            </div>
-
-            <!-- Orders -->
-            <div id="subtab-orders">
-              <div style="margin-top:6px;font-weight:700">Orders</div>
-              <div id="ordersList" class="admin-list">No orders yet</div>
-            </div>
-
-            <!-- Inventory -->
-            <div id="subtab-inventory" style="display:none">
-              <div style="margin-top:6px;font-weight:700">Inventory (Stock & Low)</div>
-              <div id="inventoryList" class="admin-list">Loading…</div>
-            </div>
-
-            <!-- Analytics -->
-            <div id="subtab-analytics" style="display:none">
-              <div style="margin-top:6px;font-weight:700">Analytics Overview</div>
-              <div class="kpis" style="margin-top:8px">
-                <div class="kpi"><div class="label">Revenue</div><div id="kpiRevenue" class="value">$0.00</div></div>
-                <div class="kpi"><div class="label">Orders</div><div id="kpiOrders" class="value">0</div></div>
-                <div class="kpi"><div class="label">AOV</div><div id="kpiAOV" class="value">$0.00</div></div>
-                <div class="kpi"><div class="label">Items sold</div><div id="kpiItems" class="value">0</div></div>
-              </div>
-              <div style="margin-top:12px">
-                <div class="label" style="margin-bottom:6px">Revenue (last 7 days)</div>
-                <svg id="revSpark" class="spark" viewBox="0 0 100 40" preserveAspectRatio="none" aria-label="Revenue last 7 days"></svg>
-              </div>
-              <div style="margin-top:12px;font-weight:700">Top Products</div>
-              <div class="table">
-                <div class="rowh"><div>Product</div><div>Qty</div><div>Revenue</div><div>Conv%</div></div>
-                <div id="topProducts"></div>
-              </div>
-              <div style="margin-top:12px;font-weight:700">Funnel by Product</div>
-              <div id="funnels" class="admin-list"></div>
-            </div>
-
-            <!-- History -->
-            <div id="subtab-history" style="display:none">
-              <div class="row-between" style="margin-top:6px;">
-                <div style="font-weight:700">Delivered Orders (auto-clears after 3 days)</div>
-                <button class="ghost" id="historyClear" style="padding:6px 10px">Clear history now</button>
-              </div>
-              <div id="historyList" class="admin-list" style="margin-top:8px">No delivered orders</div>
-            </div>
-          </div> <!-- /#adminContent -->
-        </div> <!-- /#panelAdmin -->
-      </div> <!-- /.sheet-body -->
-    </div>
-  </div>
   <!-- Product mini sheet -->
   <div id="productSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Add item">
     <div class="sheet" role="document">
@@ -659,6 +442,7 @@
       </div> <!-- /.sheet-body -->
     </div>
   </div>
+
   <!-- Toast host (kept) -->
   <div id="toastHost"></div>
 
@@ -944,134 +728,7 @@
     });
   }
   $$('.add').forEach(attachAddButtonEnhancements);
-   /* ================= Cart badge + render ================= */
-  function refreshBadge(){
-    let n=0; for(const v of cart.values()) n+=v.qty;
-    const b=$('#cartBadge'); if(!b) return;
-    if(n>0){ b.textContent=n; b.style.display='inline-flex'; }
-    else { b.style.display='none'; }
-  }
 
-  function renderCart(){
-    let total=0, html='';
-    for(const [name,info] of cart){
-      const line=info.price*info.qty; total+=line;
-      html += `<div class="row-between" style="margin-top:6px">
-        <div style="display:flex;gap:10px;align-items:center">
-          <button data-act="-" data-name="${name}" class="ghost" style="padding:4px 8px">−</button>
-          <div style="min-width:24px;text-align:center">${info.qty}</div>
-          <button data-act="+" data-name="${name}" class="ghost" style="padding:4px 8px">+</button>
-          <div style="font-weight:700;margin-left:8px">${name}</div>
-        </div>
-        <div style="font-weight:700">${fmt(line)}</div>
-      </div>`;
-    }
-    $('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
-    $('#cartTotal').textContent = fmt(total);
-    saveCart(cart); refreshBadge();
-  }
-
-  // +/- quantity inside cart sheet
-  document.addEventListener('click', (e)=>{
-    const b=e.target.closest('button'); if(!b) return;
-    if(b.matches('[data-act][data-name]')){
-      const name=b.getAttribute('data-name');
-      const act=b.getAttribute('data-act');
-      const entry=cart.get(name); if(!entry) return;
-      entry.qty = Math.max(act==='+' ? entry.qty+1 : entry.qty-1, 1);
-      renderCart();
-    }
-  }, {passive:true});
-
-  /* ================= Overlays open/close ================= */
-  function openCart(){ $('#cartOverlay').classList.add('show'); }
-  function closeCart(){ $('#cartOverlay').classList.remove('show'); }
-  function openSettings(def=false){
-    $('#settingsOverlay').classList.add('show');
-    switchTab(def?'admin':'general');
-    if(def) ensureAdminLoginVisible();
-  }
-  function closeSettings(){ $('#settingsOverlay').classList.remove('show'); }
-
-  $('#cartBtn').addEventListener('click', openCart);
-  $('#cartBack').addEventListener('click', closeCart);
-  $('#settingsBtn').addEventListener('click', ()=>openSettings(false));
-  $('#settingsClose').addEventListener('click', closeSettings);
-
-  /* ================= Re-order last ================= */
-  function loadOrders(){ try{return JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]')}catch{return[]} }
-  function saveOrders(list){ localStorage.setItem(ORDERS_KEY, JSON.stringify(list||[])); }
-
-  function loadDelivered(){ try{return JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]')}catch{return[]} }
-  function saveDelivered(list){ localStorage.setItem(DELIVERED_KEY, JSON.stringify(list||[])); }
-
-  function reorderLast(){
-    const active=loadOrders(), hist=loadDelivered();
-    const src=active[0]||hist[0];
-    if(!src){ showToast('No previous orders'); return; }
-    cart=new Map();
-    for(const line of src.lines){ cart.set(line.name, {price:line.price, qty:line.qty}); }
-    saveCart(cart); renderCart(); openCart(); haptic(12);
-  }
-  $('#reorderLast').addEventListener('click', reorderLast);
-
-  /* ================= Orders + webhook ================= */
-  // Sales buckets
-  function loadSales(){
-    try{
-      const raw=JSON.parse(localStorage.getItem(SALES_KEY)||'null');
-      if(raw && raw.length===7 && raw[0].length===24) return raw;
-    }catch{}
-    return Array.from({length:7},()=>Array(24).fill(0));
-  }
-  function saveSales(mat){ localStorage.setItem(SALES_KEY, JSON.stringify(mat)); }
-  let sales = loadSales();
-
-  // IFTTT maker webhook (non-blocking)
-  const IFTTT_EVENT = 'Fitsnack_order';
-  const IFTTT_KEY   = 'MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA'; // provided by you
-  function sendOrderWebhook(order){
-    try{
-      const lines = order.lines.map(l=>`${l.name} x${l.qty} = ${fmt(l.line)}`).join('; ');
-      const value1 = `${order.name} @ ${order.location}`;
-      const value2 = lines;
-      const value3 = `Total ${fmt(order.total)} • ${new Date(order.when).toLocaleString()}`;
-      const body = JSON.stringify({ value1, value2, value3 });
-
-      // Use keepalive to avoid page nav cancelling it
-      fetch(`https://maker.ifttt.com/trigger/${encodeURIComponent(IFTTT_EVENT)}/with/key/${encodeURIComponent(IFTTT_KEY)}`, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body,
-        keepalive:true,
-      }).catch(()=>{ /* swallow errors to avoid UI disruption */ });
-    }catch(e){ /* ignore */ }
-  }
-
-  // product analytics helper (already declared earlier ensureMetrics)
-  function addOrderFromCart(name, location, notes, discount, tip){
-    const lines=[]; let subtotal=0;
-    for(const [n,info] of cart){
-      const line=info.price*info.qty; subtotal+=line; lines.push({name:n, price:info.price, qty:info.qty, line});
-      const m = ensureMetrics(n); m.purchasedQty=(m.purchasedQty||0)+info.qty; m.revenue=(m.revenue||0)+line;
-    }
-    saveObj(ANALYTICS_KEY, prodAnalytics);
-
-    const total = Math.max(0, subtotal - (discount||0)) + (tip||0);
-
-    const order={when:new Date().toISOString(), name, location, notes:notes||'', lines, total, discount:discount||0, tip:tip||0};
-    const list=loadOrders(); list.unshift(order); saveOrders(list);
-
-    // Log sales bucket
-    const d=new Date(); sales[d.getDay()][d.getHours()] = (sales[d.getDay()][d.getHours()]||0)+1; saveSales(sales);
-
-    // Fire IFTTT webhook (async, non-blocking)
-    sendOrderWebhook(order);
-
-    return order;
-  }
-
-  /* ================= Search already above; now checkout triggers will use addOrderFromCart later ================= */
   /* ================= Cart badge + render ================= */
   function refreshBadge(){
     let n=0; for(const v of cart.values()) n+=v.qty;
@@ -1200,6 +857,7 @@
   }
 
   /* ================= Search already above; now checkout triggers will use addOrderFromCart later ================= */
+
   /* ================= Orders list (clickable) ================= */
   function renderOrders(){
     const list=loadOrders(), box=$('#ordersList'); if(!box) return;
@@ -1455,6 +1113,7 @@
     });
     if(keep.length!==list.length) saveDelivered(keep);
   }
+
   /* ================= Checkout: promos, tips, notes ================= */
   const PROMO_TABLE = {
     'SAVE10': {type:'percent', value:0.10, label:'10% off sitewide'},
@@ -1659,6 +1318,7 @@
         </linearGradient>
       </defs>`;
   }
+
   /* ================= Checkout open/close ================= */
   function openCheckout(){
     const p = loadProfile();
