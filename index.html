@@ -65,15 +65,26 @@
     }
     .track{display:flex;width:300%;height:120px;animation:slide 15s infinite}
     .slide{
+      position:relative;
       flex:0 0 100%;
       height:120px;           /* lock slide box */
       max-height:120px;
       min-height:120px;
-      background-size:contain;/* fit entire image */
-      background-position:center;
-      background-repeat:no-repeat;
-      filter:saturate(.98) contrast(1.02);
     }
+    /* banner <img> inside each slide */
+    .banner{
+      width:100%; height:120px; object-fit:contain; display:block;
+    }
+    .banner.is-loading{ opacity:.001 }
+    .banner.is-error{
+      background: repeating-linear-gradient(45deg,#300,#300 10px,#500 10px,#500 20px);
+    }
+    .slide .err-label{
+      position:absolute; inset:auto 8px 8px auto; background:#500; color:#fff;
+      padding:2px 6px; border-radius:6px; font-size:12px; display:none;
+    }
+    .slide.error .err-label{ display:inline-block }
+
     @keyframes slide{0%,28%{transform:translateX(0)}33%,61%{transform:translateX(-100%)}66%,94%{transform:translateX(-200%)}100%{transform:translateX(0)}}
 
     .chips{display:flex;gap:10px;margin:6px 0 12px;flex-wrap:wrap}
@@ -160,9 +171,18 @@
     <!-- Carousel -->
     <div class="carousel" aria-label="School photos">
       <div class="track">
-        <div class="slide" style="background-image:url(assets/carousel-1.jpg)" role="img" aria-label="Campus aerial"></div>
-        <div class="slide" style="background-image:url(assets/carousel-2.jpg)" role="img" aria-label="Front of school"></div>
-        <div class="slide" style="background-image:url(assets/carousel-3.jpg)" role="img" aria-label="Pep rally"></div>
+        <div class="slide">
+          <img class="banner" src="assets/carousel-1.jpg" alt="Campus aerial" loading="eager" />
+          <div class="err-label">Image not found</div>
+        </div>
+        <div class="slide">
+          <img class="banner" src="assets/carousel-2.jpg" alt="Front of school" loading="eager" />
+          <div class="err-label">Image not found</div>
+        </div>
+        <div class="slide">
+          <img class="banner" src="assets/carousel-3.jpg" alt="Pep rally" loading="eager" />
+          <div class="err-label">Image not found</div>
+        </div>
       </div>
     </div>
 
@@ -284,6 +304,11 @@
               <div style="font-size:12px;color:#c7c7cc">Forces the password prompt next time.</div>
             </div>
 
+            <!-- Admin state chip -->
+            <div id="adminState" style="margin:-2px 0 8px; font-size:12px; color:#c7c7cc;">
+              State: <strong id="adminStateVal">unknown</strong>
+            </div>
+
             <!-- Orders -->
             <div id="subtab-orders">
               <div style="margin-top:6px;font-weight:700">Orders</div>
@@ -365,6 +390,19 @@
       $$('.card').forEach(c => c.style.display = c.dataset.name.toLowerCase().includes(q) ? '' : 'none');
     });
 
+    // Carousel image loader/error marker
+    $$('.banner').forEach(img=>{
+      img.classList.add('is-loading');
+      const done=()=>img.classList.remove('is-loading');
+      img.addEventListener('load', done, {once:true});
+      img.addEventListener('error', ()=>{
+        img.classList.remove('is-loading');
+        img.classList.add('is-error');
+        const wrap = img.closest('.slide');
+        wrap.classList.add('error');
+      }, {once:true});
+    });
+
     // Carousel pause on interaction
     const track = document.querySelector('.track');
     ['touchstart','mousedown','pointerdown'].forEach(ev=>track.addEventListener(ev,()=>track.style.animationPlayState='paused',{passive:true}));
@@ -428,8 +466,7 @@
     $$('.card').forEach(card=>{
       // whole card opens sheet
       card.addEventListener('click', (e)=>{
-        // avoid double-trigger if '+' is clicked; we'll handle add separately
-        if (e.target.closest('.add')) return;
+        if (e.target.closest('.add')) return; // avoid double-trigger
         openProductSheet(card);
       });
     });
@@ -539,21 +576,22 @@
     function updateStockBadges(){
       $$('.card').forEach(card=>{
         const name = card.dataset.name;
-        const qty = Number(stockQty[name]||0);
-        const low = Number(stockLow[name]||0);
+        const qty = Number(stockQty[name] ?? 0);   // default to 0
+        const low = Number(stockLow[name] ?? 0);
         const wrap = ensureBadgeWrap(card);
         wrap.innerHTML = '';
-        if(Number.isFinite(qty)){
-          const b = document.createElement('div');
-          b.className = 'stock-badge';
-          b.textContent = `Stock: ${qty}`;
-          wrap.appendChild(b);
-          if(low>0 && qty<=low){
-            const l = document.createElement('div');
-            l.className = 'stock-badge low-badge';
-            l.textContent = 'Low';
-            wrap.appendChild(l);
-          }
+
+        // Always show stock badge (incl. 0)
+        const b = document.createElement('div');
+        b.className = 'stock-badge';
+        b.textContent = `Stock: ${qty}`;
+        wrap.appendChild(b);
+
+        if(low>0 && qty<=low){
+          const l = document.createElement('div');
+          l.className = 'stock-badge low-badge';
+          l.textContent = 'Low';
+          wrap.appendChild(l);
         }
       });
     }
@@ -607,6 +645,18 @@
     function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY) === '1'; }
     function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v ? '1':'0'); }
 
+    function showAdminState(){
+      const el = document.getElementById('adminStateVal');
+      if(!el) return;
+      el.textContent = isUnlocked() ? 'Unlocked (no password shown)' : 'Locked (password required)';
+    }
+
+    // force-lock via URL ?lock=1 or #lock
+    (function(){
+      const q = location.search; const h = location.hash;
+      if (/\block=1\b/.test(q) || /#lock\b/.test(h)) { setUnlocked(false); }
+    })();
+
     function switchTab(which){
       const tabG=$('#tabGeneral'), tabA=$('#tabAdmin'), panG=$('#panelGeneral'), panA=$('#panelAdmin');
       if(which==='admin'){
@@ -630,6 +680,7 @@
         renderHeat();
         updateStockBadges();
       }
+      showAdminState();
     }
 
     // main tabs click
@@ -644,14 +695,14 @@
         const ok = $('#adminPassword').value === ADMIN_PASSWORD;
         if(ok){
           setUnlocked(true); $('#adminError').style.display='none';
-          ensureAdminLoginVisible();
+          ensureAdminLoginVisible(); showAdminState();
         } else {
           $('#adminError').style.display='block';
         }
       }
       if(e.target && e.target.id === 'adminLock'){
         setUnlocked(false);
-        ensureAdminLoginVisible();
+        ensureAdminLoginVisible(); showAdminState();
       }
     }, {passive:true});
 
@@ -692,7 +743,7 @@
     });
 
     // Initial render
-    renderCart(); refreshBadge(); updateStockBadges();
+    renderCart(); refreshBadge(); updateStockBadges(); showAdminState();
   </script>
 </body>
 </html>
