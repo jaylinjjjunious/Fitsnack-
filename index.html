@@ -127,6 +127,9 @@
     /* Ensure orders rows are clickable */
     #ordersList { position: relative; }
     .order-item { pointer-events: auto; }
+
+    /* NEW: ensure order sheet stacks above Settings */
+    #orderSheet { z-index: 10050; }
   </style>
 </head>
 <body>
@@ -212,7 +215,7 @@
     </div>
   </div>
 
-  <!-- Order mini sheet -->
+  <!-- Order mini sheet (will be re-appended to <body> on open) -->
   <div id="orderSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Order details">
     <div class="sheet" role="document">
       <div class="row-between">
@@ -561,7 +564,6 @@
       return order;
     }
 
-    /* UPDATED: renderOrders (clickable rows) */
     function renderOrders(){
       const list = loadOrders();
       const box = document.getElementById('ordersList');
@@ -773,7 +775,9 @@
     function openOrderSheet(idx){
       const orders = loadOrders();
       const o = orders[idx]; if(!o) return;
+
       currentOrderIndex = idx;
+
       $('#orderMeta').textContent = `${new Date(o.when).toLocaleString()} • ${o.name} @ ${o.location}`;
       $('#orderLines').innerHTML = o.lines.map(l =>
         `<div class="row-between" style="padding:6px 0">
@@ -782,7 +786,16 @@
          </div>`
       ).join('');
       $('#orderTotal').textContent = fmt(o.total);
-      $('#orderSheet').classList.add('show');
+
+      // NEW: Move overlay to end of <body> so it paints above Settings
+      const os = document.getElementById('orderSheet');
+      if (os) document.body.appendChild(os);
+
+      os.classList.add('show');
+
+      // optional a11y focus
+      const closeBtn = document.getElementById('orderClose');
+      if (closeBtn) setTimeout(()=>closeBtn.focus(), 0);
     }
     function closeOrderSheet(){
       $('#orderSheet').classList.remove('show');
