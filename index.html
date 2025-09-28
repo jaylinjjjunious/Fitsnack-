@@ -57,26 +57,18 @@
     /* Promo carousel (card-snap, 100px tall) */
     .carousel{margin:14px 0 8px}
     .snapper{
-      height:100px;
-      display:flex;align-items:stretch;
-      gap:var(--snap-gap);
-      overflow-x:auto;scroll-snap-type:x mandatory;
-      -webkit-overflow-scrolling:touch;
+      height:100px; display:flex;align-items:stretch; gap:var(--snap-gap);
+      overflow-x:auto;scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
       padding:0 var(--snap-gap);
     }
     .snapper::-webkit-scrollbar{display:none}
     .snap-spacer{flex:0 0 7.5%}
     .snap-card{
-      position:relative;
-      flex:0 0 85%;scroll-snap-align:center;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;height:100%;
+      position:relative; flex:0 0 85%; scroll-snap-align:center; border-radius:14px; overflow:hidden;
+      border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.25); display:flex; align-items:center; justify-content:center; height:100%;
     }
     .banner{width:100%;height:100%;object-fit:contain;display:block}
-    .snap-meta{
-      position:absolute;left:10px;bottom:8px;right:10px;
-      display:flex;justify-content:space-between;align-items:end;gap:8px;
-      pointer-events:none;
-    }
+    .snap-meta{position:absolute;left:10px;bottom:8px;right:10px;display:flex;justify-content:space-between;align-items:end;gap:8px;pointer-events:none}
     .snap-title{font-weight:800;text-shadow:0 1px 6px rgba(0,0,0,.6)}
     .snap-cta{pointer-events:auto}
     .snap-dots{display:flex;justify-content:center;gap:6px;margin-top:6px}
@@ -141,12 +133,24 @@
     .stock-badge{background:#0f172acc;color:#dbeafe;border:1px solid #1f2a44;padding:4px 8px;border-radius:10px;font-size:12px}
     .low-badge{background:#2a1a10cc;color:#ffd8b0;border:1px solid #3b2412}
 
-    /* Ensure orders rows are clickable */
-    #ordersList { position: relative; }
+    /* Orders clickable */
     .order-item { pointer-events: auto; }
 
     /* Ensure order sheet above Settings */
     #orderSheet { z-index: 10050; }
+
+    /* Analytics UI */
+    .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .kpi{padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.1)}
+    .kpi .label{color:#c7c7cc;font-size:12px}
+    .kpi .value{font-weight:800;font-size:18px;margin-top:4px}
+    .bar{height:8px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden}
+    .bar > i{display:block;height:100%;background:linear-gradient(90deg,#6ea8fe,#3cd27f)}
+    .table{margin-top:8px;border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden}
+    .rowh, .rowd{display:grid;grid-template-columns:1fr 70px 70px 70px;gap:8px;padding:8px}
+    .rowh{background:rgba(255,255,255,.05);font-weight:700}
+    .rowd{border-top:1px solid rgba(255,255,255,.06)}
+    .spark{width:100%;height:42px;display:block}
   </style>
 </head>
 <body>
@@ -188,21 +192,21 @@
     <div id="grid" class="grid" role="list">
       <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50" data-img="assets/product-funyuns.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Potato Chips"></div>
+        <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Potato Chips" loading="lazy"></div>
         <div class="title">Potato Chips</div><div class="price">$2.50</div>
         <button class="add" aria-label="Add Potato Chips">+</button>
       </div>
 
       <div class="card" role="listitem" data-name="Protein Bar" data-price="2.99" data-img="assets/product-chesters.jpg" data-tags="protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb"><img src="assets/product-chesters.jpg" alt="Protein Bar"></div>
+        <div class="thumb"><img src="assets/product-chesters.jpg" alt="Protein Bar" loading="lazy"></div>
         <div class="title">Protein Bar</div><div class="price">$2.99</div>
         <button class="add" aria-label="Add Protein Bar">+</button>
       </div>
 
       <div class="card" role="listitem" data-name="Trail Mix" data-price="3.49" data-img="assets/product-cheetos.jpg" data-tags="vegan,gluten-free">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb"><img src="assets/product-cheetos.jpg" alt="Trail Mix"></div>
+        <div class="thumb"><img src="assets/product-cheetos.jpg" alt="Trail Mix" loading="lazy"></div>
         <div class="title">Trail Mix</div><div class="price">$3.49</div>
         <button class="add" aria-label="Add Trail Mix">+</button>
       </div>
@@ -335,17 +339,34 @@
 
             <!-- Analytics -->
             <div id="subtab-analytics" style="display:none">
-              <div style="margin-top:6px;font-weight:700">Heat Map (Checkouts by Hour)</div>
-              <div class="heat-wrap">
-                <div id="heatGrid" class="heat-grid"></div>
-                <div style="display:flex;gap:8px;align-items:center;margin-top:6px;color:#c7c7cc;font-size:12px">
-                  <span>Low</span>
-                  <span style="width:18px;height:10px;border-radius:4px;background:rgba(110,168,254,0.10)"></span>
-                  <span style="width:18px;height:10px;border-radius:4px;background:rgba(110,168,254,0.45)"></span>
-                  <span style="width:18px;height:10px;border-radius:4px;background:rgba(110,168,254,0.70)"></span>
-                  <span>High</span>
-                </div>
+              <div style="margin-top:6px;font-weight:700">Analytics Overview</div>
+
+              <!-- KPIs -->
+              <div class="kpis" style="margin-top:8px">
+                <div class="kpi"><div class="label">Revenue</div><div id="kpiRevenue" class="value">$0.00</div></div>
+                <div class="kpi"><div class="label">Orders</div><div id="kpiOrders" class="value">0</div></div>
+                <div class="kpi"><div class="label">AOV</div><div id="kpiAOV" class="value">$0.00</div></div>
+                <div class="kpi"><div class="label">Items sold</div><div id="kpiItems" class="value">0</div></div>
               </div>
+
+              <!-- 7-day revenue sparkline -->
+              <div style="margin-top:12px">
+                <div class="label" style="margin-bottom:6px">Revenue (last 7 days)</div>
+                <svg id="revSpark" class="spark" viewBox="0 0 100 40" preserveAspectRatio="none" aria-label="Revenue last 7 days"></svg>
+              </div>
+
+              <!-- Top products -->
+              <div style="margin-top:12px;font-weight:700">Top Products</div>
+              <div class="table">
+                <div class="rowh">
+                  <div>Product</div><div>Qty</div><div>Revenue</div><div>Conv%</div>
+                </div>
+                <div id="topProducts"></div>
+              </div>
+
+              <!-- Funnels -->
+              <div style="margin-top:12px;font-weight:700">Funnel by Product</div>
+              <div id="funnels" class="admin-list"></div>
             </div>
 
             <!-- History -->
@@ -365,12 +386,11 @@
 
   <script>
     /* Schema versioning */
-    const APP_SCHEMA_VERSION = 2;
+    const APP_SCHEMA_VERSION = 3;
     const SCHEMA_KEY='fitsnacks.schema';
     try{
       const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY)||'0')||0;
       if(cur < APP_SCHEMA_VERSION){
-        // Place migrations here if keys ever change.
         localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
       }
     }catch{ localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION)); }
@@ -389,6 +409,7 @@
     const DELIVERED_KEY='fitsnacks.orders.delivered';
     const FAVORITES_KEY='fitsnacks.favorites';
     const PROMOS_KEY='fitsnacks.promos';
+    const ANALYTICS_KEY='fitsnacks.analytics.products'; // per-product: {opens,adds,purchasedQty,revenue}
     const ADMIN_PASSWORD='8TSB077';
     const fmt = n => '$' + n.toFixed(2);
 
@@ -421,6 +442,7 @@
     if(!Object.keys(stockSet).length){ stockSet={}; saveObj(STOCK_SET_KEY, stockSet); }
     let sales = loadSales();
     let favorites = new Set(loadArr(FAVORITES_KEY));
+    let prodAnalytics = loadObj(ANALYTICS_KEY); // name -> metrics
 
     function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY) === '1'; }
     function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v ? '1':'0'); }
@@ -446,13 +468,11 @@
       if (keep.length !== list.length) saveDelivered(keep);
     }
 
-    /* Build promo carousel from PROMOS_KEY */
+    /* Promo carousel build */
     function buildPromos(){
       const data = loadArr(PROMOS_KEY);
       const snapper = $('#snapper'); if(!snapper) return;
-      // remove existing cards between spacers
       snapper.querySelectorAll('.snap-card').forEach(n=>n.remove());
-      const before = snapper.firstElementChild;
       const after  = snapper.lastElementChild;
       data.forEach(p=>{
         const card = document.createElement('div');
@@ -466,7 +486,6 @@
         snapper.insertBefore(card, after);
         if(p.action){
           card.addEventListener('click',(e)=>{
-            // Only trigger if background area (not the CTA) is tapped
             if(e.target.closest('.snap-cta')) return;
             promoAction(p);
           }, {passive:true});
@@ -530,16 +549,16 @@
       setDot(0); snapTo(0,0);
     }
 
-    /* Search filter */
+    /* Search */
     $('#search').addEventListener('input', e => {
       const q = e.target.value.toLowerCase();
       $$('.card').forEach(c => c.style.display = c.dataset.name.toLowerCase().includes(q) ? '' : 'none');
     });
 
-    /* Chip filtering (incl. Favorites) */
+    /* Chips (incl favorites) */
+    let favorites = new Set(loadArr(FAVORITES_KEY));
     function activateChip(val){
       $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch.dataset.filter===val));
-      const showFavs = (val==='favorites');
       $$('.card').forEach(c=>{
         const tags=(c.dataset.tags||'').toLowerCase();
         const name=c.dataset.name;
@@ -551,12 +570,11 @@
       const chip=e.target.closest('.chip'); if(!chip) return;
       activateChip(chip.dataset.filter||'');
     }, {passive:true});
-    activateChip(''); // default "all"
+    activateChip('');
 
-    /* Cart UI + micro haptics */
+    /* Cart + haptics */
     function haptic(ms=15){ try{ if(navigator.vibrate) navigator.vibrate(ms);}catch{} }
     function bumpCart(){ const el=$('#cartBtn'); if(!el) return; el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
-
     function fmtTotal(){ let t=0; for(const [_,info] of cart) t+=info.price*info.qty; return t; }
     function refreshBadge(){
       let n=0; for (const v of cart.values()) n+=v.qty;
@@ -609,8 +627,12 @@
       syncFavStars();
     }, {passive:true});
 
-    /* Product sheet */
+    /* Product sheet + analytics: track "open" */
     let current=null;
+    function ensureMetrics(n){
+      if(!prodAnalytics[n]) prodAnalytics[n]={opens:0,adds:0,addedQty:0,purchasedQty:0,revenue:0};
+      return prodAnalytics[n];
+    }
     function openProductSheet(card){
       current = {name:card.dataset.name, price:parseFloat(card.dataset.price), img:card.dataset.img};
       $('#sheetTitle').textContent=current.name;
@@ -619,6 +641,10 @@
       $('#sheetPrice').textContent = fmt(current.price);
       $('#qtyVal').textContent=1;
       $('#sheetAdd').textContent='Add • '+fmt(current.price);
+
+      // analytics: open
+      ensureMetrics(current.name).opens++; saveObj(ANALYTICS_KEY, prodAnalytics);
+
       if(stockSet[current.name]){
         const qty = Number(stockQty[current.name]||0);
         const low = Number(stockLow[current.name]||0);
@@ -653,6 +679,9 @@
     $('#sheetClose').addEventListener('click', closeSheet);
     $('#sheetAdd').addEventListener('click', ()=>{
       const n=parseInt($('#qtyVal').textContent);
+      // analytics: add
+      const m=ensureMetrics(current.name); m.adds++; m.addedQty += n; saveObj(ANALYTICS_KEY, prodAnalytics);
+
       const e=cart.get(current.name)||{price:current.price,qty:0};
       e.qty+=n; cart.set(current.name,e);
       closeSheet();
@@ -691,12 +720,19 @@
     }
     document.getElementById('reorderLast').addEventListener('click', reorderLast);
 
-    /* Orders + analytics */
+    /* Orders + analytics purchase write */
     function addOrderFromCart(name, location){
       const lines=[]; let total=0;
-      for(const [n,info] of cart){ const line=info.price*info.qty; total+=line; lines.push({name:n, price:info.price, qty:info.qty, line}); }
+      for(const [n,info] of cart){
+        const line=info.price*info.qty; total+=line; lines.push({name:n, price:info.price, qty:info.qty, line});
+        // analytics: purchase
+        const pm=ensureMetrics(n); pm.purchasedQty += info.qty; pm.revenue += line;
+      }
+      saveObj(ANALYTICS_KEY, prodAnalytics);
+
       const order={when:new Date().toISOString(), name, location, lines, total};
       const list=loadOrders(); list.unshift(order); saveOrders(list);
+
       const d = new Date(); const dow = d.getDay(); const hr  = d.getHours();
       sales[dow][hr] = (sales[dow][hr]||0) + 1; saveSales(sales);
       return order;
@@ -725,7 +761,7 @@
       }).join('');
     }
 
-    /* Inventory panel */
+    /* Inventory */
     function getProducts(){ return $$('.card').map(c=>({name:c.dataset.name, price:+c.dataset.price, img:c.dataset.img})); }
     function renderInventory(){
       const wrap = $('#inventoryList'); if(!wrap) return;
@@ -746,7 +782,7 @@
       }).join('');
     }
 
-    /* Heat map render */
+    /* Heat map */
     function renderHeat(){
       const grid = $('#heatGrid'); if(!grid) return;
       let max = 0; for(let d=0; d<7; d++){ for(let h=0; h<24; h++){ if (sales[d][h]>max) max = sales[d][h]; } }
@@ -812,7 +848,7 @@
       $('#adminContent').style.display= logged?'block':'none';
       if(logged){
         renderOrders(); renderInventory(); renderHeat(); updateStockBadges();
-        pruneDelivered(72); renderHistory();
+        pruneDelivered(72); renderHistory(); renderAnalytics();
       } else {
         setTimeout(focusAdminPassword,0);
       }
@@ -865,11 +901,11 @@
       $('#subtab-history').style.display = (id==='history')?'block':'none';
       if (id==='orders') renderOrders();
       if (id==='inventory'){ renderInventory(); updateStockBadges(); }
-      if (id==='analytics') renderHeat();
+      if (id==='analytics') renderAnalytics();
       if (id==='history'){ pruneDelivered(72); renderHistory(); }
     }, {passive:true});
 
-    /* Click / keys to open order sheet */
+    /* Click/keys to open order sheet */
     document.addEventListener('click', function(e){
       const row = e.target.closest('.order-item');
       if (!row) return;
@@ -962,7 +998,119 @@
       el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
     });
 
-    /* Build promos and init carousel AFTER DOM ready bits */
+    /* ---- Analytics rendering ---- */
+    function renderAnalytics(){
+      // KPIs + 7-day revenue + top products + funnels
+      const orders = loadOrders();
+      const delivered = loadDelivered();
+      const allOrders = orders.concat(delivered);
+
+      // KPIs
+      let rev=0, items=0;
+      allOrders.forEach(o=>{ rev+=o.total; o.lines.forEach(l=>items+=l.qty); });
+      const ordCount = allOrders.length;
+      const aov = ordCount ? (rev/ordCount) : 0;
+      $('#kpiRevenue').textContent = fmt(rev);
+      $('#kpiOrders').textContent = ordCount;
+      $('#kpiAOV').textContent = fmt(aov);
+      $('#kpiItems').textContent = items;
+
+      // 7-day revenue buckets (by local day)
+      const days = Array(7).fill(0);
+      const now = new Date();
+      allOrders.forEach(o=>{
+        const d = new Date(o.when);
+        const diff = Math.floor((now - d)/(24*3600*1000));
+        if(diff>=0 && diff<7) days[6-diff]+=o.total; // oldest -> index0, newest -> index6
+      });
+      drawSpark(days);
+
+      // Aggregate by product (from prodAnalytics & orders)
+      // Ensure every product in grid has an entry so it shows up
+      getProducts().forEach(p=>ensureMetrics(p.name));
+      saveObj(ANALYTICS_KEY, prodAnalytics);
+
+      const rows = Object.entries(prodAnalytics).map(([name,m])=>{
+        return {
+          name,
+          opens: m.opens||0,
+          adds: m.adds||0,
+          addedQty: m.addedQty||0,
+          purchasedQty: m.purchasedQty||0,
+          revenue: m.revenue||0
+        };
+      });
+
+      // Top products (by revenue)
+      const top = rows.slice().sort((a,b)=>b.revenue-a.revenue).slice(0,8);
+      const maxRev = Math.max(1, ...top.map(r=>r.revenue));
+      const maxQty = Math.max(1, ...top.map(r=>r.purchasedQty));
+      $('#topProducts').innerHTML = top.map(r=>{
+        const conv = r.opens ? Math.round((r.purchasedQty / r.opens)*100) : 0;
+        return `
+          <div class="rowd">
+            <div>${r.name}</div>
+            <div>${r.purchasedQty}</div>
+            <div>${fmt(r.revenue)}</div>
+            <div>${conv}%</div>
+          </div>
+          <div style="padding:0 8px 8px">
+            <div class="bar" title="Revenue bar"><i style="width:${(r.revenue/maxRev)*100}%"></i></div>
+            <div class="bar" title="Qty bar" style="margin-top:6px"><i style="width:${(r.purchasedQty/maxQty)*100}%"></i></div>
+          </div>`;
+      }).join('') || '<div class="rowd"><div>No sales yet</div><div></div><div></div><div></div></div>';
+
+      // Funnels
+      const funnelHtml = rows.map(r=>{
+        const a = r.opens||0, b=r.adds||0, c=r.purchasedQty||0;
+        const ab = a? Math.round((b/a)*100) : 0;
+        const bc = b? Math.round((c/b)*100) : 0;
+        const ac = a? Math.round((c/a)*100) : 0;
+        return `
+          <div style="padding:8px;border-bottom:1px solid rgba(255,255,255,.08)">
+            <div style="font-weight:700">${r.name}</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px">
+              <div>
+                <div class="label">Opens</div>
+                <div class="value">${a}</div>
+                <div class="bar" style="margin-top:4px"><i style="width:${a?100:0}%"></i></div>
+              </div>
+              <div>
+                <div class="label">Adds</div>
+                <div class="value">${b} <span style="color:#c7c7cc;font-size:12px">(${ab}% of opens)</span></div>
+                <div class="bar" style="margin-top:4px"><i style="width:${a? (b/a)*100 : 0}%"></i></div>
+              </div>
+              <div>
+                <div class="label">Purchases</div>
+                <div class="value">${c} <span style="color:#c7c7cc;font-size:12px">(${bc}% of adds • ${ac}% of opens)</span></div>
+                <div class="bar" style="margin-top:4px"><i style="width:${a? (c/a)*100 : 0}%"></i></div>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+      $('#funnels').innerHTML = funnelHtml || '<div>No funnel data yet</div>';
+    }
+
+    function drawSpark(buckets){
+      const svg = document.getElementById('revSpark'); if(!svg) return;
+      const max = Math.max(1, ...buckets);
+      const stepX = 100/(buckets.length-1||1);
+      const pts = buckets.map((v,i)=>{
+        const y = 40 - (v/max)*36 - 2; // padding
+        const x = i*stepX;
+        return `${x},${y}`;
+      }).join(' ');
+      svg.innerHTML = `
+        <polyline points="${pts}" fill="none" stroke="url(#g)" stroke-width="2"/>
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#6ea8fe"/><stop offset="100%" stop-color="#3cd27f"/>
+          </linearGradient>
+        </defs>
+      `;
+    }
+
+    /* Build promos + init carousel */
     buildPromos();
     initCarousel();
 
