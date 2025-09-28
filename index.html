@@ -1350,31 +1350,65 @@
     if(keep.length !== list.length) saveDelivered(keep);
   }
 
-  /* === HOTFIX: reliable product add flow + direct checkout === */
-  (function(){
-    function bindProductInteractions(){
-      const cards = $$('.card');
-      if (!cards.length) return;
+  /* === HOTFIX (delegated): reliable product open + direct checkout === */
 
-      cards.forEach(card=>{
-        // card click -> open sheet (except on fav/add)
-        card.addEventListener('click', e=>{
-          if (e.target.closest('.fav') || e.target.closest('.add')) return;
-          openProductSheet(card);
-        });
-
-        // '+' button -> open sheet
-        const addBtn = card.querySelector('.add');
-        if (addBtn){
-          const clone = addBtn.cloneNode(true);
-          addBtn.replaceWith(clone);
-          clone.addEventListener('click', e=>{
-            e.stopPropagation();
-            openProductSheet(card);
-          });
-        }
-      });
+// 1) Open the product mini-sheet whenever a card (or its + button) is clicked.
+document.addEventListener('click', function(e){
+  try{
+    // If + button inside a card
+    const addBtn = e.target.closest('.card .add');
+    if (addBtn){
+      const card = addBtn.closest('.card');
+      if (card && typeof openProductSheet === 'function'){
+        e.stopPropagation();
+        openProductSheet(card);
+      }
+      return;
     }
+
+    // If clicking a card anywhere (except on the fav star or the + button)
+    const card = e.target.closest('.card');
+    if (card && !e.target.closest('.fav') && !e.target.closest('.add')){
+      if (typeof openProductSheet === 'function'){
+        openProductSheet(card);
+      }
+    }
+  }catch(err){ console.error('delegated card handler error', err); }
+}, false);
+
+// 2) Override the mini-sheet Add button to add-to-cart and jump straight to checkout.
+(function(){
+  const btn = document.getElementById('sheetAdd');
+  if (!btn) return;
+
+  btn.replaceWith(btn.cloneNode(true));
+  const fresh = document.getElementById('sheetAdd');
+
+  fresh.addEventListener('click', function(){
+    try{
+      const qtyEl = document.getElementById('qtyVal');
+      const n = Math.max(1, parseInt(qtyEl && qtyEl.textContent || '1', 10));
+      if (!window.current || !current.name) return;
+
+      const m = ensureMetrics(current.name);
+      if (m){
+        m.adds = (m.adds||0)+1;
+        m.addedQty = (m.addedQty||0)+n;
+        saveObj(ANALYTICS_KEY, prodAnalytics);
+      }
+
+      const entry = cart.get(current.name) || {price: current.price, qty: 0};
+      entry.qty += n;
+      cart.set(current.name, entry);
+      saveCart(cart);
+      renderCart();
+      refreshBadge();
+
+      document.getElementById('productSheet')?.classList.remove('show');
+      openCheckout();
+    }catch(err){ console.error('sheetAdd handler error', err); }
+  });
+})();
 
     // Override mini-sheet "Add" to go straight to checkout
     (function overrideSheetAdd(){
