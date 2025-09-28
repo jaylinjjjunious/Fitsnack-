@@ -60,7 +60,7 @@
       border-radius:16px;
       background:rgba(0,0,0,.25);
       border:1px solid rgba(255,255,255,.14);
-      height:120px;           /* compact */
+      height:120px;
       max-height:120px;
     }
     .track{display:flex;width:300%;height:120px;animation:slide 15s infinite}
@@ -71,9 +71,7 @@
     }
     .banner{ width:100%; height:120px; object-fit:contain; display:block; }
     .banner.is-loading{ opacity:.001 }
-    .banner.is-error{
-      background: repeating-linear-gradient(45deg,#300,#300 10px,#500 10px,#500 20px);
-    }
+    .banner.is-error{ background: repeating-linear-gradient(45deg,#300,#300 10px,#500 10px,#500 20px); }
     .slide .err-label{
       position:absolute; inset:auto 8px 8px auto; background:#500; color:#fff;
       padding:2px 6px; border-radius:6px; font-size:12px; display:none;
@@ -688,8 +686,9 @@
       }
     }
 
+    // ---- FIXED: no duplicate/erroneous lines here ----
     function switchTab(which){
-      const tabG=$('#tabGeneral'), tabA=$('#tabAdmin'), panG=$('#panelGeneral'), panA=$('#panelAdmin']);
+      const tabG=$('#tabGeneral'), tabA=$('#tabAdmin'), panG=$('#panelGeneral'), panA=$('#panelAdmin');
       if(which==='admin'){
         tabG.classList.remove('active'); tabG.setAttribute('aria-selected','false');
         tabA.classList.add('active');    tabA.setAttribute('aria-selected','true');
@@ -698,8 +697,8 @@
       } else {
         tabA.classList.remove('active'); tabA.setAttribute('aria-selected','false');
         tabG.classList.add('active');    tabG.setAttribute('aria-selected','true');
-        panA.classList.remove('show'); panA.style.display='block';
-        panA.style.display='none'; panG.style.display='block';
+        panA.style.display='none';       // hide Admin
+        panG.style.display='block';      // show General
       }
     }
 
@@ -713,7 +712,6 @@
         renderHeat();
         updateStockBadges();
       } else {
-        // Auto-focus password field when locked
         setTimeout(focusAdminPassword, 0);
       }
       showAdminState();
