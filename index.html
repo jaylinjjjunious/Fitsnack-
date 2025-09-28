@@ -67,14 +67,9 @@
     .slide{
       position:relative;
       flex:0 0 100%;
-      height:120px;           /* lock slide box */
-      max-height:120px;
-      min-height:120px;
+      height:120px; max-height:120px; min-height:120px;
     }
-    /* banner <img> inside each slide */
-    .banner{
-      width:100%; height:120px; object-fit:contain; display:block;
-    }
+    .banner{ width:100%; height:120px; object-fit:contain; display:block; }
     .banner.is-loading{ opacity:.001 }
     .banner.is-error{
       background: repeating-linear-gradient(45deg,#300,#300 10px,#500 10px,#500 20px);
@@ -84,7 +79,6 @@
       padding:2px 6px; border-radius:6px; font-size:12px; display:none;
     }
     .slide.error .err-label{ display:inline-block }
-
     @keyframes slide{0%,28%{transform:translateX(0)}33%,61%{transform:translateX(-100%)}66%,94%{transform:translateX(-200%)}100%{transform:translateX(0)}}
 
     .chips{display:flex;gap:10px;margin:6px 0 12px;flex-wrap:wrap}
@@ -94,7 +88,6 @@
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
     .card{border-radius:var(--radius);padding:12px;position:relative;display:flex;flex-direction:column;min-height:190px}
     .thumb{height:90px;border-radius:12px;overflow:hidden;margin-bottom:8px}
-    /* make thumbs reliably visible without cropping */
     .thumb img{width:100%;height:100%;object-fit:contain}
     .title{font-weight:700;margin:4px 0 2px;letter-spacing:0.2px}
     .price{color:#c7c7cc;font-weight:600;margin-top:auto}
@@ -298,15 +291,12 @@
               <button class="subtab" data-subtab="analytics">Analytics</button>
             </div>
 
-            <!-- Lock admin (force password prompt next time) -->
+            <!-- Admin state chip + optional Lock -->
             <div style="margin:4px 0 8px; display:flex; gap:8px; align-items:center;">
               <button class="ghost" id="adminLock" style="padding:6px 10px">Lock Admin</button>
-              <div style="font-size:12px;color:#c7c7cc">Forces the password prompt next time.</div>
-            </div>
-
-            <!-- Admin state chip -->
-            <div id="adminState" style="margin:-2px 0 8px; font-size:12px; color:#c7c7cc;">
-              State: <strong id="adminStateVal">unknown</strong>
+              <div id="adminState" style="font-size:12px;color:#c7c7cc">
+                State: <strong id="adminStateVal">unknown</strong>
+              </div>
             </div>
 
             <!-- Orders -->
@@ -384,6 +374,24 @@
     let stockLow = loadObj(LOW_KEY);
     let sales = loadSales();
 
+    // Force admin locked on first load this session so password shows
+    function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY) === '1'; }
+    function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v ? '1':'0'); }
+
+    // On boot, if not explicitly unlocked, keep locked so password shows
+    setUnlocked(false);
+
+    const focusAdminPassword = () => {
+      const el = document.getElementById('adminPassword');
+      if (el) { el.focus(); el.select?.(); }
+    };
+
+    function showAdminState(){
+      const el = document.getElementById('adminStateVal');
+      if(!el) return;
+      el.textContent = isUnlocked() ? 'Unlocked (no password shown)' : 'Locked (password required)';
+    }
+
     // Search filter
     $('#search').addEventListener('input', e => {
       const q = e.target.value.toLowerCase();
@@ -398,8 +406,7 @@
       img.addEventListener('error', ()=>{
         img.classList.remove('is-loading');
         img.classList.add('is-error');
-        const wrap = img.closest('.slide');
-        wrap.classList.add('error');
+        img.closest('.slide')?.classList.add('error');
       }, {once:true});
     });
 
@@ -455,18 +462,23 @@
       $('#qtyVal').textContent=1;
       $('#sheetAdd').textContent='Add • '+fmt(current.price);
       // stock display
-      const qty = Number(stockQty[current.name]||0);
-      const low = Number(stockLow[current.name]||0);
-      $('#sheetStock').textContent = 'Stock: ' + qty;
-      const lowWarn = $('#sheetLowWarn');
-      if (low>0 && qty<=low){ lowWarn.style.display='block'; lowWarn.textContent = 'Low stock ('+qty+' ≤ '+low+')'; }
-      else { lowWarn.style.display='none'; }
+      const hasQty = Object.prototype.hasOwnProperty.call(stockQty, current.name);
+      if (hasQty){
+        const qty = Number(stockQty[current.name]||0);
+        const low = Number(stockLow[current.name]||0);
+        $('#sheetStock').textContent = 'Stock: ' + qty;
+        const lowWarn = $('#sheetLowWarn');
+        if (low>0 && qty<=low){ lowWarn.style.display='block'; lowWarn.textContent = 'Low stock ('+qty+' ≤ '+low+')'; }
+        else { lowWarn.style.display='none'; }
+      } else {
+        $('#sheetStock').textContent = 'Stock: --';
+        $('#sheetLowWarn').style.display='none';
+      }
       $('#productSheet').classList.add('show');
     }
     $$('.card').forEach(card=>{
-      // whole card opens sheet
       card.addEventListener('click', (e)=>{
-        if (e.target.closest('.add')) return; // avoid double-trigger
+        if (e.target.closest('.add')) return;
         openProductSheet(card);
       });
     });
@@ -551,19 +563,21 @@
       const products = getProducts();
       if(!products.length){ wrap.textContent='No products'; return; }
       wrap.innerHTML = products.map(p=>{
-        const qty = Number(stockQty[p.name]||0);
-        const low = Number(stockLow[p.name]||0);
+        const hasQ = Object.prototype.hasOwnProperty.call(stockQty, p.name);
+        const hasL = Object.prototype.hasOwnProperty.call(stockLow, p.name);
+        const qty = hasQ ? Number(stockQty[p.name]||0) : '';
+        const low = hasL ? Number(stockLow[p.name]||0) : '';
         return `<div class="field" data-prod="${p.name}">
           <div style="flex:1;font-weight:600">${p.name}</div>
           <label style="font-size:12px;color:#c7c7cc">Stock</label>
-          <input type="number" min="0" value="${qty}" data-k="qty">
+          <input type="number" min="0" value="${qty}" data-k="qty" placeholder="--">
           <label style="font-size:12px;color:#c7c7cc">Low</label>
-          <input type="number" min="0" value="${low}" data-k="low">
+          <input type="number" min="0" value="${low}" data-k="low" placeholder="--">
         </div>`;
       }).join('');
     }
 
-    // Product-card stock/low badges
+    // Product-card stock/low badges (only if Stock has a value set)
     function ensureBadgeWrap(card){
       let wrap = card.querySelector('.badge-wrap');
       if(!wrap){
@@ -576,12 +590,15 @@
     function updateStockBadges(){
       $$('.card').forEach(card=>{
         const name = card.dataset.name;
-        const qty = Number(stockQty[name] ?? 0);   // default to 0
-        const low = Number(stockLow[name] ?? 0);
         const wrap = ensureBadgeWrap(card);
         wrap.innerHTML = '';
 
-        // Always show stock badge (incl. 0)
+        const hasQty = Object.prototype.hasOwnProperty.call(stockQty, name);
+        if (!hasQty) return; // show nothing if not set
+
+        const qty = Number(stockQty[name]||0);
+        const low = Number(stockLow[name]||0);
+
         const b = document.createElement('div');
         b.className = 'stock-badge';
         b.textContent = `Stock: ${qty}`;
@@ -600,24 +617,38 @@
     function refreshMiniIfOpen(){
       const overlay = document.getElementById('productSheet');
       if(!overlay || !overlay.classList.contains('show') || !current) return;
-      const qty = Number(stockQty[current.name]||0);
-      const low = Number(stockLow[current.name]||0);
-      document.getElementById('sheetStock').textContent = 'Stock: ' + qty;
-      const lowWarn = document.getElementById('sheetLowWarn');
-      if (low>0 && qty<=low){ lowWarn.style.display='block'; lowWarn.textContent = 'Low stock ('+qty+' ≤ '+low+')'; }
-      else { lowWarn.style.display='none'; }
+      const name = current.name;
+      const hasQty = Object.prototype.hasOwnProperty.call(stockQty, name);
+      if (hasQty){
+        const qty = Number(stockQty[name]||0);
+        const low = Number(stockLow[name]||0);
+        document.getElementById('sheetStock').textContent = 'Stock: ' + qty;
+        const lowWarn = document.getElementById('sheetLowWarn');
+        if (low>0 && qty<=low){ lowWarn.style.display='block'; lowWarn.textContent = 'Low stock ('+qty+' ≤ '+low+')'; }
+        else { lowWarn.style.display='none'; }
+      } else {
+        document.getElementById('sheetStock').textContent = 'Stock: --';
+        document.getElementById('sheetLowWarn').style.display='none';
+      }
     }
 
-    // Handle inventory edits
+    // Handle inventory edits (blank input removes the value)
     document.addEventListener('input', (e)=>{
       const row = e.target.closest('.field[data-prod]'); if(!row) return;
       const name = row.getAttribute('data-prod');
+
       if (e.target.matches('input[data-k="qty"]')){
-        stockQty[name] = Number(e.target.value||0); saveObj(STOCK_KEY, stockQty);
+        const v = e.target.value.trim();
+        if (v === '') { delete stockQty[name]; }
+        else { stockQty[name] = Number(v); }
+        saveObj(STOCK_KEY, stockQty);
         updateStockBadges(); refreshMiniIfOpen();
       }
       if (e.target.matches('input[data-k="low"]')){
-        stockLow[name] = Number(e.target.value||0); saveObj(LOW_KEY, stockLow);
+        const v = e.target.value.trim();
+        if (v === '') { delete stockLow[name]; }
+        else { stockLow[name] = Number(v); }
+        saveObj(LOW_KEY, stockLow);
         updateStockBadges(); refreshMiniIfOpen();
       }
     });
@@ -625,7 +656,6 @@
     // Heat map render
     function renderHeat(){
       const grid = $('#heatGrid'); if(!grid) return;
-      // compute global max to scale color intensity
       let max = 0; for(let d=0; d<7; d++){ for(let h=0; h<24; h++){ if (sales[d][h]>max) max = sales[d][h]; } }
       grid.innerHTML = '';
       for(let d=0; d<7; d++){
@@ -641,22 +671,6 @@
       }
     }
 
-    // Settings tabs + admin lock
-    function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY) === '1'; }
-    function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v ? '1':'0'); }
-
-    function showAdminState(){
-      const el = document.getElementById('adminStateVal');
-      if(!el) return;
-      el.textContent = isUnlocked() ? 'Unlocked (no password shown)' : 'Locked (password required)';
-    }
-
-    // force-lock via URL ?lock=1 or #lock
-    (function(){
-      const q = location.search; const h = location.hash;
-      if (/\block=1\b/.test(q) || /#lock\b/.test(h)) { setUnlocked(false); }
-    })();
-
     function switchTab(which){
       const tabG=$('#tabGeneral'), tabA=$('#tabAdmin'), panG=$('#panelGeneral'), panA=$('#panelAdmin');
       if(which==='admin'){
@@ -670,8 +684,10 @@
         panA.style.display='none'; panG.style.display='block';
       }
     }
+
     function ensureAdminLoginVisible(){
       const loggedIn = isUnlocked();
+      // Show either login or content
       $('#adminLogin').style.display = loggedIn ? 'none' : 'block';
       $('#adminContent').style.display = loggedIn ? 'block' : 'none';
       if (loggedIn){
@@ -679,6 +695,9 @@
         renderInventory();
         renderHeat();
         updateStockBadges();
+      } else {
+        // Auto-focus password field when locked
+        setTimeout(focusAdminPassword, 0);
       }
       showAdminState();
     }
@@ -694,15 +713,16 @@
       if(e.target.closest('#adminSubmit')){
         const ok = $('#adminPassword').value === ADMIN_PASSWORD;
         if(ok){
-          setUnlocked(true); $('#adminError').style.display='none';
-          ensureAdminLoginVisible(); showAdminState();
+          setUnlocked(true);
+          $('#adminError').style.display='none';
+          ensureAdminLoginVisible(); // opens Admin content immediately
         } else {
           $('#adminError').style.display='block';
         }
       }
       if(e.target && e.target.id === 'adminLock'){
         setUnlocked(false);
-        ensureAdminLoginVisible(); showAdminState();
+        ensureAdminLoginVisible();
       }
     }, {passive:true});
 
