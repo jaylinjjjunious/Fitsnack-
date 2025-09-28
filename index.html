@@ -276,7 +276,7 @@
 
         <!-- Admin -->
         <div id="panelAdmin" role="tabpanel" aria-labelledby="tabAdmin" style="display:none">
-          <!-- Login prompt shows immediately when tab is opened -->
+          <!-- Login prompt shows automatically while locked -->
           <div id="adminLogin">
             <div style="margin-top:6px;">Admin password:</div>
             <input id="adminPassword" type="password" class="field" style="width:100%;padding:10px;border-radius:10px">
@@ -348,6 +348,7 @@
     const STOCK_KEY  = 'fitsnacks.stock.qty';
     const LOW_KEY    = 'fitsnacks.stock.low';
     const SALES_KEY  = 'fitsnacks.sales.buckets'; // 7x24
+    const STOCK_SET_KEY = 'fitsnacks.stock.set';   // tracks which products had Stock explicitly set
 
     const ADMIN_PASSWORD = '8TSB077';
     const fmt = n => '$' + n.toFixed(2);
@@ -372,13 +373,18 @@
     let cart = loadCart();
     let stockQty = loadObj(STOCK_KEY);
     let stockLow = loadObj(LOW_KEY);
+    let stockSet = loadObj(STOCK_SET_KEY); // { [name]:1 } when user explicitly set Stock
     let sales = loadSales();
 
-    // Force admin locked on first load this session so password shows
+    // One-time cleanup: if no 'stockSet' map yet, don't treat zeros as set
+    if (!Object.keys(stockSet).length) {
+      stockSet = {};
+      saveObj(STOCK_SET_KEY, stockSet);
+    }
+
+    // Force admin locked on load so password shows
     function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY) === '1'; }
     function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v ? '1':'0'); }
-
-    // On boot, if not explicitly unlocked, keep locked so password shows
     setUnlocked(false);
 
     const focusAdminPassword = () => {
@@ -461,9 +467,9 @@
       $('#sheetPrice').textContent = fmt(current.price);
       $('#qtyVal').textContent=1;
       $('#sheetAdd').textContent='Add • '+fmt(current.price);
-      // stock display
-      const hasQty = Object.prototype.hasOwnProperty.call(stockQty, current.name);
-      if (hasQty){
+
+      // stock display (only if explicitly set)
+      if (stockSet[current.name]) {
         const qty = Number(stockQty[current.name]||0);
         const low = Number(stockLow[current.name]||0);
         $('#sheetStock').textContent = 'Stock: ' + qty;
@@ -577,7 +583,7 @@
       }).join('');
     }
 
-    // Product-card stock/low badges (only if Stock has a value set)
+    // Product-card stock/low badges (only if Stock explicitly set)
     function ensureBadgeWrap(card){
       let wrap = card.querySelector('.badge-wrap');
       if(!wrap){
@@ -593,8 +599,7 @@
         const wrap = ensureBadgeWrap(card);
         wrap.innerHTML = '';
 
-        const hasQty = Object.prototype.hasOwnProperty.call(stockQty, name);
-        if (!hasQty) return; // show nothing if not set
+        if (!stockSet[name]) return; // show nothing unless set in Admin
 
         const qty = Number(stockQty[name]||0);
         const low = Number(stockLow[name]||0);
@@ -618,38 +623,50 @@
       const overlay = document.getElementById('productSheet');
       if(!overlay || !overlay.classList.contains('show') || !current) return;
       const name = current.name;
-      const hasQty = Object.prototype.hasOwnProperty.call(stockQty, name);
-      if (hasQty){
+      if (stockSet[name]) {
         const qty = Number(stockQty[name]||0);
         const low = Number(stockLow[name]||0);
         document.getElementById('sheetStock').textContent = 'Stock: ' + qty;
         const lowWarn = document.getElementById('sheetLowWarn');
-        if (low>0 && qty<=low){ lowWarn.style.display='block'; lowWarn.textContent = 'Low stock ('+qty+' ≤ '+low+')'; }
-        else { lowWarn.style.display='none'; }
+        if (low>0 && qty<=low){ 
+          lowWarn.style.display='block'; 
+          lowWarn.textContent = 'Low stock ('+qty+' ≤ '+low+')'; 
+        } else { 
+          lowWarn.style.display='none'; 
+        }
       } else {
         document.getElementById('sheetStock').textContent = 'Stock: --';
         document.getElementById('sheetLowWarn').style.display='none';
       }
     }
 
-    // Handle inventory edits (blank input removes the value)
+    // Handle inventory edits (blank input removes the value and "set" flag)
     document.addEventListener('input', (e)=>{
       const row = e.target.closest('.field[data-prod]'); if(!row) return;
       const name = row.getAttribute('data-prod');
 
       if (e.target.matches('input[data-k="qty"]')){
         const v = e.target.value.trim();
-        if (v === '') { delete stockQty[name]; }
-        else { stockQty[name] = Number(v); }
+        if (v === '') { 
+          delete stockQty[name]; 
+          delete stockSet[name];
+        } else { 
+          stockQty[name] = Number(v); 
+          stockSet[name] = 1; 
+        }
         saveObj(STOCK_KEY, stockQty);
-        updateStockBadges(); refreshMiniIfOpen();
+        saveObj(STOCK_SET_KEY, stockSet);
+        updateStockBadges(); 
+        refreshMiniIfOpen();
       }
+
       if (e.target.matches('input[data-k="low"]')){
         const v = e.target.value.trim();
         if (v === '') { delete stockLow[name]; }
         else { stockLow[name] = Number(v); }
         saveObj(LOW_KEY, stockLow);
-        updateStockBadges(); refreshMiniIfOpen();
+        updateStockBadges(); 
+        refreshMiniIfOpen();
       }
     });
 
@@ -672,7 +689,7 @@
     }
 
     function switchTab(which){
-      const tabG=$('#tabGeneral'), tabA=$('#tabAdmin'), panG=$('#panelGeneral'), panA=$('#panelAdmin');
+      const tabG=$('#tabGeneral'), tabA=$('#tabAdmin'), panG=$('#panelGeneral'), panA=$('#panelAdmin']);
       if(which==='admin'){
         tabG.classList.remove('active'); tabG.setAttribute('aria-selected','false');
         tabA.classList.add('active');    tabA.setAttribute('aria-selected','true');
@@ -681,13 +698,13 @@
       } else {
         tabA.classList.remove('active'); tabA.setAttribute('aria-selected','false');
         tabG.classList.add('active');    tabG.setAttribute('aria-selected','true');
+        panA.classList.remove('show'); panA.style.display='block';
         panA.style.display='none'; panG.style.display='block';
       }
     }
 
     function ensureAdminLoginVisible(){
       const loggedIn = isUnlocked();
-      // Show either login or content
       $('#adminLogin').style.display = loggedIn ? 'none' : 'block';
       $('#adminContent').style.display = loggedIn ? 'block' : 'none';
       if (loggedIn){
@@ -740,7 +757,7 @@
       if (id==='analytics') renderHeat();
     }, {passive:true});
 
-    // Checkout flow: stay on main, log order, do not auto-open Admin
+    // Checkout flow
     $('#cartCheckout').addEventListener('click', ()=>{
       $('#checkoutName').value=''; $('#checkoutLocation').value=''; $('#checkoutError').style.display='none';
       $('#cartOverlay').classList.remove('show');
@@ -752,8 +769,7 @@
       if(!name || !loc){ $('#checkoutError').style.display='block'; return; }
       addOrderFromCart(name, loc);
       cart.clear(); renderCart();
-      $('#checkoutOverlay').classList.remove('show'); // back to main
-      // If in future you decrement stock on checkout, call updateStockBadges() here.
+      $('#checkoutOverlay').classList.remove('show');
     });
 
     // a11y keys
