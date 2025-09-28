@@ -7,10 +7,10 @@
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#0b0b0d">
 
-  <!-- Cache-bust assets a bit so GH Pages refreshes -->
-  <link rel="preload" as="image" href="assets/carousel-1.jpg?v=6">
-  <link rel="preload" as="image" href="assets/carousel-2.jpg?v=6">
-  <link rel="preload" as="image" href="assets/carousel-3.jpg?v=6">
+  <!-- Preload carousel images -->
+  <link rel="preload" as="image" href="assets/carousel-1.jpg">
+  <link rel="preload" as="image" href="assets/carousel-2.jpg">
+  <link rel="preload" as="image" href="assets/carousel-3.jpg">
 
   <style>
     :root{
@@ -25,13 +25,12 @@
       --radius:18px;
       --blur:18px;
       --grid-gap:6px;
-      --snap-gap:12px; /* gap between carousel cards */
+      --snap-gap:12px;
     }
-
     html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
     .app{max-width:393px;min-height:100svh;margin:0 auto;padding:12px 12px 32px;box-sizing:border-box}
 
-    /* Glass look + glow */
+    /* Glass + glow */
     .card, .sheet, .btn, .search, .chip, .tab, .ghost, .primary, .field{
       backdrop-filter: blur(var(--blur));
       -webkit-backdrop-filter: blur(var(--blur));
@@ -46,15 +45,15 @@
     .search{width:100%;border-radius:999px;padding:12px 44px;color:var(--text);outline:none;border:1px solid #2a2a2e}
     .search::placeholder{color:#6c6c70}
     .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
-    .icon-rights{position:absolute;right:8px;top:50%;transform:translateY(-50%);display:flex;gap:10px;margin-left:0}
+    .icon-rights{position:absolute; right:8px; top:50%; transform:translateY(-50%); display:flex; gap:10px; margin-left:0}
     .btn{-webkit-appearance:none;appearance:none;border-radius:14px;width:44px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
     #cartBtn{position:relative;display:flex;align-items:center;justify-content:center}
     .badge{position:absolute;top:-6px;right:-8px;background:var(--badge);color:#fff;border-radius:999px;padding:1px 6px;font-size:12px;font-weight:700;display:none;align-items:center;justify-content:center}
 
-    /* ===== Card-snap carousel (per JSON: 100px tall, 85% card width, centered) ===== */
+    /* Card-snap carousel (100px tall) */
     .carousel{margin:14px 0 8px}
     .snapper{
-      height:100px;                         /* target height from JSON */
+      height:100px;
       display:flex;align-items:stretch;
       gap:var(--snap-gap);
       overflow-x:auto;scroll-snap-type:x mandatory;
@@ -62,17 +61,8 @@
       padding:0 var(--snap-gap);
     }
     .snapper::-webkit-scrollbar{display:none}
-    .snap-spacer{flex:0 0 7.5%;scroll-snap-align:none} /* center first/last cards */
-    .snap-card{
-      flex:0 0 85%;                         /* per JSON */
-      scroll-snap-align:center;
-      border-radius:14px;overflow:hidden;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.25);
-      display:flex;align-items:center;justify-content:center;
-      position:relative;
-      height:100%;
-    }
+    .snap-spacer{flex:0 0 7.5%}
+    .snap-card{flex:0 0 85%;scroll-snap-align:center;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;height:100%}
     .banner{width:100%;height:100%;object-fit:contain;display:block}
     .banner.is-loading{opacity:.001}
     .banner.is-error{background:repeating-linear-gradient(45deg,#300,#300 10px,#500 10px,#500 20px)}
@@ -102,7 +92,8 @@
     #cartOverlay .sheet,#checkoutOverlay .sheet,#settingsOverlay .sheet{
       width:100%;border-top-left-radius:24px;border-top-right-radius:24px;border-bottom-left-radius:0;border-bottom-right-radius:0;
       padding-bottom:calc(16px + env(safe-area-inset-bottom));
-      transform:translateY(100%);animation:slideUp 220ms ease-out forwards;
+      transform:translateY(100%);
+      animation:slideUp 220ms ease-out forwards;
     }
     @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
     .row-between{display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -112,7 +103,7 @@
     .ghost{border:1px solid #2a2a30;color:#e7e7eb;border-radius:12px;padding:10px 12px;background:#1b1b20}
     .actions{display:flex;gap:10px;margin-top:12px}
 
-    /* Settings tabs + admin */
+    /* Settings + admin */
     .tabs{display:flex;gap:8px;margin:6px 0 12px}
     .tab{padding:8px 10px;border-radius:10px;cursor:pointer;border:1px solid #2a2a30;background:#18181d}
     .tab.active{background:#24242a}
@@ -120,17 +111,16 @@
     .admin-subtabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
     .subtab{padding:6px 10px;border-radius:10px;cursor:pointer;border:1px solid #2a2a30;background:#18181d;font-size:13px}
     .subtab.active{background:#24242a}
-
     .admin-list{border:1px solid #2a2a30;border-radius:12px;padding:8px;margin-top:8px}
     .field{display:flex;align-items:center;gap:8px;padding:8px;border-radius:12px}
     .field input{width:72px;padding:8px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec}
 
     /* Heat map */
     .heat-wrap{margin-top:8px}
-    .heat-grid{display:grid;grid-template-columns:repeat(24,minmax(10px,1fr));gap:var(--grid-gap)}
+    .heat-grid{display:grid;grid-template-columns:repeat(24, minmax(10px,1fr));gap:var(--grid-gap)}
     .heat-cell{width:100%;aspect-ratio:1/1;border-radius:6px;background:rgba(110,168,254,0.08)}
 
-    /* Product stock badges */
+    /* Stock badges */
     .badge-wrap{position:absolute;left:12px;bottom:12px;display:flex;gap:6px;align-items:center}
     .stock-badge{background:#0f172acc;color:#dbeafe;border:1px solid #1f2a44;padding:4px 8px;border-radius:10px;font-size:12px}
     .low-badge{background:#2a1a10cc;color:#ffd8b0;border:1px solid #3b2412}
@@ -152,13 +142,13 @@
       </div>
     </div>
 
-    <!-- ===== Card-snap Carousel (100px) ===== -->
+    <!-- Carousel -->
     <div class="carousel" aria-label="School photos">
       <div id="snapper" class="snapper" aria-roledescription="carousel">
         <div class="snap-spacer" aria-hidden="true"></div>
-        <div class="snap-card"><img class="banner" src="assets/carousel-1.jpg?v=6" alt="Campus aerial"></div>
-        <div class="snap-card"><img class="banner" src="assets/carousel-2.jpg?v=6" alt="Front of school"></div>
-        <div class="snap-card"><img class="banner" src="assets/carousel-3.jpg?v=6" alt="Pep rally"></div>
+        <div class="snap-card"><img class="banner" src="assets/carousel-1.jpg" alt="Campus aerial" /></div>
+        <div class="snap-card"><img class="banner" src="assets/carousel-2.jpg" alt="Front of school" /></div>
+        <div class="snap-card"><img class="banner" src="assets/carousel-3.jpg" alt="Pep rally" /></div>
         <div class="snap-spacer" aria-hidden="true"></div>
       </div>
       <div id="snapDots" class="snap-dots" aria-hidden="true"></div>
@@ -173,18 +163,18 @@
 
     <!-- Product Grid -->
     <div id="grid" class="grid" role="list">
-      <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50" data-img="assets/product-funyuns.jpg?v=6">
-        <div class="thumb"><img src="assets/product-funyuns.jpg?v=6" alt="Potato Chips"></div>
+      <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50" data-img="assets/product-funyuns.jpg">
+        <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Potato Chips"></div>
         <div class="title">Potato Chips</div><div class="price">$2.50</div>
         <button class="add" aria-label="Add Potato Chips">+</button>
       </div>
-      <div class="card" role="listitem" data-name="Protein Bar" data-price="2.99" data-img="assets/product-chesters.jpg?v=6">
-        <div class="thumb"><img src="assets/product-chesters.jpg?v=6" alt="Protein Bar"></div>
+      <div class="card" role="listitem" data-name="Protein Bar" data-price="2.99" data-img="assets/product-chesters.jpg">
+        <div class="thumb"><img src="assets/product-chesters.jpg" alt="Protein Bar"></div>
         <div class="title">Protein Bar</div><div class="price">$2.99</div>
         <button class="add" aria-label="Add Protein Bar">+</button>
       </div>
-      <div class="card" role="listitem" data-name="Trail Mix" data-price="3.49" data-img="assets/product-cheetos.jpg?v=6">
-        <div class="thumb"><img src="assets/product-cheetos.jpg?v=6" alt="Trail Mix"></div>
+      <div class="card" role="listitem" data-name="Trail Mix" data-price="3.49" data-img="assets/product-cheetos.jpg">
+        <div class="thumb"><img src="assets/product-cheetos.jpg" alt="Trail Mix"></div>
         <div class="title">Trail Mix</div><div class="price">$3.49</div>
         <button class="add" aria-label="Add Trail Mix">+</button>
       </div>
@@ -193,12 +183,12 @@
 
   <!-- Product mini sheet -->
   <div id="productSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Add item">
-    <div class="sheet" role="document">
+    <div class="sheet">
       <div class="row-between">
         <h3 id="sheetTitle">Item</h3>
         <div class="ghost" id="sheetClose">Close</div>
       </div>
-      <div style="display:flex; gap:12px; align-items:center; margin-top:8px;">
+      <div style="display:flex;gap:12px;align-items:center;margin-top:8px;">
         <div style="width:88px;height:88px;border-radius:12px;overflow:hidden;border:1px solid #2a2a30;">
           <img id="sheetImg" alt="" style="width:100%;height:100%;object-fit:cover">
         </div>
@@ -221,7 +211,7 @@
 
   <!-- Cart bottom-sheet -->
   <div id="cartOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Cart">
-    <div class="sheet" role="document">
+    <div class="sheet">
       <div class="row-between"><h3>Cart</h3><div class="ghost" id="cartBack">Back</div></div>
       <div id="cartContent" class="sheet-body">Cart is empty</div>
       <div class="row-between" style="margin-top:10px;"><strong>Total</strong><strong id="cartTotal">$0.00</strong></div>
@@ -231,7 +221,7 @@
 
   <!-- Checkout bottom-sheet -->
   <div id="checkoutOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Checkout">
-    <div class="sheet" role="document">
+    <div class="sheet">
       <div class="row-between"><h3>Checkout</h3><div class="ghost" id="checkoutClose">Close</div></div>
       <div class="sheet-body">
         <div style="margin-top:6px;">Your name:</div>
@@ -246,53 +236,54 @@
 
   <!-- Settings bottom-sheet -->
   <div id="settingsOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Settings">
-    <div class="sheet" role="document">
-      <div class="row-between"><h3>Settings</h3><div class="ghost" id="settingsClose">Close</div></div>
-      <div class="tabs" role="tablist" aria-label="Settings Tabs">
+    <div class="sheet">
+      <div class="row-between">
+        <h3>Settings</h3>
+        <div class="ghost" id="settingsClose">Close</div>
+      </div>
+
+      <div class="tabs">
         <button id="tabGeneral" class="tab active" role="tab" aria-selected="true" aria-controls="panelGeneral">General</button>
         <button id="tabAdmin" class="tab" role="tab" aria-selected="false" aria-controls="panelAdmin">Admin</button>
       </div>
 
       <div class="sheet-body">
-        <!-- General -->
+        <!-- General panel -->
         <div id="panelGeneral" role="tabpanel" aria-labelledby="tabGeneral">
           <div style="display:flex;gap:12px"><div class="ghost">Dark Mode (disabled)</div><div class="ghost">Notifications (disabled)</div></div>
         </div>
 
-        <!-- Admin -->
+        <!-- Admin panel -->
         <div id="panelAdmin" role="tabpanel" aria-labelledby="tabAdmin" style="display:none">
+          <!-- Login prompt shows when locked -->
           <div id="adminLogin">
             <div style="margin-top:6px;">Admin password:</div>
             <input id="adminPassword" type="password" class="field" style="width:100%;padding:10px;border-radius:10px">
             <div id="adminError" style="display:none;color:#ff6b6b;margin-top:6px;">Wrong password.</div>
             <div class="actions" style="margin-top:12px;"><button class="primary" id="adminSubmit">Unlock</button></div>
           </div>
-
+          <!-- Admin content -->
           <div id="adminContent" style="display:none">
             <div class="admin-subtabs">
               <button class="subtab active" data-subtab="orders">Orders</button>
               <button class="subtab" data-subtab="inventory">Inventory</button>
               <button class="subtab" data-subtab="analytics">Analytics</button>
             </div>
-
             <div style="margin:4px 0 8px;display:flex;gap:8px;align-items:center;">
               <button class="ghost" id="adminLock" style="padding:6px 10px">Lock Admin</button>
               <div id="adminState" style="font-size:12px;color:#c7c7cc">State: <strong id="adminStateVal">unknown</strong></div>
             </div>
-
-            <!-- Orders -->
+            <!-- Orders panel -->
             <div id="subtab-orders">
               <div style="margin-top:6px;font-weight:700">Orders</div>
               <div id="ordersList" class="admin-list">No orders yet</div>
             </div>
-
-            <!-- Inventory -->
+            <!-- Inventory panel -->
             <div id="subtab-inventory" style="display:none">
               <div style="margin-top:6px;font-weight:700">Inventory (Stock & Low)</div>
               <div id="inventoryList" class="admin-list">Loading…</div>
             </div>
-
-            <!-- Analytics (Heat Map) -->
+            <!-- Analytics panel -->
             <div id="subtab-analytics" style="display:none">
               <div style="margin-top:6px;font-weight:700">Heat Map (Checkouts by Hour)</div>
               <div class="heat-wrap">
@@ -310,251 +301,382 @@
         </div><!-- /panelAdmin -->
       </div><!-- /sheet-body -->
     </div>
-  </div>
+  </div><!-- /settingsOverlay -->
 
   <script>
-    /* PWA SW */
+    /* PWA service worker */
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function(){ navigator.serviceWorker.register('./sw.js'); });
+      window.addEventListener('load', function(){navigator.serviceWorker.register('./sw.js');});
     }
 
     var $=function(s){return document.querySelector(s)}, $$=function(s){return Array.from(document.querySelectorAll(s))};
 
-    /* Storage keys */
+    /* Storage keys & helpers */
     var CART_KEY='fitsnacks.cart.v1', ORDERS_KEY='fitsnacks.orders', UNLOCK_KEY='fitsnacks.admin.unlocked';
     var STOCK_KEY='fitsnacks.stock.qty', LOW_KEY='fitsnacks.stock.low', SALES_KEY='fitsnacks.sales.buckets', STOCK_SET_KEY='fitsnacks.stock.set';
-    var ADMIN_PASSWORD='8TSB077', fmt=function(n){return '$'+n.toFixed(2)};
+    var ADMIN_PASSWORD='8TSB077', fmt=function(n){return '$'+n.toFixed(2);};
 
-    /* Persist helpers */
     function loadCart(){try{return new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]'));}catch(e){return new Map();}}
     function saveCart(m){try{localStorage.setItem(CART_KEY, JSON.stringify(Array.from(m.entries())));}catch(e){}}
     function loadObj(k){try{return JSON.parse(localStorage.getItem(k)||'{}');}catch(e){return {};}}
     function saveObj(k,o){localStorage.setItem(k, JSON.stringify(o||{}));}
-    function loadSales(){try{var raw=JSON.parse(localStorage.getItem(SALES_KEY)||'null');if(raw&&raw.length===7&&raw[0].length===24)return raw;}catch(e){}return Array.from({length:7},function(){return Array(24).fill(0)})}
+    function loadSales(){try{var raw=JSON.parse(localStorage.getItem(SALES_KEY)||'null');if(raw&&raw.length===7&&raw[0].length===24) return raw;}catch(e){}; return Array.from({length:7},()=>Array(24).fill(0));}
     function saveSales(m){localStorage.setItem(SALES_KEY, JSON.stringify(m));}
 
     /* State */
     var cart=loadCart(), stockQty=loadObj(STOCK_KEY), stockLow=loadObj(LOW_KEY), stockSet=loadObj(STOCK_SET_KEY), sales=loadSales();
-    if(!Object.keys(stockSet).length){stockSet={};saveObj(STOCK_SET_KEY,stockSet);}
-    function isUnlocked(){return localStorage.getItem(UNLOCK_KEY)==='1'} function setUnlocked(v){localStorage.setItem(UNLOCK_KEY, v?'1':'0')} setUnlocked(false);
+    if(!Object.keys(stockSet).length){stockSet={}; saveObj(STOCK_SET_KEY,stockSet);}
+    function isUnlocked(){return localStorage.getItem(UNLOCK_KEY)==='1';}
+    function setUnlocked(v){localStorage.setItem(UNLOCK_KEY,v?'1':'0');}
+    setUnlocked(false);
 
-    /* Search */
-    var sEl=$('#search'); if(sEl){ sEl.addEventListener('input', function(e){ var q=(e.target.value||'').toLowerCase(); $$('.card').forEach(function(c){ c.style.display=c.dataset.name.toLowerCase().indexOf(q)>-1?'':'none'; }); }); }
-
-    /* ===== Card-snap carousel logic (rAF autoplay: hold 5s / slide 3s) ===== */
+    /* Carousel autoplay (5s hold, 3s slide) */
     (function(){
       var scroller=$('#snapper'); if(!scroller) return;
       var cards=$$('.snap-card'), dotsWrap=$('#snapDots');
-      // build dots
-      dotsWrap.innerHTML = cards.map(function(){return '<div class="snap-dot"></div>'}).join('');
-      var dots=$$('.snap-dot');
-      function setDot(i){ dots.forEach(function(d,k){ d.classList.toggle('active',k===i); }); }
-      setDot(0);
-
-      // wait for images then start autoplay
-      var banners=$$('.banner'), loaded=0; function mark(){loaded++; if(loaded>=banners.length){start();}}
-      banners.forEach(function(img){
-        img.classList.add('is-loading');
-        img.addEventListener('load', function(){img.classList.remove('is-loading');mark();},{once:true});
-        img.addEventListener('error', function(){img.classList.remove('is-loading');img.classList.add('is-error');mark();},{once:true});
-      });
-
-      var idx=0, holdMs=5000, slideMs=3000, paused=false, af=null, tId=null, scrolling=false;
-
-      function centerOf(el){ var r=el.getBoundingClientRect(); return r.left+r.width/2; }
-      function containerCenter(){ var r=scroller.getBoundingClientRect(); return r.left+r.width/2; }
-
-      function snapTo(i, dur){
-        i=(i+cards.length)%cards.length;
-        idx=i; setDot(idx);
+      dotsWrap.innerHTML=cards.map(function(){return '<div class="snap-dot"></div>';}).join('');
+      var dots=$$('.snap-dot'), idx=0, holdMs=5000, slideMs=3000, paused=false, af=null,tId=null, loaded=0;
+      function setDot(i){dots.forEach(function(d,k){d.classList.toggle('active',k===i);});}
+      function centerOf(el){var r=el.getBoundingClientRect();return r.left+r.width/2;}
+      function containerCenter(){var r=scroller.getBoundingClientRect();return r.left+r.width/2;}
+      function snapTo(i,dur){
+        i=(i+cards.length)%cards.length; idx=i; setDot(i);
         var target = cards[i].offsetLeft - (scroller.clientWidth - cards[i].clientWidth)/2;
-        if(dur<=0){ scroller.scrollLeft=target; return; }
+        if(dur<=0){scroller.scrollLeft=target; return;}
         var start=performance.now(), from=scroller.scrollLeft, dist=target-from;
         cancelAnimationFrame(af);
         function step(now){
           var t=Math.min(1,(now-start)/dur);
-          var eased=t<.5?4*t*t*t:(t-1)*(2*t-2)*(2*t-2)+1; // easeInOutCubic
+          var eased=t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1;
           scroller.scrollLeft = from + dist*eased;
           if(t<1 && !paused) af=requestAnimationFrame(step);
         }
-        af=requestAnimationFrame(step);
+        af = requestAnimationFrame(step);
       }
-
       function autoLoop(){
         if(paused) return;
-        tId=setTimeout(function(){ if(paused) return; snapTo(idx+1, slideMs); autoLoop(); }, holdMs+slideMs);
+        tId=setTimeout(function(){
+          if(paused) return;
+          snapTo(idx+1, slideMs);
+          autoLoop();
+        }, holdMs + slideMs);
       }
-
-      function start(){ paused=false; clearTimeout(tId); autoLoop(); }
-      function stop(){ paused=true; clearTimeout(tId); cancelAnimationFrame(af); }
-
-      // Pause/resume on interaction
-      ['pointerdown','touchstart','mousedown','mouseenter'].forEach(function(ev){ scroller.addEventListener(ev, function(){ stop(); }); });
-      ['pointerup','touchend','mouseup','mouseleave'].forEach(function(ev){ scroller.addEventListener(ev, function(){ start(); }); });
-
-      // Update active dot when user scrolls
+      function start(){paused=false; clearTimeout(tId); autoLoop();}
+      function stop(){paused=true; clearTimeout(tId); cancelAnimationFrame(af);}
+      var banners=$$('.banner');
+      banners.forEach(function(img){
+        img.classList.add('is-loading');
+        img.addEventListener('load', function(){img.classList.remove('is-loading'); mark();},{once:true});
+        img.addEventListener('error', function(){img.classList.remove('is-loading'); img.classList.add('is-error'); mark();},{once:true});
+      });
+      function mark(){loaded++; if(loaded>=banners.length){start();}}
+      ['pointerdown','touchstart','mousedown','mouseenter'].forEach(function(ev){scroller.addEventListener(ev, function(){stop();});});
+      ['pointerup','touchend','mouseup','mouseleave'].forEach(function(ev){scroller.addEventListener(ev, function(){start();});});
       scroller.addEventListener('scroll', function(){
-        if(scrolling) return; // ignore our own animation pass
-        var center = containerCenter(), bestI=0, best=1e9;
-        cards.forEach(function(c,i){ var d=Math.abs(center-centerOf(c)); if(d<best){best=d;bestI=i;} });
+        var c = containerCenter(), best=Infinity, bestI=0;
+        cards.forEach(function(card,i){
+          var d=Math.abs(c - centerOf(card));
+          if(d<best){best=d; bestI=i;}
+        });
         if(bestI!==idx){ idx=bestI; setDot(idx); }
       });
-
-      // Dot click
-      dots.forEach(function(d,i){ d.addEventListener('click', function(){ stop(); snapTo(i, 400); start(); }); });
-
-      // Initial center first card
+      dots.forEach(function(dot,i){
+        dot.addEventListener('click', function(){ stop(); snapTo(i,400); start();});
+      });
       snapTo(0,0);
     })();
 
-    /* Cart badge + render */
-    function refreshBadge(){ var n=0; for(var v of cart.values()) n+=v.qty; var b=$('#cartBadge'); if(!b) return; b.style.display=n>0?'inline-flex':'none'; if(n>0) b.textContent=n; }
+    /* Search filter */
+    $('#search').addEventListener('input', function(e){
+      var q=(e.target.value||'').toLowerCase();
+      $$('.card').forEach(function(c){c.style.display=c.dataset.name.toLowerCase().indexOf(q)>-1?'':'none';});
+    });
+
+    /* Cart badge & rendering */
+    function refreshBadge(){
+      var n=0; for(var v of cart.values()) n+=v.qty;
+      var b=$('#cartBadge'); if(!b) return;
+      b.style.display=n>0?'inline-flex':'none'; if(n>0) b.textContent=n;
+    }
     function renderCart(){
       var total=0, html='';
-      for(var it of cart){ var name=it[0],info=it[1]; var line=info.price*info.qty; total+=line;
-        html+='<div class="row-between" style="margin-top:6px">'+
-              '<div style="display:flex;gap:10px;align-items:center">'+
-              '<button data-act="-" data-name="'+name+'" class="ghost" style="padding:4px 8px">−</button>'+
-              '<div style="min-width:24px;text-align:center">'+info.qty+'</div>'+
-              '<button data-act="+" data-name="'+name+'" class="ghost" style="padding:4px 8px">+</button>'+
-              '<div style="font-weight:700;margin-left:8px">'+name+'</div>'+
-              '</div><div style="font-weight:700">'+fmt(line)+'</div></div>';
+      for(var item of cart){
+        var name=item[0], info=item[1];
+        var line=info.price * info.qty; total+=line;
+        html += '<div class="row-between" style="margin-top:6px">' +
+                  '<div style="display:flex;gap:10px;align-items:center">' +
+                    '<button data-act="-" data-name="'+name+'" class="ghost" style="padding:4px 8px">−</button>'+
+                    '<div style="min-width:24px;text-align:center">'+info.qty+'</div>'+
+                    '<button data-act="+" data-name="'+name+'" class="ghost" style="padding:4px 8px">+</button>'+
+                    '<div style="font-weight:700;margin-left:8px">'+name+'</div>'+
+                  '</div>'+
+                  '<div style="font-weight:700">'+fmt(line)+'</div>'+
+                '</div>';
       }
       $('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
       $('#cartTotal').textContent = fmt(total);
       saveCart(cart); refreshBadge();
     }
 
-    /* Cart qty +/− */
+    /* Modify cart qty */
     document.addEventListener('click', function(e){
       var b=e.target.closest?e.target.closest('button'):null; if(!b) return;
       if(b.hasAttribute('data-act') && b.hasAttribute('data-name')){
-        var name=b.getAttribute('data-name'), act=b.getAttribute('data-act'), entry=cart.get(name); if(!entry) return;
-        entry.qty=Math.max(act==='+'?entry.qty+1:entry.qty-1,1); renderCart();
+        var name=b.getAttribute('data-name'), act=b.getAttribute('data-act');
+        var ent=cart.get(name); if(!ent) return;
+        ent.qty=Math.max(act==='+'? ent.qty+1 : ent.qty-1, 1);
+        renderCart();
       }
     });
 
-    /* Product sheet */
+    /* Product mini sheet */
     var current=null;
     function openProductSheet(card){
       current={name:card.dataset.name, price:parseFloat(card.dataset.price), img:card.dataset.img};
-      $('#sheetTitle').textContent=current.name; $('#sheetImg').src=current.img||''; $('#sheetImg').alt=current.name||'';
-      $('#sheetPrice').textContent=fmt(current.price); $('#qtyVal').textContent=1; $('#sheetAdd').textContent='Add • '+fmt(current.price);
+      $('#sheetTitle').textContent=current.name;
+      $('#sheetImg').src=current.img || '';
+      $('#sheetImg').alt=current.name || '';
+      $('#sheetPrice').textContent=fmt(current.price);
+      $('#qtyVal').textContent=1;
+      $('#sheetAdd').textContent='Add • '+fmt(current.price);
       if(stockSet[current.name]){
         var qty=Number(stockQty[current.name]||0), low=Number(stockLow[current.name]||0);
         $('#sheetStock').textContent='Stock: '+qty;
-        var lw=$('#sheetLowWarn'); if(low>0 && qty<=low){lw.style.display='block';lw.textContent='Low stock ('+qty+' ≤ '+low+')';}else{lw.style.display='none';}
-      }else{$('#sheetStock').textContent='Stock: --';$('#sheetLowWarn').style.display='none';}
+        if(low>0 && qty<=low){ $('#sheetLowWarn').style.display='block'; $('#sheetLowWarn').textContent='Low stock ('+qty+' ≤ '+low+')';}
+        else { $('#sheetLowWarn').style.display='none'; }
+      } else {
+        $('#sheetStock').textContent='Stock: --';
+        $('#sheetLowWarn').style.display='none';
+      }
       $('#productSheet').classList.add('show');
     }
     $$('.card').forEach(function(card){
-      card.addEventListener('click', function(e){ if(e.target.closest && e.target.closest('.add')) return; openProductSheet(card); });
+      card.addEventListener('click', function(e){
+        if(e.target.closest && e.target.closest('.add')) return;
+        openProductSheet(card);
+      });
     });
-    $$('.add').forEach(function(btn){
-      btn.addEventListener('click', function(e){ var card=e.target.closest?e.target.closest('.card'):null; if(card) openProductSheet(card); });
+    $$('.add').forEach(function(button){
+      button.addEventListener('click', function(e){
+        var card=e.target.closest?e.target.closest('.card'):null;
+        if(card) openProductSheet(card);
+      });
     });
-    $('#qtyPlus').addEventListener('click', function(){ var n=Math.min(99,parseInt($('#qtyVal').textContent,10)+1); $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price*n); });
-    $('#qtyMinus').addEventListener('click', function(){ var n=Math.max(1,parseInt($('#qtyVal').textContent,10)-1); $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price*n); });
+    $('#qtyPlus').addEventListener('click', function(){
+      var n=Math.min(99, parseInt($('#qtyVal').textContent,10)+1);
+      $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price*n);
+    });
+    $('#qtyMinus').addEventListener('click', function(){
+      var n=Math.max(1, parseInt($('#qtyVal').textContent,10)-1);
+      $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price*n);
+    });
     function closeSheet(){ $('#productSheet').classList.remove('show'); }
     $('#sheetClose').addEventListener('click', closeSheet);
-    $('#sheetAdd').addEventListener('click', function(){ var n=parseInt($('#qtyVal').textContent,10); var e=cart.get(current.name)||{price:current.price,qty:0}; e.qty+=n; cart.set(current.name,e); closeSheet(); renderCart(); $('#cartOverlay').classList.add('show'); });
+    $('#sheetAdd').addEventListener('click', function(){
+      var n=parseInt($('#qtyVal').textContent,10);
+      var e=cart.get(current.name) || {price:current.price,qty:0};
+      e.qty += n; cart.set(current.name, e);
+      closeSheet();
+      renderCart();
+      $('#cartOverlay').classList.add('show');
+    });
 
-    /* Open/close overlays */
-    function openCart(){ $('#cartOverlay').classList.add('show'); } function closeCart(){ $('#cartOverlay').classList.remove('show'); }
+    /* Overlay open/close */
+    function openCart(){ $('#cartOverlay').classList.add('show'); }
+    function closeCart(){ $('#cartOverlay').classList.remove('show'); }
     function openSettings(toAdmin){ $('#settingsOverlay').classList.add('show'); switchTab(toAdmin?'admin':'general'); if(toAdmin) ensureAdminLoginVisible(); }
     function closeSettings(){ $('#settingsOverlay').classList.remove('show'); }
     $('#cartBtn').addEventListener('click', openCart); $('#cartBack').addEventListener('click', closeCart);
-    $('#settingsBtn').addEventListener('click', function(){ openSettings(false); }); $('#settingsClose').addEventListener('click', closeSettings);
+    $('#settingsBtn').addEventListener('click', function(){ openSettings(false); });
+    $('#settingsClose').addEventListener('click', closeSettings);
 
-    /* Orders, checkout, analytics */
-    function loadOrders(){try{return JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]')}catch(e){return []}}
-    function saveOrders(l){localStorage.setItem(ORDERS_KEY, JSON.stringify(l||[]))}
-    function addOrderFromCart(name,loc){ var lines=[], total=0; for(var kv of cart){var n=kv[0],info=kv[1]; var line=info.price*info.qty; total+=line; lines.push({name:n,price:info.price,qty:info.qty,line:line});}
-      var order={when:new Date().toISOString(),name:name,location:loc,lines:lines,total:total}; var list=loadOrders(); list.unshift(order); saveOrders(list);
-      var d=new Date(), dow=d.getDay(), hr=d.getHours(); sales[dow][hr]=(sales[dow][hr]||0)+1; saveSales(sales); return order; }
-    function renderOrders(){ var list=loadOrders(), box=$('#ordersList'); if(!box) return; if(!list.length){box.textContent='No orders yet';return;}
-      box.innerHTML=list.map(function(o){ var items=o.lines.map(function(l){return l.name+' × '+l.qty+' -- '+fmt(l.line)}).join('<br>'); var when=new Date(o.when).toLocaleString();
-        return '<div style="padding:8px;border-bottom:1px solid #2a2a30"><div style="font-weight:700">'+when+'</div><div style="margin-top:4px">'+items+'</div><div style="margin-top:6px;font-weight:700">Total: '+fmt(o.total)+'</div><div style="color:#bbb;margin-top:4px">'+o.name+' @ '+o.location+'</div></div>';}).join(''); }
+    /* Checkout & orders & analytics */
+    function loadOrders(){try{return JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');}catch(e){return [];}}
+    function saveOrders(list){localStorage.setItem(ORDERS_KEY, JSON.stringify(list||[]));}
+    function addOrderFromCart(name, location){
+      var lines=[], total=0;
+      cart.forEach(function(info, n){ var line=info.price*info.qty; total+=line; lines.push({name:n, price:info.price, qty:info.qty, line:line}); });
+      var order={when:new Date().toISOString(), name:name, location:location, lines:lines, total:total};
+      var list=loadOrders(); list.unshift(order); saveOrders(list);
+      var d=new Date(), dow=d.getDay(), hr=d.getHours(); sales[dow][hr]=(sales[dow][hr]||0)+1; saveSales(sales);
+      return order;
+    }
+    function renderOrders(){
+      var list=loadOrders(), box=$('#ordersList');
+      if(!box) return;
+      if(!list.length){ box.textContent='No orders yet'; return; }
+      box.innerHTML=list.map(function(o){
+        var items=o.lines.map(function(l){ return l.name+' × '+l.qty+' -- '+fmt(l.line); }).join('<br>');
+        var when=new Date(o.when).toLocaleString();
+        return '<div style="padding:8px;border-bottom:1px solid #2a2a30">'+
+          '<div style="font-weight:700">'+when+'</div>'+
+          '<div style="margin-top:4px">'+items+'</div>'+
+          '<div style="margin-top:6px;font-weight:700">Total: '+fmt(o.total)+'</div>'+
+          '<div style="color:#bbb;margin-top:4px">'+o.name+' @ '+o.location+'</div>'+
+        '</div>';
+      }).join('');
+    }
 
-    function getProducts(){ return $$('.card').map(function(c){return {name:c.dataset.name,price:+c.dataset.price,img:c.dataset.img}}); }
-    function renderInventory(){ var wrap=$('#inventoryList'); if(!wrap) return; var products=getProducts(); if(!products.length){wrap.textContent='No products';return;}
-      wrap.innerHTML=products.map(function(p){ var hasQ=Object.prototype.hasOwnProperty.call(stockQty,p.name), hasL=Object.prototype.hasOwnProperty.call(stockLow,p.name);
-        var qty=hasQ?Number(stockQty[p.name]||0):'', low=hasL?Number(stockLow[p.name]||0):'';
+    function getProducts(){ return $$('.card').map(function(c){ return {name:c.dataset.name, price:+c.dataset.price, img:c.dataset.img};}); }
+    function renderInventory(){
+      var wrap=$('#inventoryList'); if(!wrap) return;
+      var products=getProducts();
+      if(!products.length){ wrap.textContent='No products'; return; }
+      wrap.innerHTML=products.map(function(p){
+        var hasQ=Object.prototype.hasOwnProperty.call(stockQty,p.name), hasL=Object.prototype.hasOwnProperty.call(stockLow,p.name);
+        var qty = hasQ? Number(stockQty[p.name]||0):'', low = hasL?Number(stockLow[p.name]||0):'';
         return '<div class="field" data-prod="'+p.name+'"><div style="flex:1;font-weight:600">'+p.name+'</div>'+
           '<label style="font-size:12px;color:#c7c7cc">Stock</label><input type="number" min="0" value="'+qty+'" data-k="qty" placeholder="--">'+
-          '<label style="font-size:12px;color:#c7c7cc">Low</label><input type="number" min="0" value="'+low+'" data-k="low" placeholder="--"></div>';}).join(''); }
+          '<label style="font-size:12px;color:#c7c7cc">Low</label><input type="number" min="0" value="'+low+'" data-k="low" placeholder="--"></div>';
+      }).join('');
+    }
 
-    function ensureBadgeWrap(card){ var wrap=card.querySelector('.badge-wrap'); if(!wrap){ wrap=document.createElement('div'); wrap.className='badge-wrap'; card.appendChild(wrap);} return wrap; }
-    function updateStockBadges(){ $$('.card').forEach(function(card){ var name=card.dataset.name, wrap=ensureBadgeWrap(card); wrap.innerHTML=''; if(!stockSet[name]) return;
-      var qty=Number(stockQty[name]||0), low=Number(stockLow[name]||0), b=document.createElement('div'); b.className='stock-badge'; b.textContent='Stock: '+qty; wrap.appendChild(b);
-      if(low>0 && qty<=low){ var l=document.createElement('div'); l.className='stock-badge low-badge'; l.textContent='Low'; wrap.appendChild(l); } }); }
-    function refreshMiniIfOpen(){ var ov=document.getElementById('productSheet'); if(!ov || !ov.classList.contains('show') || !current) return; var name=current.name;
-      if(stockSet[name]){ var qty=Number(stockQty[name]||0), low=Number(stockLow[name]||0); document.getElementById('sheetStock').textContent='Stock: '+qty; var lw=document.getElementById('sheetLowWarn'); if(low>0 && qty<=low){lw.style.display='block';lw.textContent='Low stock ('+qty+' ≤ '+low+')';}else{lw.style.display='none';}}
-      else{ document.getElementById('sheetStock').textContent='Stock: --'; document.getElementById('sheetLowWarn').style.display='none'; } }
+    function ensureBadgeWrap(card){
+      var wrap=card.querySelector('.badge-wrap');
+      if(!wrap){ wrap=document.createElement('div'); wrap.className='badge-wrap'; card.appendChild(wrap); }
+      return wrap;
+    }
+    function updateStockBadges(){
+      $$('.card').forEach(function(card){
+        var name=card.dataset.name, wrap=ensureBadgeWrap(card);
+        wrap.innerHTML='';
+        if(!stockSet[name]) return;
+        var qty=Number(stockQty[name]||0), low=Number(stockLow[name]||0);
+        var b=document.createElement('div'); b.className='stock-badge'; b.textContent='Stock: '+qty; wrap.appendChild(b);
+        if(low>0 && qty<=low){ var l=document.createElement('div'); l.className='stock-badge low-badge'; l.textContent='Low'; wrap.appendChild(l); }
+      });
+    }
 
-    document.addEventListener('input', function(e){
-      var row=e.target.closest?e.target.closest('.field[data-prod]'):null; if(!row) return; var name=row.getAttribute('data-prod');
-      if(e.target.matches && e.target.matches('input[data-k="qty"]')){ var v=(e.target.value||'').trim();
-        if(v===''){ delete stockQty[name]; delete stockSet[name]; } else { stockQty[name]=Number(v); stockSet[name]=1; }
-        saveObj(STOCK_KEY,stockQty); saveObj(STOCK_SET_KEY,stockSet); updateStockBadges(); refreshMiniIfOpen();
+    function refreshMiniIfOpen(){
+      var overlay=document.getElementById('productSheet'); if(!overlay || !overlay.classList.contains('show') || !current) return;
+      var name=current.name;
+      if(stockSet[name]){
+        var qty=Number(stockQty[name]||0), low=Number(stockLow[name]||0);
+        $('#sheetStock').textContent='Stock: '+qty;
+        if(low>0 && qty<=low){ $('#sheetLowWarn').style.display='block'; $('#sheetLowWarn').textContent='Low stock ('+qty+' ≤ '+low+')'; }
+        else { $('#sheetLowWarn').style.display='none'; }
+      } else {
+        $('#sheetStock').textContent='Stock: --';
+        $('#sheetLowWarn').style.display='none';
       }
-      if(e.target.matches && e.target.matches('input[data-k="low"]')){ var v2=(e.target.value||'').trim();
-        if(v2===''){ delete stockLow[name]; } else { stockLow[name]=Number(v2); }
-        saveObj(LOW_KEY,stockLow); updateStockBadges(); refreshMiniIfOpen();
+    }
+
+    /* Inventory changes */
+    document.addEventListener('input', function(e){
+      var row=e.target.closest? e.target.closest('.field[data-prod]'):null; if(!row) return;
+      var name=row.getAttribute('data-prod');
+      if(e.target.matches && e.target.matches('input[data-k="qty"]')){
+        var v=(e.target.value||'').trim();
+        if(v===''){ delete stockQty[name]; delete stockSet[name]; }
+        else { stockQty[name]=Number(v); stockSet[name]=1; }
+        saveObj(STOCK_KEY,stockQty); saveObj(STOCK_SET_KEY,stockSet);
+        updateStockBadges(); refreshMiniIfOpen();
+      }
+      if(e.target.matches && e.target.matches('input[data-k="low"]')){
+        var v2=(e.target.value||'').trim();
+        if(v2===''){ delete stockLow[name]; }
+        else { stockLow[name]=Number(v2); }
+        saveObj(LOW_KEY,stockLow);
+        updateStockBadges(); refreshMiniIfOpen();
       }
     });
 
-    function renderHeat(){ var grid=$('#heatGrid'); if(!grid) return; var max=0; for(var d=0; d<7; d++){ for(var h=0; h<24; h++){ if(sales[d][h]>max) max=sales[d][h]; } }
-      grid.innerHTML=''; for(var d2=0; d2<7; d2++){ for(var h2=0; h2<24; h2++){ var v=sales[d2][h2], a=max?(0.08+0.62*(v/max)):0.10; var cell=document.createElement('div'); cell.className='heat-cell'; cell.title='Day '+d2+', '+h2+':00 -- '+v; cell.style.background='rgba(110,168,254,'+a+')'; grid.appendChild(cell); } } }
-
-    function switchTab(which){
-      var tabG=$('#tabGeneral'), tabA=$('#tabAdmin'), panG=$('#panelGeneral'), panA=$('#panelAdmin');
-      if(which==='admin'){
-        if(tabG){tabG.classList.remove('active');tabG.setAttribute('aria-selected','false');}
-        if(tabA){tabA.classList.add('active');tabA.setAttribute('aria-selected','true');}
-        if(panG) panG.style.display='none'; if(panA) panA.style.display='block';
-        ensureAdminLoginVisible();
-      } else {
-        if(tabA){tabA.classList.remove('active');tabA.setAttribute('aria-selected','false');}
-        if(tabG){tabG.classList.add('active');tabG.setAttribute('aria-selected','true');}
-        if(panA) panA.style.display='none'; if(panG) panG.style.display='block';
+    /* Heat map rendering */
+    function renderHeat(){
+      var grid=$('#heatGrid'); if(!grid) return;
+      var max=0; for(var d=0; d<7; d++){ for(var h=0; h<24; h++){ if(sales[d][h]>max) max=sales[d][h]; } }
+      grid.innerHTML='';
+      for(var d2=0; d2<7; d2++){
+        for(var h2=0; h2<24; h2++){
+          var v=sales[d2][h2];
+          var a=max? (0.08 + 0.62*(v/max)) : 0.10;
+          var cell=document.createElement('div');
+          cell.className='heat-cell';
+          cell.title='Day '+d2+', '+h2+':00 -- '+v;
+          cell.style.background='rgba(110,168,254,'+a+')';
+          grid.appendChild(cell);
+        }
       }
     }
 
-    function focusAdminPassword(){ var el=document.getElementById('adminPassword'); if(el){el.focus(); if(el.select) el.select();}}
-    function showAdminState(){ var el=document.getElementById('adminStateVal'); if(!el) return; el.textContent=isUnlocked()?'Unlocked (no password shown)':'Locked (password required)'; }
+    /* Tab switching */
+    function switchTab(which){
+      var tabG=$('#tabGeneral'), tabA=$('#tabAdmin'), panG=$('#panelGeneral'), panA=$('#panelAdmin');
+      if(which==='admin'){
+        tabG.classList.remove('active'); tabG.setAttribute('aria-selected','false');
+        tabA.classList.add('active'); tabA.setAttribute('aria-selected','true');
+        panG.style.display='none'; panA.style.display='block';
+        ensureAdminLoginVisible();
+      } else {
+        tabA.classList.remove('active'); tabA.setAttribute('aria-selected','false');
+        tabG.classList.add('active'); tabG.setAttribute('aria-selected','true');
+        panA.style.display='none'; panG.style.display='block';
+      }
+    }
+
+    function focusAdminPassword(){ var el=document.getElementById('adminPassword'); if(el){ el.focus(); if(el.select) el.select();}}
+    function showAdminState(){ var el=document.getElementById('adminStateVal'); if(!el) return; el.textContent=isUnlocked()?'Unlocked (no password shown)':'Locked (password required)';}
     function ensureAdminLoginVisible(){
-      var logged=isUnlocked(); var login=$('#adminLogin'), content=$('#adminContent');
-      if(login) login.style.display=logged?'none':'block'; if(content) content.style.display=logged?'block':'none';
-      if(logged){ renderOrders(); renderInventory(); renderHeat(); updateStockBadges(); } else { setTimeout(focusAdminPassword,0); }
+      var logged=isUnlocked();
+      $('#adminLogin').style.display = logged ? 'none' : 'block';
+      $('#adminContent').style.display = logged ? 'block' : 'none';
+      if(logged){ renderOrders(); renderInventory(); renderHeat(); updateStockBadges(); }
+      else { setTimeout(focusAdminPassword,0); }
       showAdminState();
     }
 
+    /* Main tab clicks */
     document.addEventListener('click', function(e){
       if(e.target.closest && e.target.closest('#tabGeneral')) switchTab('general');
       if(e.target.closest && e.target.closest('#tabAdmin'))   switchTab('admin');
       if(e.target.closest && e.target.closest('#adminSubmit')){
-        var ok=$('#adminPassword').value===ADMIN_PASSWORD;
-        if(ok){ setUnlocked(true); $('#adminError').style.display='none'; ensureAdminLoginVisible(); } else { $('#adminError').style.display='block'; }
+        if($('#adminPassword').value === ADMIN_PASSWORD){
+          setUnlocked(true); $('#adminError').style.display='none'; ensureAdminLoginVisible();
+        } else {
+          $('#adminError').style.display='block';
+        }
       }
-      if(e.target && e.target.id==='adminLock'){ setUnlocked(false); ensureAdminLoginVisible(); }
+      if(e.target && e.target.id === 'adminLock'){
+        setUnlocked(false); ensureAdminLoginVisible();
+      }
+    });
+
+    /* Sub-tab switching */
+    document.addEventListener('click', function(e){
+      var subBtn=e.target.closest? e.target.closest('.subtab'):null; if(!subBtn) return;
+      $$('.subtab').forEach(function(b){ b.classList.remove('active');});
+      subBtn.classList.add('active');
+      var id=subBtn.getAttribute('data-subtab');
+      $('#subtab-orders').style.display = (id==='orders')?'block':'none';
+      $('#subtab-inventory').style.display = (id==='inventory')?'block':'none';
+      $('#subtab-analytics').style.display = (id==='analytics')?'block':'none';
+      if(id==='orders') renderOrders();
+      if(id==='inventory'){ renderInventory(); updateStockBadges(); }
+      if(id==='analytics') renderHeat();
     });
 
     /* Checkout flow */
-    $('#cartCheckout').addEventListener('click', function(){ $('#checkoutName').value=''; $('#checkoutLocation').value=''; $('#checkoutError').style.display='none'; $('#cartOverlay').classList.remove('show'); $('#checkoutOverlay').classList.add('show'); });
+    $('#cartCheckout').addEventListener('click', function(){
+      $('#checkoutName').value=''; $('#checkoutLocation').value=''; $('#checkoutError').style.display='none';
+      $('#cartOverlay').classList.remove('show');
+      $('#checkoutOverlay').classList.add('show');
+    });
     $('#checkoutClose').addEventListener('click', function(){ $('#checkoutOverlay').classList.remove('show'); });
     $('#checkoutSubmit').addEventListener('click', function(){
       var name=$('#checkoutName').value.trim(), loc=$('#checkoutLocation').value.trim();
       if(!name || !loc){ $('#checkoutError').style.display='block'; return; }
-      addOrderFromCart(name,loc); cart.clear(); renderCart(); $('#checkoutOverlay').classList.remove('show');
+      addOrderFromCart(name, loc);
+      cart.clear(); renderCart();
+      $('#checkoutOverlay').classList.remove('show');
     });
 
-    /* a11y keyboard click */
+    /* Keyboard a11y */
     $$('.btn,.add,.ghost,.primary,.tab,.subtab').forEach(function(el){
-      el.tabIndex=0; el.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
+      el.tabIndex=0;
+      el.addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); el.click(); }});
     });
 
-    /* Initial render */
+    /* Initial */
     renderCart(); refreshBadge(); updateStockBadges(); showAdminState();
   </script>
 </body>
