@@ -73,7 +73,8 @@
     .snap-dots{display:flex;justify-content:center;gap:6px;margin-top:6px}
     .snap-dot{width:6px;height:6px;border-radius:999px;background:#2c3447;border:1px solid rgba(255,255,255,.18)}
     .snap-dot.active{background:#7fb1ff}
-        /* Chips */
+
+    /* Chips */
     .chips{display:flex;gap:10px;margin:6px 0 12px;flex-wrap:wrap}
     .chip{padding:6px 10px;border-radius:999px;font-size:13px;cursor:pointer}
     .chip.active{outline:2px solid rgba(110,168,254,.5)}
@@ -154,6 +155,20 @@
     #cartBar{position:fixed;left:0;right:0;bottom:0;display:none;z-index:10040;padding:8px}
     #cartBar.show{display:block}
     #cartBar .inner{max-width:393px;margin:0 auto;border-radius:16px;padding:10px;display:flex;gap:8px;align-items:center;justify-content:space-between;border:1px solid rgba(255,255,255,.1);background:rgba(20,20,24,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+
+    /* === Promo / Tip / Notes UI === */
+    .breakdown{margin-top:12px;border:1px solid rgba(255,255,255,.10);border-radius:12px;overflow:hidden}
+    .break-row{display:flex;justify-content:space-between;gap:8px;padding:8px;border-top:1px solid rgba(255,255,255,.06)}
+    .break-row:first-child{border-top:none}
+    .break-row .muted{color:#c7c7cc}
+    .field-inline{display:flex;gap:8px;align-items:center}
+    .promo-ok{color:#3cd27f;font-weight:700}
+    .promo-bad{color:#ff6b6b;font-weight:700}
+    .tip-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+    .tip-btn{padding:8px 10px;border-radius:10px;border:1px solid #2a2a30;background:#18181d;cursor:pointer}
+    .tip-btn.active{background:#24242a;box-shadow:0 0 0 1px rgba(110,168,254,.35)}
+    .notes{width:100%;min-height:64px;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec}
+    .badge-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.25);font-size:12px}
   </style>
 </head>
 <body>
@@ -287,20 +302,58 @@
     </div>
   </div>
 
-  <!-- Checkout bottom-sheet -->
+  <!-- Checkout bottom-sheet (with Promo, Tips, Notes) -->
   <div id="checkoutOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Checkout">
     <div class="sheet" role="document">
       <div class="row-between">
         <h3>Checkout</h3>
         <div class="ghost" id="checkoutClose">Close</div>
       </div>
+
       <div class="sheet-body">
+        <!-- Profile -->
         <div style="margin-top:6px;">Your name:</div>
         <input id="checkoutName" class="field" style="width:100%;padding:10px;border-radius:10px">
         <div style="margin-top:10px;">Where are you on campus?</div>
         <input id="checkoutLocation" class="field" style="width:100%;padding:10px;border-radius:10px">
+
+        <!-- Promo -->
+        <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+          <div class="field-inline" style="flex:1">
+            <input id="checkoutPromo" placeholder="Promo code" class="field" style="flex:1;min-width:0;padding:10px;border-radius:10px">
+            <button class="ghost" id="checkoutApplyPromo">Apply</button>
+          </div>
+          <div id="promoStatus" class="badge-pill" style="display:none"></div>
+        </div>
+
+        <!-- Tip -->
+        <div style="margin-top:12px;">Tip (optional)</div>
+        <div class="tip-group" id="tipGroup">
+          <button class="tip-btn" data-tip="none">No tip</button>
+          <button class="tip-btn" data-tip="amount:1">$1</button>
+          <button class="tip-btn" data-tip="amount:2">$2</button>
+          <button class="tip-btn" data-tip="percent:10">10%</button>
+          <div class="field-inline" style="margin-left:auto">
+            <input id="tipCustomAmount" type="number" min="0" step="0.5" placeholder="Custom $" class="field" style="width:110px">
+            <button class="ghost" id="tipApplyCustom">Set</button>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div style="margin-top:12px;">Delivery notes (optional)</div>
+        <textarea id="checkoutNotes" class="notes" placeholder="e.g., Meet at library entrance, 2nd floor."></textarea>
+
+        <!-- Breakdown -->
+        <div class="breakdown" style="margin-top:12px">
+          <div class="break-row"><div class="muted">Subtotal</div><div id="ckSub">$0.00</div></div>
+          <div class="break-row"><div class="muted">Discount</div><div id="ckDisc">-$0.00</div></div>
+          <div class="break-row"><div class="muted">Tip</div><div id="ckTip">$0.00</div></div>
+          <div class="break-row" style="font-weight:800"><div>Total</div><div id="ckTotal">$0.00</div></div>
+        </div>
+
         <div id="checkoutError" style="display:none;color:#ff6b6b;margin-top:10px;">Please fill both fields.</div>
       </div>
+
       <div class="actions" style="margin-top:12px;">
         <button class="primary" id="checkoutSubmit">Place Order</button>
       </div>
@@ -373,37 +426,20 @@
             <div id="subtab-analytics" style="display:none">
               <div style="margin-top:6px;font-weight:700">Analytics Overview</div>
               <div class="kpis" style="margin-top:8px">
-                <div class="kpi">
-                  <div class="label">Revenue</div>
-                  <div id="kpiRevenue" class="value">$0.00</div>
-                </div>
-                <div class="kpi">
-                  <div class="label">Orders</div>
-                  <div id="kpiOrders" class="value">0</div>
-                </div>
-                <div class="kpi">
-                  <div class="label">AOV</div>
-                  <div id="kpiAOV" class="value">$0.00</div>
-                </div>
-                <div class="kpi">
-                  <div class="label">Items sold</div>
-                  <div id="kpiItems" class="value">0</div>
-                </div>
+                <div class="kpi"><div class="label">Revenue</div><div id="kpiRevenue" class="value">$0.00</div></div>
+                <div class="kpi"><div class="label">Orders</div><div id="kpiOrders" class="value">0</div></div>
+                <div class="kpi"><div class="label">AOV</div><div id="kpiAOV" class="value">$0.00</div></div>
+                <div class="kpi"><div class="label">Items sold</div><div id="kpiItems" class="value">0</div></div>
               </div>
-
               <div style="margin-top:12px">
                 <div class="label" style="margin-bottom:6px">Revenue (last 7 days)</div>
                 <svg id="revSpark" class="spark" viewBox="0 0 100 40" preserveAspectRatio="none" aria-label="Revenue last 7 days"></svg>
               </div>
-
               <div style="margin-top:12px;font-weight:700">Top Products</div>
               <div class="table">
-                <div class="rowh">
-                  <div>Product</div><div>Qty</div><div>Revenue</div><div>Conv%</div>
-                </div>
+                <div class="rowh"><div>Product</div><div>Qty</div><div>Revenue</div><div>Conv%</div></div>
                 <div id="topProducts"></div>
               </div>
-
               <div style="margin-top:12px;font-weight:700">Funnel by Product</div>
               <div id="funnels" class="admin-list"></div>
             </div>
@@ -510,7 +546,7 @@
       ]);
     }
 
-    /* Small utils */
+    /* Utils */
     function haptic(ms=15){try{if(navigator.vibrate)navigator.vibrate(ms)}catch{}}
     function fmtTotal(){let t=0;for(const[,info]of cart)t+=info.price*info.qty;return t}
     function showToast(msg,ms=1800){
@@ -675,7 +711,7 @@
       }
     });
 
-    /* ----- Favorites toggle (single source of truth) ----- */
+    /* ----- Favorites toggle ----- */
     function syncFavStars(){
       $$('.card').forEach(c=>{
         const f=c.querySelector('.fav'); if(!f) return;
@@ -789,20 +825,20 @@
     }
     $('#reorderLast').addEventListener('click', reorderLast);
     /* ----- Orders, Delivered/History, Sales ----- */
-    function addOrderFromCart(name, location){
+    function addOrderFromCart(name, location, notes, discount, tip){
       const lines=[]; let total=0;
       for(const [n,info] of cart){
         const line=info.price*info.qty; total+=line; lines.push({name:n, price:info.price, qty:info.qty, line});
-        // analytics product metrics
         ensureMetrics(n).purchasedQty += info.qty;
         ensureMetrics(n).revenue += line;
       }
       saveObj(ANALYTICS_KEY, prodAnalytics);
 
-      const order={when:new Date().toISOString(), name, location, lines, total};
+      total = Math.max(0, total - (discount||0)) + (tip||0);
+
+      const order={when:new Date().toISOString(), name, location, notes:notes||'', lines, total, discount:discount||0, tip:tip||0};
       const list=loadOrders(); list.unshift(order); saveOrders(list);
 
-      // sales bucket (7x24)
       const d=new Date(), dow=d.getDay(), hr=d.getHours();
       sales[dow][hr]=(sales[dow][hr]||0)+1; saveSales(sales);
 
@@ -825,12 +861,13 @@
                     <div style="font-weight:700">${fmt(o.total)}</div>
                   </div>
                   <div style="margin-top:6px">${items}</div>
+                  ${o.notes?`<div style="margin-top:6px;color:#c7c7cc;font-size:12px">📝 ${o.notes}</div>`:''}
                 </div>`;
       }).join('');
     }
 
     /* ----- Inventory + Heat + Badges ----- */
-    function getProducts(){ return $$('.card').map(c=>({name:c.dataset.name, price:+c.dataset.price, img:c.dataset.img})); }
+    function getProducts(){ return $$('.card').map(c=>({name:c.dataset.name, price:+c.dataset.price, img:c.dataset.img, tags:(c.dataset.tags||'').toLowerCase()})); }
 
     function renderInventory(){
       const wrap=$('#inventoryList'); if(!wrap) return;
@@ -875,7 +912,7 @@
       $$('.card').forEach(card=>{
         const name=card.dataset.name, wrap=ensureBadgeWrap(card);
         wrap.innerHTML='';
-        if(!stockSet[name]) return; // show nothing unless stock is explicitly set for this product
+        if(!stockSet[name]) return; // only show when stock set
         const qty=Number(stockQty[name]||0), low=Number(stockLow[name]||0);
         const b=document.createElement('div'); b.className='stock-badge'; b.textContent='Stock: '+qty; wrap.appendChild(b);
         if(low>0 && qty<=low){
@@ -950,6 +987,7 @@
             <div style="font-weight:700">${fmt(o.total)}</div>
           </div>
           <div style="margin-top:6px">${items}</div>
+          ${o.notes?`<div style="margin-top:6px;color:#c7c7cc;font-size:12px">📝 ${o.notes}</div>`:''}
         </div>`;
       }).join('');
     }
@@ -1033,15 +1071,97 @@
       closeOrderSheet();
     });
 
-    /* ----- Checkout + Profile + Sticky bar ----- */
+    /* ===== Checkout + Profile + Sticky bar (with Promo & Tips/Notes) ===== */
+    // promo table: type 'percent' value 0..1  OR  type 'amount' flat $
+    const PROMO_TABLE = {
+      'SAVE10': {type:'percent', value:0.10, label:'10% off sitewide'},
+      'BAR1':   {type:'amount',  value:1.00, label:'$1 off protein items', rule:'tag:protein'}
+    };
+
+    let activePromo = null;        // {code,type,value,label,rule}
+    let activeTip = {kind:'none', amount:0};
+
+    function evalPromoDiscount(code){
+      code=(code||'').trim().toUpperCase();
+      if(!code || !PROMO_TABLE[code]) return null;
+      const p = PROMO_TABLE[code];
+      // base subtotal
+      let subtotal = 0; for(const[,info] of cart) subtotal += info.price*info.qty;
+      if(subtotal<=0) return null;
+
+      // optional rule: tag:protein (only discount lines matching tag)
+      let discount=0;
+      if(p.rule && p.rule.startsWith('tag:')){
+        const t = p.rule.slice(4).toLowerCase();
+        // compute eligible
+        let eligible = 0;
+        $$('.card').forEach(c=>{
+          const name=c.dataset.name;
+          const tags=(c.dataset.tags||'').toLowerCase();
+          const entry=cart.get(name);
+          if(!entry) return;
+          if(tags.includes(t)){
+            eligible += entry.price*entry.qty;
+          }
+        });
+        if(eligible<=0) return {code, label:`No eligible items for ${code}`, type:'none', value:0, discount:0, ok:false};
+        discount = p.type==='percent' ? eligible * p.value : Math.min(p.value, eligible);
+      }else{
+        discount = p.type==='percent' ? subtotal * p.value : Math.min(p.value, subtotal);
+      }
+      return {code, type:p.type, value:p.value, label:p.label, rule:p.rule||'', discount:Math.max(0,discount), ok:true};
+    }
+
+    function computeTotals(){
+      let subtotal=0; for(const[,info] of cart) subtotal+=info.price*info.qty;
+      const disc = activePromo?.discount || 0;
+      const tip  = Math.max(0, activeTip.amount||0);
+      const total = Math.max(0, subtotal - disc) + tip;
+      return {subtotal, disc, tip, total};
+    }
+
+    function updateCheckoutBreakdown(){
+      const {subtotal, disc, tip, total} = computeTotals();
+      $('#ckSub').textContent = fmt(subtotal);
+      $('#ckDisc').textContent = `-${fmt(disc)}`;
+      $('#ckTip').textContent = fmt(tip);
+      $('#ckTotal').textContent = fmt(total);
+    }
+
+    function setTip(kind, amount){
+      activeTip = {kind, amount:Math.max(0, +amount||0)};
+      $$('#tipGroup .tip-btn').forEach(b=>b.classList.remove('active'));
+      if(kind==='none'){
+        const btn=[...$('#tipGroup').children].find(el=>el.matches('.tip-btn[data-tip="none"]'));
+        btn && btn.classList.add('active');
+      }
+      updateCheckoutBreakdown();
+    }
+
+    function selectQuickTip(btn){
+      $$('#tipGroup .tip-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const spec=btn.getAttribute('data-tip')||'none';
+      if(spec==='none'){ setTip('none',0); return; }
+      const [k,v]=spec.split(':'); const {subtotal, disc}=computeTotals();
+      // percentage tips computed on (subtotal - discount)
+      if(k==='percent'){ const base=Math.max(0, subtotal - disc); setTip('percent', base*(+v/100)); }
+      if(k==='amount'){ setTip('amount', +v); }
+    }
+
     $('#cartCheckout').addEventListener('click', ()=>{
       const p=loadProfile();
       $('#checkoutName').value=p.name||'';
       $('#checkoutLocation').value=p.loc||'';
       $('#checkoutError').style.display='none';
+      $('#checkoutPromo').value='';
+      activePromo=null; $('#promoStatus').style.display='none'; $('#promoStatus').textContent='';
+      setTip('none',0); $('#tipCustomAmount').value='';
+      updateCheckoutBreakdown();
       $('#cartOverlay').classList.remove('show');
       $('#checkoutOverlay').classList.add('show');
     });
+
     $('#cartBarView').addEventListener('click', openCart);
     $('#cartBarCheckout').addEventListener('click', ()=>{
       if(fmtTotal()<=0){ showToast('Your cart is empty'); return; }
@@ -1049,22 +1169,69 @@
       $('#checkoutName').value=p.name||'';
       $('#checkoutLocation').value=p.loc||'';
       $('#checkoutError').style.display='none';
+      $('#checkoutPromo').value='';
+      activePromo=null; $('#promoStatus').style.display='none'; $('#promoStatus').textContent='';
+      setTip('none',0); $('#tipCustomAmount').value='';
+      updateCheckoutBreakdown();
       $('#checkoutOverlay').classList.add('show');
     });
+
     $('#checkoutClose').addEventListener('click', ()=>$('#checkoutOverlay').classList.remove('show'));
+
+    // Apply promo
+    $('#checkoutApplyPromo').addEventListener('click', ()=>{
+      const code=$('#checkoutPromo').value;
+      const res=evalPromoDiscount(code);
+      const badge=$('#promoStatus');
+      if(res && res.ok){
+        activePromo = res;
+        badge.textContent = `${res.code} • ${res.label} • -${fmt(res.discount)}`;
+        badge.style.display='inline-flex'; badge.classList.remove('promo-bad'); badge.classList.add('promo-ok');
+      }else{
+        activePromo = null;
+        badge.textContent = res ? res.label || 'Not eligible' : 'Invalid code';
+        badge.style.display='inline-flex'; badge.classList.add('promo-bad'); badge.classList.remove('promo-ok');
+      }
+      updateCheckoutBreakdown();
+    });
+
+    // Tip quick buttons
+    document.getElementById('tipGroup').addEventListener('click', e=>{
+      const btn=e.target.closest('.tip-btn'); if(!btn) return;
+      selectQuickTip(btn); 
+    }, {passive:true});
+
+    // Tip custom amount
+    document.getElementById('tipApplyCustom').addEventListener('click', ()=>{
+      const v=+($('#tipCustomAmount').value||0);
+      setTip('amount', v);
+      // mark none/percent buttons inactive
+      $$('#tipGroup .tip-btn').forEach(b=>b.classList.remove('active'));
+    });
+
     $('#checkoutSubmit').addEventListener('click', ()=>{
       const name=$('#checkoutName').value.trim();
       const loc=$('#checkoutLocation').value.trim();
+      const notes=$('#checkoutNotes').value.trim();
       if(!name || !loc){ $('#checkoutError').style.display='block'; return; }
+
+      // persist profile
       saveProfile(name,loc);
-      addOrderFromCart(name,loc);
+
+      // compute final discount/tip
+      const totals=computeTotals();
+
+      // add order
+      addOrderFromCart(name, loc, notes, totals.disc, totals.tip);
+
+      // clear cart
       cart.clear(); renderCart();
       $('#checkoutOverlay').classList.remove('show');
       updateGreeting();
       showToast('Order placed 🎉');
     });
 
-    /* ----- Input handlers (inventory changes) ----- */
+    /* Inputs from inventory */
     document.addEventListener('input', (e)=>{
       const row=e.target.closest('.field[data-prod]'); if(!row) return;
       const name=row.getAttribute('data-prod');
@@ -1085,12 +1252,11 @@
       }
     });
 
-    /* ----- a11y ----- */
+    /* a11y keys */
     $$('.btn,.add,.ghost,.primary,.tab,.subtab').forEach(el=>{
       el.tabIndex=0;
       el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
     });
-
     /* ----- Analytics render ----- */
     function renderAnalytics(){
       const orders=loadOrders(), delivered=loadDelivered(), all=orders.concat(delivered);
