@@ -53,7 +53,7 @@
     /* Greeting */
     .greet{margin:8px 2px 2px;color:#c7c7cc;font-size:14px}
 
-    /* Promo – card-snap carousel */
+    /* Promo – card-snap carousel (auto-advances via JS) */
     .carousel{margin:10px 0 6px}
     .snapper{
       height:100px;display:flex;align-items:stretch;gap:var(--snap-gap);
@@ -152,6 +152,7 @@
     .toast.show{opacity:1;transform:translateY(0)}
   </style>
 </head>
+
 <body>
   <div class="app" role="application">
     <!-- Header -->
@@ -283,7 +284,7 @@
     </div>
   </div>
 
-  <!-- Checkout bottom-sheet (with Promo, Tips, Notes) -->
+  <!-- Checkout bottom-sheet -->
   <div id="checkoutOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Checkout">
     <div class="sheet" role="document">
       <div class="row-between">
@@ -375,20 +376,13 @@
             </div>
           </div>
 
-          <!-- Content (locked until unlock) -->
+          <!-- Content -->
           <div id="adminContent" style="display:none">
             <div class="admin-subtabs">
               <button class="subtab active" data-subtab="orders">Orders</button>
               <button class="subtab" data-subtab="inventory">Inventory</button>
               <button class="subtab" data-subtab="analytics">Analytics</button>
               <button class="subtab" data-subtab="history">History</button>
-            </div>
-
-            <div style="margin:4px 0 8px;display:flex;gap:8px;align-items:center;">
-              <button class="ghost" id="adminLock" style="padding:6px 10px">Lock Admin</button>
-              <div id="adminState" style="font-size:12px;color:#c7c7cc">
-                State: <strong id="adminStateVal">unknown</strong>
-              </div>
             </div>
 
             <!-- Orders -->
@@ -439,78 +433,105 @@
     </div>
   </div>
 
-  <!-- Toast host (kept) -->
+  <!-- Toast host -->
   <div id="toastHost"></div>
 
   <script>
-    /* Schema + SW */
-    const APP_SCHEMA_VERSION=3, SCHEMA_KEY='fitsnacks.schema';
-    try{
-      const cur=JSON.parse(localStorage.getItem(SCHEMA_KEY)||'0')||0;
-      if(cur<APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY,JSON.stringify(APP_SCHEMA_VERSION));
-    }catch{
-      localStorage.setItem(SCHEMA_KEY,JSON.stringify(APP_SCHEMA_VERSION));
+    /* ==== PWA + schema ==== */
+    const APP_SCHEMA_VERSION = 3, SCHEMA_KEY = 'fitsnacks.schema';
+    try {
+      const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY) || '0') || 0;
+      if (cur < APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
+    } catch {
+      localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
     }
-    if('serviceWorker' in navigator){
-      window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
     }
 
-    const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+    /* ==== DOM helpers ==== */
+    const $  = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
 
-    /* Keys */
-    const CART_KEY='fitsnacks.cart.v1';
-    const ORDERS_KEY='fitsnacks.orders';
-    const UNLOCK_KEY='fitsnacks.admin.unlocked';
-    const STOCK_KEY='fitsnacks.stock.qty';
-    const LOW_KEY='fitsnacks.stock.low';
-    const STOCK_SET_KEY='fitsnacks.stock.set';
-    const SALES_KEY='fitsnacks.sales.buckets';
-    const DELIVERED_KEY='fitsnacks.orders.delivered';
-    const FAVORITES_KEY='fitsnacks.favorites';
-    const PROMOS_KEY='fitsnacks.promos';
-    const ANALYTICS_KEY='fitsnacks.analytics.products';
-    const PROFILE_NAME_KEY='fitsnacks.profile.name';
-    const PROFILE_LOC_KEY='fitsnacks.profile.location';
+    // Important: force all <button> to be type="button" to prevent accidental form submits
+    $$('button:not([type])').forEach(b => b.type = 'button');
 
-    const ADMIN_PASSWORD='8TSB077';
-    const fmt=n=>'$'+n.toFixed(2);
+    /* ==== Keys & constants ==== */
+    const CART_KEY         = 'fitsnacks.cart.v1';
+    const ORDERS_KEY       = 'fitsnacks.orders';
+    const DELIVERED_KEY    = 'fitsnacks.orders.delivered';
+    const UNLOCK_KEY       = 'fitsnacks.admin.unlocked';
+    const STOCK_KEY        = 'fitsnacks.stock.qty';
+    const LOW_KEY          = 'fitsnacks.stock.low';
+    const STOCK_SET_KEY    = 'fitsnacks.stock.set';
+    const SALES_KEY        = 'fitsnacks.sales.buckets';
+    const FAVORITES_KEY    = 'fitsnacks.favorites';
+    const PROMOS_KEY       = 'fitsnacks.promos';
+    const ANALYTICS_KEY    = 'fitsnacks.analytics.products';
+    const PROFILE_NAME_KEY = 'fitsnacks.profile.name';
+    const PROFILE_LOC_KEY  = 'fitsnacks.profile.location';
 
-    /* Load/save helpers */
-    function loadCart(){try{return new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]'))}catch{return new Map()}}
-    function saveCart(m){try{localStorage.setItem(CART_KEY,JSON.stringify(Array.from(m.entries())))}catch{}}
-    function loadObj(k){try{return JSON.parse(localStorage.getItem(k)||'{}')}catch{return{}}}
-    function saveObj(k,o){localStorage.setItem(k,JSON.stringify(o||{}))}
-    function loadArr(k){try{return JSON.parse(localStorage.getItem(k)||'[]')}catch{return[]}}
-    function saveArr(k,a){localStorage.setItem(k,JSON.stringify(a||[]))}
-    function loadOrders(){try{return JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]')}catch{return[]}}
-    function saveOrders(v){localStorage.setItem(ORDERS_KEY,JSON.stringify(v||[]))}
-    function loadDelivered(){try{return JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]')}catch{return[]}}
-    function saveDelivered(v){localStorage.setItem(DELIVERED_KEY,JSON.stringify(v||[]))}
+    const ADMIN_PASSWORD = '8TSB077';
+    const IFTTT_WEBHOOK  = 'https://maker.ifttt.com/trigger/Fitsnack_order/with/key/MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA';
+    const fmt = n => '$' + n.toFixed(2);
+
+    /* ==== Storage helpers ==== */
+    const loadCart      = () => { try { return new Map(JSON.parse(localStorage.getItem(CART_KEY) || '[]')); } catch { return new Map(); } };
+    const saveCart      = (m) => { try { localStorage.setItem(CART_KEY, JSON.stringify(Array.from(m.entries()))); } catch {} };
+    const loadObj       = (k) => { try { return JSON.parse(localStorage.getItem(k) || '{}'); } catch { return {}; } };
+    const saveObj       = (k,o)=> localStorage.setItem(k, JSON.stringify(o||{}));
+    const loadArr       = (k) => { try { return JSON.parse(localStorage.getItem(k) || '[]'); } catch { return []; } };
+    const saveArr       = (k,a)=> localStorage.setItem(k, JSON.stringify(a||[]));
+    const loadOrders    = () => { try { return JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]'); } catch { return []; } };
+    const saveOrders    = (v) => localStorage.setItem(ORDERS_KEY, JSON.stringify(v||[]));
+    const loadDelivered = () => { try { return JSON.parse(localStorage.getItem(DELIVERED_KEY) || '[]'); } catch { return []; } };
+    const saveDelivered = (v) => localStorage.setItem(DELIVERED_KEY, JSON.stringify(v||[]));
     function loadSales(){
       try{
-        const raw=JSON.parse(localStorage.getItem(SALES_KEY)||'null');
-        if(raw&&raw.length===7&&raw[0].length===24) return raw;
+        const raw = JSON.parse(localStorage.getItem(SALES_KEY) || 'null');
+        if (raw && raw.length===7 && raw[0].length===24) return raw;
       }catch{}
-      return Array.from({length:7},()=>Array(24).fill(0));
+      return Array.from({length:7}, ()=>Array(24).fill(0));
     }
-    function saveSales(m){localStorage.setItem(SALES_KEY,JSON.stringify(m))}
-    function loadProfile(){return {name:localStorage.getItem(PROFILE_NAME_KEY)||'',loc:localStorage.getItem(PROFILE_LOC_KEY)||''}}
-    function saveProfile(n,l){try{localStorage.setItem(PROFILE_NAME_KEY,n||'');localStorage.setItem(PROFILE_LOC_KEY,l||'')}catch{}}
+    const saveSales = (m) => localStorage.setItem(SALES_KEY, JSON.stringify(m));
 
-    /* State */
-    let cart=loadCart();
-    let stockQty=loadObj(STOCK_KEY);
-    let stockLow=loadObj(LOW_KEY);
-    let stockSet=loadObj(STOCK_SET_KEY); if(!Object.keys(stockSet).length){stockSet={};saveObj(STOCK_SET_KEY,stockSet)}
-    let sales=loadSales();
-    let favorites=new Set(loadArr(FAVORITES_KEY));
-    let prodAnalytics=loadObj(ANALYTICS_KEY);
+    /* ==== State ==== */
+    let cart        = loadCart();
+    let stockQty    = loadObj(STOCK_KEY);
+    let stockLow    = loadObj(LOW_KEY);
+    let stockSet    = loadObj(STOCK_SET_KEY); if (!Object.keys(stockSet).length){ stockSet = {}; saveObj(STOCK_SET_KEY, stockSet); }
+    let sales       = loadSales();
+    let favorites   = new Set(loadArr(FAVORITES_KEY));
+    let prodMetrics = loadObj(ANALYTICS_KEY);
 
-    function isUnlocked(){return localStorage.getItem(UNLOCK_KEY)==='1'}
-    function setUnlocked(v){localStorage.setItem(UNLOCK_KEY,v?'1':'0')}
+    const isUnlocked   = () => localStorage.getItem(UNLOCK_KEY) === '1';
+    const setUnlocked  = (v) => localStorage.setItem(UNLOCK_KEY, v ? '1' : '0');
     setUnlocked(false); // locked by default
 
-    /* Seed promos once */
+    /* ==== Utils ==== */
+    function haptic(ms=15){ try{ if(navigator.vibrate) navigator.vibrate(ms); }catch{} }
+    function showToast(msg, ms=1800){
+      const host = $('#toastHost'); if(!host) return;
+      const el = document.createElement('div');
+      el.className = 'toast'; el.textContent = msg;
+      host.appendChild(el);
+      requestAnimationFrame(()=> el.classList.add('show'));
+      setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=> el.remove(), 240); }, ms);
+    }
+    function ensureMetrics(name){
+      if(!prodMetrics[name]) prodMetrics[name] = {opens:0,adds:0,addedQty:0,purchasedQty:0,revenue:0};
+      return prodMetrics[name];
+    }
+
+    /* ==== Greeting ==== */
+    const loadProfile = () => ({ name: localStorage.getItem(PROFILE_NAME_KEY)||'', loc: localStorage.getItem(PROFILE_LOC_KEY)||'' });
+    const saveProfile = (n,l) => { try{ localStorage.setItem(PROFILE_NAME_KEY,n||''); localStorage.setItem(PROFILE_LOC_KEY,l||''); }catch{} };
+    function updateGreeting(){
+      const g = $('#greet'); const p = loadProfile();
+      if (g) g.textContent = p.name ? `Hi, ${p.name} 👋` : 'Welcome 👋';
+    }
+
+    /* ==== Promos (card-snap) ==== */
     if(!localStorage.getItem(PROMOS_KEY)){
       saveArr(PROMOS_KEY, [
         {img:'assets/carousel-1.jpg', title:'Fuel your study grind', cta:'Shop snacks', action:'scrollGrid'},
@@ -518,35 +539,18 @@
         {img:'assets/carousel-3.jpg', title:'Need help?', cta:'Open settings', action:'openSettings'}
       ]);
     }
-
-    /* Utils */
-    function haptic(ms=15){try{if(navigator.vibrate)navigator.vibrate(ms)}catch{}}
-    function fmtTotal(){let t=0;for(const[,info]of cart)t+=info.price*info.qty;return t}
-    function cartItemCount(){let n=0;for(const v of cart.values()) n+=v.qty;return n}
-    function showToast(msg,ms=1800){
-      const host=$('#toastHost');
-      const el=document.createElement('div');
-      el.className='toast'; el.textContent=msg;
-      host.appendChild(el);
-      requestAnimationFrame(()=>el.classList.add('show'));
-      setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),250)},ms);
+    function promoAction(p){
+      if (p.action==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
+      if (p.action==='filter'){ activateChip(p.value||''); }
+      if (p.action==='scrollGrid'){ document.getElementById('grid')?.scrollIntoView({behavior:'smooth',block:'start'}); }
     }
-    function updateGreeting(){
-      const g=$('#greet'); const p=loadProfile();
-      if(g) g.textContent = p.name ? `Hi, ${p.name} 👋` : 'Welcome 👋';
-    }
-    function updateCartBar(){
-      /* Sticky cart bar removed -- keep no-op to avoid breaking calls */
-    }
-
-    /* ----- Promos (card-snap carousel) ----- */
     function buildPromos(){
-      const data=loadArr(PROMOS_KEY), snapper=$('#snapper'); if(!snapper) return;
+      const data = loadArr(PROMOS_KEY), snapper = $('#snapper'); if(!snapper) return;
       snapper.querySelectorAll('.snap-card').forEach(n=>n.remove());
-      const after=snapper.lastElementChild;
+      const after = snapper.lastElementChild;
       data.forEach(p=>{
-        const c=document.createElement('div');
-        c.className='snap-card';
+        const c = document.createElement('div');
+        c.className = 'snap-card';
         c.innerHTML = `
           <img class="banner" src="${p.img}" alt="${p.title||'promo'}">
           <div class="snap-meta">
@@ -554,43 +558,32 @@
             ${p.cta?`<button class="ghost snap-cta">${p.cta}</button>`:''}
           </div>`;
         snapper.insertBefore(c, after);
-        if(p.action){
-          c.addEventListener('click',e=>{
-            if(e.target.closest('.snap-cta')) return;
-            promoAction(p);
-          }, {passive:true});
-          c.querySelector('.snap-cta')?.addEventListener('click',e=>{
-            e.stopPropagation(); promoAction(p);
-          }, {passive:true});
+        if (p.action){
+          c.addEventListener('click', e=>{ if(e.target.closest('.snap-cta')) return; promoAction(p); }, {passive:true});
+          c.querySelector('.snap-cta')?.addEventListener('click', e=>{ e.stopPropagation(); promoAction(p); }, {passive:true});
         }
       });
     }
-    function promoAction(p){
-      if(p.action==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
-      if(p.action==='filter'){ activateChip(p.value||''); }
-      if(p.action==='scrollGrid'){ document.getElementById('grid')?.scrollIntoView({behavior:'smooth',block:'start'}); }
-    }
     function initCarousel(){
-      const snapper=$('#snapper'); if(!snapper) return;
-      const cards=$$('.snap-card'), dotsWrap=$('#snapDots');
-      dotsWrap.innerHTML = cards.map(()=>'<div class="snap-dot"></div>').join('');
-      const dots=$$('.snap-dot'), banners=$$('.banner');
-      function setDot(i){ dots.forEach((d,k)=>d.classList.toggle('active',k===i)); }
+      const snapper = $('#snapper'); if(!snapper) return;
+      const cards   = $$('.snap-card');
+      const dotsWrap= $('#snapDots'); dotsWrap.innerHTML = cards.map(()=>'<div class="snap-dot"></div>').join('');
+      const dots    = $$('.snap-dot'), banners = $$('.banner');
       let idx=0, holdMs=5000, slideMs=3000, paused=false, af=null, tId=null, loaded=0;
-
+      function setDot(i){ dots.forEach((d,k)=>d.classList.toggle('active',k===i)); }
       function centerOf(el){ const r=el.getBoundingClientRect(); return r.left+r.width/2; }
       function containerCenter(){ const r=snapper.getBoundingClientRect(); return r.left+r.width/2; }
 
       function snapTo(i,dur){
         i=(i+cards.length)%cards.length; idx=i; setDot(idx);
-        const target=cards[i].offsetLeft-(snapper.clientWidth-cards[i].clientWidth)/2;
-        if(dur<=0){ snapper.scrollLeft=target; return; }
+        const target = cards[i].offsetLeft - (snapper.clientWidth - cards[i].clientWidth)/2;
+        if(dur<=0){ snapper.scrollLeft = target; return; }
         const start=performance.now(), from=snapper.scrollLeft, dist=target-from;
         cancelAnimationFrame(af);
         function step(now){
           const t=Math.min(1,(now-start)/dur);
           const eased = t<.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1;
-          snapper.scrollLeft = from+dist*eased;
+          snapper.scrollLeft = from + dist*eased;
           if(t<1 && !paused) af=requestAnimationFrame(step);
         }
         af=requestAnimationFrame(step);
@@ -604,90 +597,48 @@
         }, holdMs+slideMs);
       }
       function start(){ paused=false; clearTimeout(tId); autoLoop(); }
-      function stop(){ paused=true; clearTimeout(tId); cancelAnimationFrame(af); }
+      function stop(){ paused=true;  clearTimeout(tId); cancelAnimationFrame(af); }
 
       banners.forEach(img=>{
-        img.addEventListener('load',mark,{once:true});
-        img.addEventListener('error',mark,{once:true});
+        img.addEventListener('load', mark, {once:true});
+        img.addEventListener('error', mark, {once:true});
       });
       function mark(){ loaded++; if(loaded>=banners.length){ start(); } }
 
       ['pointerdown','touchstart','mousedown','mouseenter'].forEach(ev=>snapper.addEventListener(ev,()=>stop()));
       ['pointerup','touchend','mouseup','mouseleave'].forEach(ev=>snapper.addEventListener(ev,()=>start()));
-      snapper.addEventListener('scroll',()=>{
+      snapper.addEventListener('scroll', ()=>{
         const c=containerCenter(); let best=Infinity,bestI=0;
         const now=$$('.snap-card');
-        now.forEach((card,i)=>{ const d=Math.abs(c-centerOf(card)); if(d<best){best=d;bestI=i} });
+        now.forEach((card,i)=>{ const d=Math.abs(c-centerOf(card)); if(d<best){best=d;bestI=i;} });
         if(bestI!==idx){ idx=bestI; setDot(idx); }
       });
       dots.forEach((dot,i)=>dot.addEventListener('click',()=>{ stop(); snapTo(i,400); start(); }));
       setDot(0); snapTo(0,0);
     }
 
-    /* ----- Search ----- */
+    /* ==== Search ==== */
     $('#search').addEventListener('input', e=>{
-      const q=e.target.value.toLowerCase();
-      $$('.card').forEach(c=>c.style.display = c.dataset.name.toLowerCase().includes(q) ? '' : 'none');
+      const q = e.target.value.toLowerCase();
+      $$('.card').forEach(c=> c.style.display = c.dataset.name.toLowerCase().includes(q) ? '' : 'none');
     });
 
-    /* ----- Chips + Favorites filter ----- */
+    /* ==== Chips + Favorites ==== */
     function activateChip(val){
-      $$('#chips .chip').forEach(ch=>ch.classList.toggle('active',ch.dataset.filter===val));
+      $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch.dataset.filter===val));
       $$('.card').forEach(c=>{
         const tags=(c.dataset.tags||'').toLowerCase();
         const name=c.dataset.name;
-        const hit = !val || val==='' || (val==='favorites' ? favorites.has(name) : tags.includes(val));
-        c.style.display = hit ? '' : 'none';
+        const show = !val || val==='' || (val==='favorites' ? favorites.has(name) : tags.includes(val));
+        c.style.display = show ? '' : 'none';
       });
     }
-    document.getElementById('chips').addEventListener('click', e=>{
-      const chip=e.target.closest('.chip'); if(!chip) return;
+    $('#chips').addEventListener('click', e=>{
+      const chip = e.target.closest('.chip'); if(!chip) return;
       activateChip(chip.dataset.filter||'');
     }, {passive:true});
     activateChip('');
 
-    /* ----- Cart ----- */
-    function refreshBadge(){
-      let n=0; for(const v of cart.values()) n+=v.qty;
-      const b=$('#cartBadge'); if(!b) return;
-      if(n>0){ b.textContent=n; b.style.display='inline-flex'; }
-      else { b.style.display='none'; }
-    }
-    function renderCart(){
-      let total=0, html='';
-      for(const [name,info] of cart){
-        const line=info.price*info.qty; total+=line;
-        html += `<div class="row-between" style="margin-top:6px">
-          <div style="display:flex;gap:10px;align-items:center">
-            <button data-act="-" data-name="${name}" class="ghost" style="padding:4px 8px">−</button>
-            <div style="min-width:24px;text-align:center">${info.qty}</div>
-            <button data-act="+" data-name="${name}" class="ghost" style="padding:4px 8px">+</button>
-            <button data-act="del" data-name="${name}" class="ghost" style="padding:4px 8px" title="Remove"><span aria-hidden="true">🗑️</span></button>
-            <div style="font-weight:700;margin-left:8px">${name}</div>
-          </div>
-          <div style="font-weight:700">${fmt(line)}</div>
-        </div>`;
-      }
-      $('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
-      $('#cartTotal').textContent = fmt(total);
-      saveCart(cart); refreshBadge(); updateCartBar();
-    }
-
-    document.addEventListener('click', (e)=>{
-      const b=e.target.closest('button'); if(!b) return;
-      if(b.matches('[data-act][data-name]')){
-        const name=b.getAttribute('data-name');
-        const act=b.getAttribute('data-act');
-        const entry=cart.get(name); if(!entry) return;
-        if(act==='+') entry.qty = Math.min(99, entry.qty+1);
-        if(act==='-') entry.qty = Math.max(1, entry.qty-1);
-        if(act==='del') { cart.delete(name); renderCart(); return; }
-        cart.set(name, entry);
-        renderCart();
-      }
-    });
-
-    /* ----- Favorites toggle ----- */
     function syncFavStars(){
       $$('.card').forEach(c=>{
         const f=c.querySelector('.fav'); if(!f) return;
@@ -703,45 +654,64 @@
       syncFavStars();
     }, {passive:true});
 
-    /* ----- Product mini-sheet + analytics capture ----- */
-    let current=null;
-    function ensureMetrics(n){
-      if(!prodAnalytics[n]) prodAnalytics[n]={opens:0,adds:0,addedQty:0,purchasedQty:0,revenue:0};
-      return prodAnalytics[n];
-    }
+    /* ==== Product sheet ==== */
+    let current = null;
     function openProductSheet(card){
-      current={name:card.dataset.name, price:parseFloat(card.dataset.price), img:card.dataset.img};
-      $('#sheetTitle').textContent=current.name;
-      $('#sheetImg').src=current.img||''; $('#sheetImg').alt=current.name||'';
-      $('#sheetPrice').textContent=fmt(current.price);
-      $('#qtyVal').textContent=1; $('#sheetAdd').textContent='Add • '+fmt(current.price);
+      current = {name:card.dataset.name, price:+card.dataset.price, img:card.dataset.img};
+      $('#sheetTitle').textContent = current.name;
+      $('#sheetImg').src = current.img || ''; $('#sheetImg').alt = current.name || '';
+      $('#sheetPrice').textContent = fmt(current.price);
+      $('#qtyVal').textContent = 1; $('#sheetAdd').textContent = 'Add • ' + fmt(current.price);
 
-      ensureMetrics(current.name).opens++; saveObj(ANALYTICS_KEY, prodAnalytics);
+      // analytics open
+      ensureMetrics(current.name).opens++; saveObj(ANALYTICS_KEY, prodMetrics);
 
-      if(stockSet[current.name]){
-        const q=Number(stockQty[current.name]||0), l=Number(stockLow[current.name]||0);
-        $('#sheetStock').textContent='Stock: '+q;
-        const w=$('#sheetLowWarn');
-        if(l>0 && q<=l){ w.style.display='block'; w.textContent='Low stock ('+q+' ≤ '+l+')'; }
-        else { w.style.display='none'; }
-      }else{
-        $('#sheetStock').textContent='Stock: --'; $('#sheetLowWarn').style.display='none';
+      // stock info (only if set)
+      if (stockSet[current.name]){
+        const q = Number(stockQty[current.name]||0);
+        const l = Number(stockLow[current.name]||0);
+        $('#sheetStock').textContent = 'Stock: ' + q;
+        const lowWarn = $('#sheetLowWarn');
+        if (l>0 && q<=l){ lowWarn.style.display='block'; lowWarn.textContent = `Low stock (${q} ≤ ${l})`; }
+        else { lowWarn.style.display='none'; }
+      } else {
+        $('#sheetStock').textContent = 'Stock: --'; $('#sheetLowWarn').style.display='none';
       }
 
       $('#productSheet').classList.add('show');
     }
+    // open sheet on card click (except + or ⭐)
     $$('.card').forEach(card=>{
       card.addEventListener('click', e=>{
-        if(e.target.closest('.add') || e.target.closest('.fav')) return;
+        if (e.target.closest('.add') || e.target.closest('.fav')) return;
         openProductSheet(card);
       });
     });
-    $$('.add').forEach(btn=>{
+    // add button: short click opens sheet; long press quick-add 1
+    function attachAddButtonEnhancements(btn){
+      let timer=null, long=false;
+      const start=()=>{
+        long=false; clearTimeout(timer);
+        timer=setTimeout(()=>{
+          long=true;
+          const card=btn.closest('.card');
+          const name=card.dataset.name; const price=+card.dataset.price;
+          const item=cart.get(name)||{price,qty:0};
+          item.qty+=1; cart.set(name,item); saveCart(cart); renderCart();
+          haptic(12); showToast(`Added 1 × ${name}`);
+        }, 520);
+      };
+      const cancel=()=>clearTimeout(timer);
+      btn.addEventListener('touchstart', start, {passive:true});
+      btn.addEventListener('mousedown', start);
+      ['touchend','touchcancel','mouseup','mouseleave'].forEach(ev=>btn.addEventListener(ev, cancel));
       btn.addEventListener('click', e=>{
-        const card=btn.closest('.card'); if(!card) return;
-        openProductSheet(card);
+        if (long){ e.preventDefault(); e.stopPropagation(); return; }
+        const card=btn.closest('.card'); openProductSheet(card);
       });
-    });
+    }
+    $$('.add').forEach(attachAddButtonEnhancements);
+
     $('#qtyPlus').addEventListener('click', ()=>{
       const n=Math.min(99, parseInt($('#qtyVal').textContent)+1);
       $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price*n);
@@ -753,78 +723,90 @@
     function closeProductSheet(){ $('#productSheet').classList.remove('show'); }
     $('#sheetClose').addEventListener('click', closeProductSheet);
     $('#sheetAdd').addEventListener('click', ()=>{
-      const n=parseInt($('#qtyVal').textContent)||1;
-      const m=ensureMetrics(current.name); m.adds++; m.addedQty+=n; saveObj(ANALYTICS_KEY, prodAnalytics);
-      const e=cart.get(current.name)||{price:current.price,qty:0};
-      e.qty+=n; cart.set(current.name,e);
+      const n = parseInt($('#qtyVal').textContent);
+      const m = ensureMetrics(current.name); m.adds++; m.addedQty += n; saveObj(ANALYTICS_KEY, prodMetrics);
+      const e = cart.get(current.name)||{price:current.price,qty:0};
+      e.qty += n; cart.set(current.name,e);
       closeProductSheet(); renderCart(); $('#cartOverlay').classList.add('show'); haptic(12);
     });
 
-    /* ----- Overlays open/close ----- */
-    function openCart(){ $('#cartOverlay').classList.add('show'); }
-    function closeCart(){ $('#cartOverlay').classList.remove('show'); }
-    function openSettings(def=false){ $('#settingsOverlay').classList.add('show'); switchTab(def?'admin':'general'); if(def) ensureAdminLoginVisible(); }
-    function closeSettings(){ $('#settingsOverlay').classList.remove('show'); }
+    /* ==== Cart UI basics ==== */
+    const fmtTotal = () => { let t=0; for(const [,info] of cart) t += info.price*info.qty; return t; };
+    function refreshBadge(){
+      let n=0; for(const v of cart.values()) n += v.qty;
+      const b=$('#cartBadge'); if(!b) return;
+      if (n>0){ b.textContent=n; b.style.display='inline-flex'; } else { b.style.display='none'; }
+    }
+    function renderCart(){
+      let total=0, html='';
+      for (const [name,info] of cart){
+        const line=info.price*info.qty; total+=line;
+        html += `<div class="row-between" style="margin-top:6px">
+          <div style="display:flex;gap:10px;align-items:center">
+            <button data-act="-" data-name="${name}" class="ghost" style="padding:4px 8px">−</button>
+            <div style="min-width:24px;text-align:center">${info.qty}</div>
+            <button data-act="+" data-name="${name}" class="ghost" style="padding:4px 8px">+</button>
+            <div style="font-weight:700;margin-left:8px">${name}</div>
+          </div>
+          <div style="font-weight:700">${fmt(line)}</div>
+        </div>`;
+      }
+      $('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
+      $('#cartTotal').textContent = fmt(total);
+      saveCart(cart); refreshBadge();
+    }
+    document.addEventListener('click', e=>{
+      const b=e.target.closest('button'); if(!b) return;
+      if (b.matches('[data-act][data-name]')){
+        const name=b.getAttribute('data-name');
+        const act =b.getAttribute('data-act');
+        const entry=cart.get(name); if(!entry) return;
+        entry.qty = Math.max(act==='+' ? entry.qty+1 : entry.qty-1, 1);
+        renderCart();
+      }
+    }, {passive:true});
+
+    /* ==== Overlay open/close ==== */
+    const openCart      = ()=> $('#cartOverlay').classList.add('show');
+    const closeCart     = ()=> $('#cartOverlay').classList.remove('show');
+    const openSettings  = (def=false)=>{ $('#settingsOverlay').classList.add('show'); switchTab(def?'admin':'general'); if(def) ensureAdminLoginVisible(); };
+    const closeSettings = ()=> $('#settingsOverlay').classList.remove('show');
     $('#cartBtn').addEventListener('click', openCart);
     $('#cartBack').addEventListener('click', closeCart);
-    $('#settingsBtn').addEventListener('click', ()=>openSettings(false));
+    $('#settingsBtn').addEventListener('click', ()=> openSettings(false));
     $('#settingsClose').addEventListener('click', closeSettings);
 
-    /* Re-order last */
-    function reorderLast(){
-      const active=loadOrders(), hist=loadDelivered();
-      const src=active[0]||hist[0];
-      if(!src){ showToast('No previous orders'); return; }
-      cart=new Map();
-      for(const line of src.lines){ cart.set(line.name, {price:line.price, qty:line.qty}); }
-      saveCart(cart); renderCart(); openCart(); haptic(12);
+    /* ==== Settings top tabs & Admin subtabs (robust delegates) ==== */
+    // Top level tabs
+    const settingsTabs = document.querySelector('#settingsOverlay .tabs');
+    if (settingsTabs) {
+      settingsTabs.addEventListener('click', (e) => {
+        const g = e.target.closest('#tabGeneral');
+        const a = e.target.closest('#tabAdmin');
+        if (g) { e.preventDefault(); switchTab('general'); }
+        if (a) { e.preventDefault(); switchTab('admin'); }
+      });
     }
-    $('#reorderLast').addEventListener('click', reorderLast);
-
-    /* ----- Orders, Delivered/History, Sales ----- */
-    function addOrderFromCart(name, location, notes, discount, tip){
-      const lines=[]; let subtotal=0;
-      for(const [n,info] of cart){
-        const line=info.price*info.qty; subtotal+=line; lines.push({name:n, price:info.price, qty:info.qty, line});
-        ensureMetrics(n).purchasedQty += info.qty;
-        ensureMetrics(n).revenue += line;
-      }
-      saveObj(ANALYTICS_KEY, prodAnalytics);
-
-      const total = Math.max(0, subtotal - (discount||0)) + (tip||0);
-
-      const order={when:new Date().toISOString(), name, location, notes:notes||'', lines, total, discount:discount||0, tip:tip||0};
-      const list=loadOrders(); list.unshift(order); saveOrders(list);
-
-      const d=new Date(), dow=d.getDay(), hr=d.getHours();
-      sales[dow][hr]=(sales[dow][hr]||0)+1; saveSales(sales);
-
-      return order;
+    // Admin subtabs
+    const adminContent = document.getElementById('adminContent');
+    if (adminContent) {
+      adminContent.addEventListener('click', (e) => {
+        const btn = e.target.closest('.subtab'); if (!btn) return;
+        $$('.subtab').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const id = btn.getAttribute('data-subtab');
+        document.getElementById('subtab-orders').style.display    = (id === 'orders')    ? 'block':'none';
+        document.getElementById('subtab-inventory').style.display = (id === 'inventory') ? 'block':'none';
+        document.getElementById('subtab-analytics').style.display = (id === 'analytics') ? 'block':'none';
+        document.getElementById('subtab-history').style.display   = (id === 'history')   ? 'block':'none';
+        if (id==='orders')    renderOrders();
+        if (id==='inventory'){renderInventory(); updateStockBadges();}
+        if (id==='analytics') renderAnalytics?.();
+        if (id==='history')  {pruneDelivered(72); renderHistory();}
+      });
     }
 
-    function renderOrders(){
-      const list=loadOrders(), box=$('#ordersList'); if(!box) return;
-      if(!list.length){ box.innerHTML='No orders yet'; return; }
-      box.innerHTML = list.map((o,i)=>{
-        const items = o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
-        const when = new Date(o.when).toLocaleString();
-        return `<div class="order-item" data-idx="${i}" role="button" tabindex="0"
-                  style="padding:8px;border-bottom:1px solid #2a2a30;cursor:pointer">
-                  <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-                    <div>
-                      <div style="font-weight:700">${when}</div>
-                      <div style="color:#bbb;margin-top:4px">${o.name} @ ${o.location}</div>
-                    </div>
-                    <div style="font-weight:700">${fmt(o.total)}</div>
-                  </div>
-                  <div style="margin-top:6px">${items}</div>
-                  ${o.notes?`<div style="margin-top:6px;color:#c7c7cc;font-size:12px">📝 ${o.notes}</div>`:''}
-                </div>`;
-      }).join('');
-    }
-
-    /* ----- Inventory + Badges ----- */
-    function getProducts(){ return $$('.card').map(c=>({name:c.dataset.name, price:+c.dataset.price, img:c.dataset.img, tags:(c.dataset.tags||'').toLowerCase()})); }
+    /* ==== Build UI pieces on load ==== */
     function ensureBadgeWrap(card){
       let w=card.querySelector('.badge-wrap');
       if(!w){ w=document.createElement('div'); w.className='badge-wrap'; card.appendChild(w); }
@@ -834,7 +816,7 @@
       $$('.card').forEach(card=>{
         const name=card.dataset.name, wrap=ensureBadgeWrap(card);
         wrap.innerHTML='';
-        if(!stockSet[name]) return; // only show when stock set
+        if(!stockSet[name]) return; // show only if stock configured
         const qty=Number(stockQty[name]||0), low=Number(stockLow[name]||0);
         const b=document.createElement('div'); b.className='stock-badge'; b.textContent='Stock: '+qty; wrap.appendChild(b);
         if(low>0 && qty<=low){
@@ -856,7 +838,59 @@
       }
     }
 
-    /* ----- Settings tabs + Admin lock ----- */
+    // Build promos & start auto-advance
+    buildPromos();
+    initCarousel();
+
+    // Initial paints
+    renderCart(); refreshBadge(); updateStockBadges(); syncFavStars(); updateGreeting();
+
+    /* ========= Orders / Inventory / Heat ========= */
+    function getProducts(){
+      return $$('.card').map(c=>({
+        name:c.dataset.name,
+        price:+c.dataset.price,
+        img:c.dataset.img,
+        tags:(c.dataset.tags||'').toLowerCase()
+      }));
+    }
+
+    function renderInventory(){
+      const wrap = $('#inventoryList'); if(!wrap) return;
+      const products = getProducts();
+      if(!products.length){ wrap.textContent='No products'; return; }
+      wrap.innerHTML = products.map(p=>{
+        const hasQ = Object.prototype.hasOwnProperty.call(stockQty,p.name);
+        const hasL = Object.prototype.hasOwnProperty.call(stockLow,p.name);
+        const qty  = hasQ ? Number(stockQty[p.name]||0) : '';
+        const low  = hasL ? Number(stockLow[p.name]||0) : '';
+        return `<div class="field" data-prod="${p.name}">
+          <div style="flex:1;font-weight:600">${p.name}</div>
+          <label style="font-size:12px;color:#c7c7cc">Stock</label>
+          <input type="number" min="0" value="${qty}" data-k="qty" placeholder="--">
+          <label style="font-size:12px;color:#c7c7cc">Low</label>
+          <input type="number" min="0" value="${low}" data-k="low" placeholder="--">
+        </div>`;
+      }).join('');
+    }
+
+    function renderHeat(){
+      const grid=$('#heatGrid'); if(!grid) return;
+      let max=0; for(let d=0; d<7; d++) for(let h=0; h<24; h++) if(sales[d][h]>max) max=sales[d][h];
+      grid.innerHTML='';
+      for(let d=0; d<7; d++){
+        for(let h=0; h<24; h++){
+          const v=sales[d][h]; const alpha=max?(0.08+0.62*(v/max)):0.10; // 0.10..0.70
+          const cell=document.createElement('div');
+          cell.className='heat-cell';
+          cell.title=`Day ${d}, ${h}:00 -- ${v}`;
+          cell.style.background=`rgba(110,168,254,${alpha})`;
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    /* ========= Admin: tabs & auth ========= */
     function switchTab(which){
       const tabG=$('#tabGeneral'), tabA=$('#tabAdmin'),
             panG=$('#panelGeneral'), panA=$('#panelAdmin');
@@ -871,56 +905,51 @@
         panA.style.display='none'; panG.style.display='block';
       }
     }
-    function showAdminState(){
-      const el=$('#adminStateVal'); if(!el) return;
-      el.textContent = isUnlocked() ? 'Unlocked (no password shown)' : 'Locked (password required)';
-    }
-    function focusAdminPassword(){ const el=$('#adminPassword'); if(el){ el.focus(); el.select && el.select(); } }
-    function renderInventory(){
-      const wrap=$('#inventoryList'); if(!wrap) return;
-      const products=getProducts(); if(!products.length){ wrap.textContent='No products'; return; }
-      wrap.innerHTML = products.map(p=>{
-        const hasQ=Object.prototype.hasOwnProperty.call(stockQty,p.name);
-        const hasL=Object.prototype.hasOwnProperty.call(stockLow,p.name);
-        const qty = hasQ ? Number(stockQty[p.name]||0) : '';
-        const low = hasL ? Number(stockLow[p.name]||0) : '';
-        return `<div class="field" data-prod="${p.name}">
-          <div style="flex:1;font-weight:600">${p.name}</div>
-          <label style="font-size:12px;color:#c7c7cc">Stock</label>
-          <input type="number" min="0" value="${qty}" data-k="qty" placeholder="--">
-          <label style="font-size:12px;color:#c7c7cc">Low</label>
-          <input type="number" min="0" value="${low}" data-k="low" placeholder="--">
-        </div>`;
-      }).join('');
-    }
+
     function ensureAdminLoginVisible(){
-      const logged=isUnlocked();
-      $('#adminLogin').style.display = logged ? 'none' : 'block';
-      $('#adminContent').style.display = logged ? 'block' : 'none';
-      if(logged){
-        renderOrders(); renderInventory(); updateStockBadges(); pruneDelivered(72); renderHistory(); renderAnalytics();
-      }else{
-        setTimeout(focusAdminPassword,0);
+      const logged = isUnlocked();
+      $('#adminLogin').style.display  = logged ? 'none'  : 'block';
+      $('#adminContent').style.display= logged ? 'block' : 'none';
+      if (logged){
+        renderOrders(); renderInventory(); renderHeat();
+        updateStockBadges(); pruneDelivered(72); renderHistory(); renderAnalytics?.();
+      } else {
+        const el=$('#adminPassword'); el && (el.focus(), el.select && el.select());
       }
-      showAdminState();
     }
-    // main tabs
-    document.addEventListener('click',(e)=>{
-      if(e.target.closest('#tabGeneral')) switchTab('general');
-      if(e.target.closest('#tabAdmin'))   switchTab('admin');
-    }, {passive:true});
-    // admin auth + lock + history clear
+
+    // top tabs already wired in chunk 4; wire admin auth & history clear
     document.addEventListener('click',(e)=>{
       if(e.target.closest('#adminSubmit')){
-        const ok = $('#adminPassword').value===ADMIN_PASSWORD;
+        const ok = $('#adminPassword').value==='8TSB077';
         if(ok){ setUnlocked(true); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
         else { $('#adminError').style.display='block'; }
       }
-      if(e.target && e.target.id==='adminLock'){ setUnlocked(false); ensureAdminLoginVisible(); }
       if(e.target && e.target.id==='historyClear'){ saveDelivered([]); renderHistory(); }
     }, {passive:true});
 
-    /* ----- Order sheet open/deliver ----- */
+    /* ========= Orders list + History ========= */
+    function renderOrders(){
+      const list = loadOrders(), box = $('#ordersList'); if(!box) return;
+      if(!list.length){ box.innerHTML='No orders yet'; return; }
+      box.innerHTML = list.map((o,i)=>{
+        const items = o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
+        const when  = new Date(o.when).toLocaleString();
+        return `<div class="order-item" data-idx="${i}" role="button" tabindex="0"
+                  style="padding:8px;border-bottom:1px solid #2a2a30;cursor:pointer">
+                  <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+                    <div>
+                      <div style="font-weight:700">${when}</div>
+                      <div style="color:#bbb;margin-top:4px">${o.name} @ ${o.location}</div>
+                    </div>
+                    <div style="font-weight:700">${fmt(o.total)}</div>
+                  </div>
+                  <div style="margin-top:6px">${items}</div>
+                  ${o.notes?`<div style="margin-top:6px;color:#c7c7cc;font-size:12px">📝 ${o.notes}</div>`:''}
+                </div>`;
+      }).join('');
+    }
+
     document.addEventListener('click', e=>{
       const row=e.target.closest('.order-item'); if(!row) return;
       openOrderSheet(parseInt(row.getAttribute('data-idx'),10));
@@ -930,6 +959,42 @@
       const row=e.target.closest('.order-item'); if(!row) return;
       e.preventDefault(); openOrderSheet(parseInt(row.getAttribute('data-idx'),10));
     });
+
+    function renderHistory(){
+      const box=$('#historyList'); if(!box) return;
+      pruneDelivered(72);
+      const list=loadDelivered();
+      if(!list.length){ box.textContent='No delivered orders'; return; }
+      box.innerHTML = list.map(o=>{
+        const items=o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
+        const placed=new Date(o.when).toLocaleString();
+        const del=o.deliveredWhen?new Date(o.deliveredWhen).toLocaleString():'--';
+        return `<div style="padding:8px;border-bottom:1px solid #2a2a30">
+          <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+            <div>
+              <div style="font-weight:700">Delivered: ${del}</div>
+              <div style="color:#bbb;margin-top:2px">Placed: ${placed}</div>
+              <div style="color:#bbb;margin-top:2px">${o.name} @ ${o.location}</div>
+            </div>
+            <div style="font-weight:700">${fmt(o.total)}</div>
+          </div>
+          <div style="margin-top:6px">${items}</div>
+          ${o.notes?`<div style="margin-top:6px;color:#c7c7cc;font-size:12px">📝 ${o.notes}</div>`:''}
+        </div>`;
+      }).join('');
+    }
+
+    function pruneDelivered(hours){
+      const list=loadDelivered();
+      const cutoff=Date.now()-hours*3600*1000;
+      const keep=list.filter(o=>{
+        const t=Date.parse(o.deliveredWhen||o.when||0);
+        return isFinite(t) && t>=cutoff;
+      });
+      if(keep.length!==list.length) saveDelivered(keep);
+    }
+
+    /* ========= Order detail sheet ========= */
     let currentOrderIndex=null;
     function openOrderSheet(idx){
       const orders=loadOrders(); const o=orders[idx]; if(!o) return;
@@ -955,37 +1020,38 @@
       closeOrderSheet();
     });
 
-    /* ===== Checkout (promos, tips, notes, totals) ===== */
+    /* ========= Checkout totals / promo / tips ========= */
     const PROMO_TABLE = {
       'SAVE10': {type:'percent', value:0.10, label:'10% off sitewide'},
       'BAR1':   {type:'amount',  value:1.00, label:'$1 off protein items', rule:'tag:protein'}
     };
-    let activePromo = null;        // {code,type,value,label,rule,discount,ok}
-    let activeTip   = {kind:'none', amount:0};
+    let activePromo=null;
+    let activeTip={kind:'none', amount:0};
+
     function evalPromoDiscount(code){
       code=(code||'').trim().toUpperCase();
       if(!code || !PROMO_TABLE[code]) return null;
-      const p = PROMO_TABLE[code];
-      let subtotal = 0; for(const[,info] of cart) subtotal += info.price*info.qty;
+      const p=PROMO_TABLE[code];
+      let subtotal=0; for(const[,info] of cart) subtotal+=info.price*info.qty;
       if(subtotal<=0) return null;
+
       let discount=0;
       if(p.rule && p.rule.startsWith('tag:')){
-        const t = p.rule.slice(4).toLowerCase();
-        let eligible = 0;
+        const t=p.rule.slice(4).toLowerCase();
+        let eligible=0;
         $$('.card').forEach(c=>{
-          const name=c.dataset.name;
-          const tags=(c.dataset.tags||'').toLowerCase();
-          const entry=cart.get(name);
-          if(!entry) return;
+          const name=c.dataset.name, tags=(c.dataset.tags||'').toLowerCase();
+          const entry=cart.get(name); if(!entry) return;
           if(tags.includes(t)) eligible += entry.price*entry.qty;
         });
         if(eligible<=0) return {code, label:`No eligible items for ${code}`, type:'none', value:0, discount:0, ok:false};
-        discount = p.type==='percent' ? eligible * p.value : Math.min(p.value, eligible);
+        discount = p.type==='percent' ? eligible*p.value : Math.min(p.value, eligible);
       }else{
-        discount = p.type==='percent' ? subtotal * p.value : Math.min(p.value, subtotal);
+        discount = p.type==='percent' ? subtotal*p.value : Math.min(p.value, subtotal);
       }
       return {code, type:p.type, value:p.value, label:p.label, rule:p.rule||'', discount:Math.max(0,discount), ok:true};
     }
+
     function computeTotals(){
       let subtotal=0; for(const[,info] of cart) subtotal+=info.price*info.qty;
       const disc = activePromo?.discount || 0;
@@ -1000,6 +1066,7 @@
       $('#ckTip').textContent  = fmt(tip);
       $('#ckTotal').textContent= fmt(total);
     }
+
     function setTip(kind, amount){
       activeTip = {kind, amount:Math.max(0, +amount||0)};
       $$('#tipGroup .tip-btn').forEach(b=>b.classList.remove('active'));
@@ -1018,23 +1085,22 @@
       if(k==='percent'){ const base=Math.max(0, subtotal - disc); setTip('percent', base*(+v/100)); }
       if(k==='amount'){ setTip('amount', +v); }
     }
-    function openCheckoutWithPrefill(){
+
+    // cart → checkout
+    $('#cartCheckout').addEventListener('click', ()=>{
       const p=loadProfile();
       $('#checkoutName').value=p.name||'';
       $('#checkoutLocation').value=p.loc||'';
       $('#checkoutError').style.display='none';
       $('#checkoutPromo').value='';
-      activePromo=null; const badge=$('#promoStatus'); badge.style.display='none'; badge.textContent='';
+      activePromo=null; $('#promoStatus').style.display='none'; $('#promoStatus').textContent='';
       setTip('none',0); $('#tipCustomAmount').value='';
       updateCheckoutBreakdown();
-      $('#checkoutOverlay').classList.add('show');
-    }
-    $('#cartCheckout').addEventListener('click', ()=>{
-      if(cartItemCount()<=0){ showToast('Your cart is empty'); return; }
       $('#cartOverlay').classList.remove('show');
-      openCheckoutWithPrefill();
+      $('#checkoutOverlay').classList.add('show');
     });
-    $('#checkoutClose').addEventListener('click', ()=>$('#checkoutOverlay').classList.remove('show'));
+
+    // promo apply
     $('#checkoutApplyPromo').addEventListener('click', ()=>{
       const code=$('#checkoutPromo').value;
       const res=evalPromoDiscount(code);
@@ -1045,11 +1111,13 @@
         badge.style.display='inline-flex'; badge.classList.remove('promo-bad'); badge.classList.add('promo-ok');
       }else{
         activePromo = null;
-        badge.textContent = res ? (res.label||'Not eligible') : 'Invalid code';
+        badge.textContent = res ? res.label || 'Not eligible' : 'Invalid code';
         badge.style.display='inline-flex'; badge.classList.add('promo-bad'); badge.classList.remove('promo-ok');
       }
       updateCheckoutBreakdown();
     });
+
+    // tip group + custom
     document.getElementById('tipGroup').addEventListener('click', e=>{
       const btn=e.target.closest('.tip-btn'); if(!btn) return;
       selectQuickTip(btn);
@@ -1059,60 +1127,118 @@
       setTip('amount', v);
       $$('#tipGroup .tip-btn').forEach(b=>b.classList.remove('active'));
     });
+
+    /* ========= Place order (with IFTTT webhook) ========= */
+    function addOrderFromCart(name, location, notes, discount, tip){
+      const lines=[]; let subtotal=0;
+      for(const [n,info] of cart){
+        const line=info.price*info.qty; subtotal+=line; lines.push({name:n, price:info.price, qty:info.qty, line});
+        ensureMetrics(n).purchasedQty += info.qty;
+        ensureMetrics(n).revenue += line;
+      }
+      saveObj(ANALYTICS_KEY, prodMetrics);
+
+      const total = Math.max(0, subtotal - (discount||0)) + (tip||0);
+      const order={when:new Date().toISOString(), name, location, notes:notes||'', lines, total, discount:discount||0, tip:tip||0};
+      const list=loadOrders(); list.unshift(order); saveOrders(list);
+
+      const d=new Date(), dow=d.getDay(), hr=d.getHours();
+      sales[dow][hr]=(sales[dow][hr]||0)+1; saveSales(sales);
+
+      // Fire IFTTT webhook (best-effort, non-blocking)
+      try{
+        const payload = {
+          value1: `${name} @ ${location}`,
+          value2: lines.map(l=>`${l.name}×${l.qty}`).join(', '),
+          value3: `Total ${fmt(total)}${notes?` • Notes: ${notes}`:''}`
+        };
+        fetch(IFTTT_WEBHOOK, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(payload),
+          mode: 'no-cors' // keep it simple in PWA
+        }).catch(()=>{});
+      }catch{}
+
+      return order;
+    }
+
+    $('#checkoutClose').addEventListener('click', ()=>$('#checkoutOverlay').classList.remove('show'));
     $('#checkoutSubmit').addEventListener('click', ()=>{
       const name=$('#checkoutName').value.trim();
       const loc=$('#checkoutLocation').value.trim();
       const notes=$('#checkoutNotes').value.trim();
       if(!name || !loc){ $('#checkoutError').style.display='block'; return; }
-      saveProfile(name, loc);
+
+      saveProfile(name,loc);
+
       const totals=computeTotals();
       addOrderFromCart(name, loc, notes, totals.disc, totals.tip);
+
       cart.clear(); renderCart();
       $('#checkoutOverlay').classList.remove('show');
       updateGreeting();
       showToast('Order placed 🎉');
     });
 
-    /* ===== History (auto-prunes) ===== */
-    function pruneDelivered(hours){
-      const list=loadDelivered();
-      const cutoff=Date.now()-hours*3600*1000;
-      const keep=list.filter(o=>{
-        const t=Date.parse(o.deliveredWhen||o.when||0);
-        return isFinite(t) && t>=cutoff;
+    /* ========= Inventory inputs persist ========= */
+    document.addEventListener('input', (e)=>{
+      const row=e.target.closest('.field[data-prod]'); if(!row) return;
+      const name=row.getAttribute('data-prod');
+
+      if(e.target.matches('input[data-k="qty"]')){
+        const v=(e.target.value||'').trim();
+        if(v===''){ delete stockQty[name]; delete stockSet[name]; }
+        else { stockQty[name]=Number(v); stockSet[name]=1; }
+        saveObj(STOCK_KEY,stockQty); saveObj(STOCK_SET_KEY,stockSet);
+        updateStockBadges(); refreshMiniIfOpen();
+      }
+      if(e.target.matches('input[data-k="low"]')){
+        const v2=(e.target.value||'').trim();
+        if(v2===''){ delete stockLow[name]; }
+        else { stockLow[name]=Number(v2); }
+        saveObj(LOW_KEY,stockLow);
+        updateStockBadges(); refreshMiniIfOpen();
+      }
+    });
+
+    /* ========= Accessibility: keyboard click ========= */
+    $$('.btn,.add,.ghost,.primary,.tab,.subtab').forEach(el=>{
+      el.tabIndex=0;
+      el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
+    });
+
+    /* ========= Optional: simple analytics view ========= */
+    function renderAnalytics(){
+      const orders=loadOrders(), delivered=loadDelivered(), all=orders.concat(delivered);
+      let rev=0, items=0;
+      all.forEach(o=>{ rev+=o.total; o.lines.forEach(l=>items+=l.qty); });
+      const cnt=all.length, aov=cnt?(rev/cnt):0;
+      $('#kpiRevenue').textContent=fmt(rev);
+      $('#kpiOrders').textContent=cnt;
+      $('#kpiAOV').textContent=fmt(aov);
+      $('#kpiItems').textContent=items;
+
+      // last 7 days spark
+      const days=Array(7).fill(0), now=new Date();
+      all.forEach(o=>{
+        const d=new Date(o.when);
+        const diff=Math.floor((now-d)/(24*3600*1000));
+        if(diff>=0 && diff<7) days[6-diff]+=o.total;
       });
-      if(keep.length!==list.length) saveDelivered(keep);
-    }
-    function renderHistory(){
-      const box=$('#historyList'); if(!box) return;
-      pruneDelivered(72);
-      const list=loadDelivered();
-      if(!list.length){ box.textContent='No delivered orders'; return; }
-      box.innerHTML = list.map(o=>{
-        const items=o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
-        const placed=new Date(o.when).toLocaleString();
-        const del=o.deliveredWhen?new Date(o.deliveredWhen).toLocaleString():'--';
-        return `<div style="padding:8px;border-bottom:1px solid #2a2a30">
-          <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-            <div>
-              <div style="font-weight:700">Delivered: ${del}</div>
-              <div style="color:#bbb;margin-top:2px">Placed: ${placed}</div>
-              <div style="color:#bbb;margin-top:2px">${o.name} @ ${o.location}</div>
-            </div>
-            <div style="font-weight:700">${fmt(o.total)}</div>
-          </div>
-          <div style="margin-top:6px">${items}</div>
-          ${o.notes?`<div style="margin-top:6px;color:#c7c7cc;font-size:12px">📝 ${o.notes}</div>`:''}
-        </div>`;
-      }).join('');
+      drawSpark(days);
+
+      // ensure metrics for any current product cards
+      getProducts().forEach(p=>ensureMetrics(p.name));
+      saveObj(ANALYTICS_KEY, prodMetrics);
+
+      // top products & funnels could be added here if needed
     }
 
-    /* ===== Analytics ===== */
-    function fmtMoney(m){ return fmt(m||0); }
-    function drawSpark(vals){
+    function drawSpark(b){
       const svg=$('#revSpark'); if(!svg) return;
-      const max=Math.max(1,...vals), step=100/(vals.length-1||1);
-      const pts=vals.map((v,i)=>`${i*step},${40-(v/max)*36-2}`).join(' ');
+      const max=Math.max(1,...b), step=100/(b.length-1||1);
+      const pts=b.map((v,i)=>`${i*step},${40-(v/max)*36-2}`).join(' ');
       svg.innerHTML = `
         <polyline points="${pts}" fill="none" stroke="url(#g)" stroke-width="2"/>
         <defs>
@@ -1122,85 +1248,16 @@
           </linearGradient>
         </defs>`;
     }
-    function renderAnalytics(){
-      const orders=loadOrders(), delivered=loadDelivered(), all=orders.concat(delivered);
-      let rev=0, items=0;
-      all.forEach(o=>{ rev+=o.total; o.lines.forEach(l=>items+=l.qty); });
-      const cnt=all.length, aov=cnt?(rev/cnt):0;
-      $('#kpiRevenue').textContent=fmtMoney(rev);
-      $('#kpiOrders').textContent=cnt;
-      $('#kpiAOV').textContent=fmtMoney(aov);
-      $('#kpiItems').textContent=items;
 
-      const days=Array(7).fill(0), now=new Date();
-      all.forEach(o=>{
-        const d=new Date(o.when);
-        const diff=Math.floor((now-d)/(24*3600*1000));
-        if(diff>=0 && diff<7) days[6-diff]+=o.total;
-      });
-      drawSpark(days);
+    /* ========= Final init tweaks ========= */
+    // Ensure Settings tab routing works when opened via button
+    document.addEventListener('click', (e)=>{
+      if(e.target.closest('#tabGeneral')) switchTab('general');
+      if(e.target.closest('#tabAdmin'))   switchTab('admin');
+    }, {passive:true});
 
-      getProducts().forEach(p=>{ if(!prodAnalytics[p.name]) prodAnalytics[p.name]={opens:0,adds:0,addedQty:0,purchasedQty:0,revenue:0}; });
-      saveObj(ANALYTICS_KEY, prodAnalytics);
-
-      const rows=Object.entries(prodAnalytics).map(([name,m])=>({
-        name, opens:m.opens||0, adds:m.adds||0, addedQty:m.addedQty||0, purchasedQty:m.purchasedQty||0, revenue:m.revenue||0
-      }));
-      const top=rows.slice().sort((a,b)=>b.revenue-a.revenue).slice(0,8);
-      const maxR=Math.max(1,...top.map(r=>r.revenue));
-      const maxQ=Math.max(1,...top.map(r=>r.purchasedQty));
-      $('#topProducts').innerHTML = top.length ? top.map(r=>{
-        const conv = r.opens ? Math.round((r.purchasedQty/r.opens)*100) : 0;
-        return `<div class="rowd">
-                  <div>${r.name}</div><div>${r.purchasedQty}</div><div>${fmtMoney(r.revenue)}</div><div>${conv}%</div>
-                </div>
-                <div style="padding:0 8px 8px">
-                  <div class="bar"><i style="width:${(r.revenue/maxR)*100}%"></i></div>
-                  <div class="bar" style="margin-top:6px"><i style="width:${(r.purchasedQty/maxQ)*100}%"></i></div>
-                </div>`;
-      }).join('') : '<div class="rowd"><div>No sales yet</div><div></div><div></div><div></div></div>';
-      const funnelHtml = rows.map(r=>{
-        const a=r.opens||0, b=r.adds||0, c=r.purchasedQty||0;
-        const ab=a?Math.round((b/a)*100):0, bc=b?Math.round((c/b)*100):0, ac=a?Math.round((c/a)*100):0;
-        return `<div style="padding:8px;border-bottom:1px solid rgba(255,255,255,.08)">
-          <div style="font-weight:700">${r.name}</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px">
-            <div>
-              <div class="label">Opens</div>
-              <div class="value">${a}</div>
-              <div class="bar" style="margin-top:4px"><i style="width:${a?100:0}%"></i></div>
-            </div>
-            <div>
-              <div class="label">Adds</div>
-              <div class="value">${b} <span style="color:#c7c7cc;font-size:12px">(${ab}% of opens)</span></div>
-              <div class="bar" style="margin-top:4px"><i style="width:${a?(b/a)*100:0}%"></i></div>
-            </div>
-            <div>
-              <div class="label">Purchases</div>
-              <div class="value">${c} <span style="color:#c7c7cc;font-size:12px">(${bc}% of adds • ${ac}% of opens)</span></div>
-              <div class="bar" style="margin-top:4px"><i style="width:${a?(c/a)*100:0}%"></i></div>
-            </div>
-          </div>
-        </div>`;
-      }).join('');
-      $('#funnels').innerHTML = funnelHtml || '<div>No funnel data yet</div>';
-    }
-
-    /* ===== Init ===== */
-    function pruneDeliveredInit(){
-      const list=loadDelivered();
-      const cutoff=Date.now()-72*3600*1000; // 72h
-      const keep=list.filter(o=>{
-        const t=Date.parse(o.deliveredWhen||o.when||0);
-        return isFinite(t)&&t>=cutoff;
-      });
-      if(keep.length!==list.length) saveDelivered(keep);
-    }
-
-    buildPromos();
-    initCarousel();
-    pruneDeliveredInit();
-    renderCart(); refreshBadge(); updateStockBadges(); syncFavStars(); updateGreeting();
+    // Ready
+    updateCheckoutBreakdown();
   </script>
 </body>
 </html>
