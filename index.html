@@ -39,7 +39,7 @@
       box-shadow:0 4px 24px rgba(0,255,0,0.08);
     }
 
-    /* ===== Header (no overlap) ===== */
+    /* ===== Header: search never overlaps buttons ===== */
     .row{position:relative;display:flex;align-items:center;gap:12px}
     .search-wrap{flex:1 1 auto;min-width:0;position:relative}
     .search{width:100%;border-radius:999px;padding:12px 44px;color:var(--text);outline:none;border:1px solid #2a2a2e}
@@ -84,6 +84,11 @@
     .fav{position:absolute;right:12px;top:12px;width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);cursor:pointer}
     .fav.active{background:rgba(255,215,0,.15);box-shadow:0 0 0 1px rgba(255,215,0,.35) inset}
 
+    /* Stock badges on cards (admin) */
+    .badge-wrap{position:absolute;left:12px;top:12px;display:flex;flex-direction:column;gap:6px}
+    .stock-badge{padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);font-size:12px}
+    .low-badge{background:rgba(255,0,0,.12);border-color:rgba(255,0,0,.35)}
+
     /* Overlays */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
     .overlay.show{display:flex}
@@ -124,6 +129,10 @@
     .rowh,.rowd{display:grid;grid-template-columns:1fr 70px 70px 70px;gap:8px;padding:8px}
     .rowh{background:rgba(255,255,255,.05);font-weight:700}
     .rowd{border-top:1px solid rgba(255,255,255,.06)}
+
+    /* Heat map grid */
+    #heatGrid{display:grid;grid-template-columns:repeat(24,12px);gap:4px;margin-top:8px}
+    .heat-cell{width:12px;height:12px;border-radius:3px;background:rgba(110,168,254,.12);border:1px solid rgba(255,255,255,.06)}
 
     /* Toasts */
     #toastHost{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;z-index:11000}
@@ -398,6 +407,8 @@
               </div>
               <div style="margin-top:12px;font-weight:700">Funnel by Product</div>
               <div id="funnels" class="admin-list"></div>
+              <div style="margin-top:12px;font-weight:700">Sales Heat (7×24)</div>
+              <div id="heatGrid"></div>
             </div>
 
             <!-- History -->
@@ -447,6 +458,11 @@
   const PROFILE_NAME_KEY= 'fitsnacks.profile.name';
   const PROFILE_LOC_KEY = 'fitsnacks.profile.location';
 
+  /* ========= IFTTT webhook config ========= */
+  const IFTTT_EVENT = 'Fitsnack_order';
+  const IFTTT_KEY   = 'fI-MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA';
+  const IFTTT_URL   = `https://maker.ifttt.com/trigger/${IFTTT_EVENT}/with/key/${IFTTT_KEY}`;
+
   const ADMIN_PASSWORD='8TSB077';
   const fmt = n => '$'+n.toFixed(2);
 
@@ -483,7 +499,7 @@
 
   function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY)==='1'; }
   function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v?'1':'0'); }
-  setUnlocked(false);
+  setUnlocked(false); // default locked
 
   /* ========= Seed promos once ========= */
   if(!localStorage.getItem(PROMOS_KEY)){
@@ -498,10 +514,8 @@
   function haptic(ms=15){ try{ if(navigator.vibrate) navigator.vibrate(ms); }catch{} }
   function fmtTotal(){ let t=0; for(const[,info] of cart) t+=info.price*info.qty; return t; }
   function showToast(msg, ms=1800){
-    const host=$('#toastHost'); if(!host) return;
-    const el=document.createElement('div');
-    el.className='toast'; el.textContent=msg;
-    host.appendChild(el);
+    const host=$('#toastHost'); const el=document.createElement('div');
+    el.className='toast'; el.textContent=msg; host.appendChild(el);
     requestAnimationFrame(()=>el.classList.add('show'));
     setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),250); }, ms);
   }
@@ -532,11 +546,13 @@
         },{passive:true});
       }
     });
+    // dots
     const cards=$$('.snap-card'), dotsWrap=$('#snapDots');
     dotsWrap.innerHTML = cards.map(()=>'<div class="snap-dot"></div>').join('');
     const dots=$$('.snap-dot');
     function setDot(i){ dots.forEach((d,k)=>d.classList.toggle('active',k===i)); }
     setDot(0);
+    // simple auto (5s cycle)
     let idx=0; setInterval(()=>{ if(!cards.length) return; idx=(idx+1)%cards.length; setDot(idx); cards[idx].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'}); }, 5000);
   }
   function promoAction(p){
@@ -546,26 +562,47 @@
   }
 
   /* ========= Search ========= */
-  $('#search').addEventListener('input', e=>{
-    const q=(e.target.value||'').toLowerCase();
-    let hits=0;
+  function searchAndFilter(){
+    const q=($('#search').value||'').toLowerCase();
+    let shown=0;
     $$('.card').forEach(c=>{
-      const show = c.dataset.name.toLowerCase().includes(q);
-      c.style.display = show ? '' : 'none';
-      if(show) hits++;
+      const hit=c.dataset.name.toLowerCase().includes(q) && c.style.display!=='none-filter';
+      c.style.display=hit?'':'none';
+      if(hit) shown++;
     });
-    if(q && !hits) showToast('No results found');
-  });
+    if($('#noResultsBanner')) $('#noResultsBanner').style.display = shown?'none':'block';
+  }
+  $('#search').addEventListener('input', searchAndFilter);
 
-  /* ========= Chips ========= */
+  // create no results banner
+  (function ensureNoResultsBanner(){
+    if(document.getElementById('noResultsBanner')) return;
+    const n=document.createElement('div');
+    n.id='noResultsBanner';
+    n.textContent='No results found';
+    n.style.cssText='display:none;color:#c7c7cc;margin:8px 4px;';
+    const grid=document.getElementById('grid');
+    grid?.parentNode?.insertBefore(n,grid);
+  })();
+
+  /* ========= Chips / Filters ========= */
+  let currentFilter='';
   function activateChip(val){
-    $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch.dataset.filter===val));
+    currentFilter=val||'';
+    $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch.dataset.filter===currentFilter));
     $$('.card').forEach(c=>{
       const tags=(c.dataset.tags||'').toLowerCase();
       const name=c.dataset.name;
-      const show = !val || val==='' || (val==='favorites' ? favorites.has(name) : tags.includes(val));
-      c.style.display = show ? '' : 'none';
+      const inFav=favorites.has(name);
+      let pass=true;
+      if(currentFilter){
+        if(currentFilter==='favorites') pass=inFav;
+        else pass=tags.includes(currentFilter);
+      }
+      if(pass) c.style.removeProperty('display');
+      else c.style.display='none-filter';
     });
+    searchAndFilter();
   }
   $('#chips').addEventListener('click', e=>{
     const chip=e.target.closest('.chip'); if(!chip) return;
@@ -587,16 +624,13 @@
     if(favorites.has(name)) favorites.delete(name); else favorites.add(name);
     saveArr(FAVORITES_KEY, Array.from(favorites));
     syncFavStars();
+    if(currentFilter==='favorites' && !favorites.has(name)){
+      card.style.display='none-filter'; searchAndFilter();
+    }
   }, {passive:true});
 
   /* ========= Product Sheet ========= */
   let currentProduct=null;
-  function ensureMetrics(name){
-    if(!prodAnalytics[name]){
-      prodAnalytics[name]={opens:0,adds:0,addedQty:0,purchasedQty:0,revenue:0};
-    }
-    return prodAnalytics[name];
-  }
   function openProductSheet(card){
     currentProduct = {
       name: card.dataset.name,
@@ -609,27 +643,13 @@
     $('#sheetPrice').textContent = fmt(currentProduct.price);
     $('#qtyVal').textContent = '1';
     $('#sheetAdd').textContent = 'Add • ' + fmt(currentProduct.price);
-
-    const q = Number(stockQty[currentProduct.name] ?? NaN);
-    const l = Number(stockLow[currentProduct.name] ?? NaN);
-    if(Number.isFinite(q)){
-      $('#sheetStock').textContent = 'Stock: ' + q;
-      if(Number.isFinite(l) && q<=l){ $('#sheetLowWarn').style.display='block'; }
-      else { $('#sheetLowWarn').style.display='none'; }
-    }else{
-      $('#sheetStock').textContent = 'Stock: --';
-      $('#sheetLowWarn').style.display='none';
-    }
-
-    ensureMetrics(currentProduct.name).opens++;
-    saveObj(ANALYTICS_KEY, prodAnalytics);
-
     $('#productSheet').classList.add('show');
   }
   function closeProductSheet(){ $('#productSheet').classList.remove('show'); }
+
   $$('.card').forEach(card=>{
     card.addEventListener('click', e=>{
-      if(e.target.closest('.fav') || e.target.closest('.add')) return;
+      if(e.target.closest('.fav')||e.target.closest('.add')) return;
       openProductSheet(card);
     });
   });
@@ -640,6 +660,7 @@
       openProductSheet(card);
     });
   });
+  $('#sheetClose').addEventListener('click', closeProductSheet);
   $('#qtyPlus').addEventListener('click', ()=>{
     const n = Math.min(99, parseInt($('#qtyVal').textContent)||1 + 1);
     $('#qtyVal').textContent=n;
@@ -650,15 +671,14 @@
     $('#qtyVal').textContent=n;
     $('#sheetAdd').textContent = 'Add • ' + fmt(n*(currentProduct?.price||0));
   });
-  $('#sheetClose').addEventListener('click', closeProductSheet);
-
-  /* ========= Cart ========= */
+    /* ========= Cart ========= */
   function refreshBadge(){
     let n=0; for(const v of cart.values()) n+=v.qty;
     const b=$('#cartBadge'); if(!b) return;
     if(n>0){ b.textContent=String(n); b.style.display='inline-flex'; }
     else { b.style.display='none'; }
   }
+
   function renderCart(){
     let total=0, html='';
     for(const [name,info] of cart){
@@ -675,9 +695,10 @@
     }
     $('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
     $('#cartTotal').textContent = fmt(total);
-    saveCart(cart);
-    refreshBadge();
+    saveCart(cart); refreshBadge();
   }
+
+  // +/- in cart
   document.addEventListener('click', (e)=>{
     const b=e.target.closest('button[data-act][data-name]'); if(!b) return;
     const name=b.getAttribute('data-name'); const act=b.getAttribute('data-act');
@@ -686,51 +707,41 @@
     if(entry.qty===0) cart.delete(name);
     renderCart();
   });
+
+  // "Add" from product sheet
   $('#sheetAdd').addEventListener('click', ()=>{
     const n = Math.max(1, parseInt($('#qtyVal').textContent)||1);
     if(!currentProduct) return;
     const entry = cart.get(currentProduct.name) || {price: currentProduct.price, qty:0};
     entry.qty += n;
     cart.set(currentProduct.name, entry);
-
-    const m=ensureMetrics(currentProduct.name);
-    m.adds = (m.adds||0)+1; m.addedQty=(m.addedQty||0)+n;
-    saveObj(ANALYTICS_KEY, prodAnalytics);
-
-    closeProductSheet();
-    renderCart(); haptic(12);
+    closeProductSheet(); renderCart(); haptic(12);
     $('#cartOverlay').classList.add('show');
     showToast(`Added ${n} × ${currentProduct.name}`);
   });
 
-  /* ========= Overlay helpers ========= */
-  function openCart(){ $('#cartOverlay').classList.add('show'); }
-  function closeCart(){ $('#cartOverlay').classList.remove('show'); }
+  /* ========= Overlays open/close ========= */
+  $('#cartBtn').addEventListener('click', ()=>$('#cartOverlay').classList.add('show'));
+  $('#cartBack').addEventListener('click', ()=>$('#cartOverlay').classList.remove('show'));
+  $('#settingsBtn').addEventListener('click', ()=>openSettings(false));
+  $('#settingsClose').addEventListener('click', ()=>$('#settingsOverlay').classList.remove('show'));
   function openSettings(defToAdmin=false){
     $('#settingsOverlay').classList.add('show');
     switchTab(defToAdmin?'admin':'general');
     ensureAdminLoginVisible();
   }
-  function closeSettings(){ $('#settingsOverlay').classList.remove('show'); }
-  $('#cartBtn').addEventListener('click', openCart);
-  $('#cartBack').addEventListener('click', closeCart);
-  $('#settingsBtn').addEventListener('click', ()=>openSettings(false));
-  $('#settingsClose').addEventListener('click', closeSettings);
-  document.querySelectorAll('.overlay').forEach(ov=>{
-    ov.addEventListener('click', (e)=>{ if(e.target===ov) ov.classList.remove('show'); });
-  });
+
+  // Esc/backdrop close
   document.addEventListener('keydown', e=>{
     if(e.key!=='Escape') return;
     ['productSheet','cartOverlay','checkoutOverlay','settingsOverlay','orderSheet']
       .forEach(id=>document.getElementById(id)?.classList.remove('show'));
   });
+  document.querySelectorAll('.overlay').forEach(ov=>{
+    ov.addEventListener('click', (e)=>{ if(e.target===ov) ov.classList.remove('show'); });
+  });
 
-  /* ========= Initial paint ========= */
-  buildPromos();
-  renderCart();
-  refreshBadge();
-  updateGreeting();
-    /* ========= Promo / Tip / Totals ========= */
+  /* ========= Checkout ========= */
   const PROMO_TABLE = {
     'SAVE10': {type:'percent', value:0.10, label:'10% off sitewide'},
     'BAR1':   {type:'amount',  value:1.00, label:'$1 off protein items', rule:'tag:protein'}
@@ -738,37 +749,12 @@
   let activePromo=null;
   let activeTip={kind:'none', amount:0};
 
-  function evalPromoDiscount(code){
-    code=(code||'').trim().toUpperCase();
-    if(!code || !PROMO_TABLE[code]) return null;
-    const p = PROMO_TABLE[code];
-    let subtotal=0; for(const[,info] of cart) subtotal+=info.price*info.qty;
-    if(subtotal<=0) return null;
-    let discount=0;
-    if(p.rule && p.rule.startsWith('tag:')){
-      const tag=p.rule.slice(4).toLowerCase(); let eligible=0;
-      $$('.card').forEach(c=>{
-        const entry=cart.get(c.dataset.name); if(!entry) return;
-        if((c.dataset.tags||'').toLowerCase().includes(tag)){
-          eligible+=entry.price*entry.qty;
-        }
-      });
-      if(eligible<=0) return {code, label:`No eligible items for ${code}`, discount:0, ok:false};
-      discount = p.type==='percent'? eligible*p.value : Math.min(p.value,eligible);
-    }else{
-      discount = p.type==='percent'? subtotal*p.value : Math.min(p.value,subtotal);
-    }
-    return {code,label:p.label,discount,ok:true};
-  }
-
   function computeTotals(){
     let subtotal=0; for(const[,info] of cart) subtotal+=info.price*info.qty;
     const disc=activePromo?.discount||0;
-    const tip = Math.max(0, activeTip.amount||0);
-    const total = Math.max(0, subtotal-disc) + tip;
-    return {subtotal, disc, tip, total};
+    const tip=activeTip.amount||0;
+    return {subtotal,disc,tip,total:Math.max(0, subtotal-disc)+tip};
   }
-
   function updateCheckoutBreakdown(){
     const {subtotal,disc,tip,total}=computeTotals();
     $('#ckSub').textContent=fmt(subtotal);
@@ -777,7 +763,6 @@
     $('#ckTotal').textContent=fmt(total);
   }
 
-  /* ========= Checkout open/close ========= */
   $('#cartCheckout').addEventListener('click', ()=>{
     const p=loadProfile();
     $('#checkoutName').value=p.name||''; $('#checkoutLocation').value=p.loc||'';
@@ -790,367 +775,152 @@
   });
   $('#checkoutClose').addEventListener('click', ()=>$('#checkoutOverlay').classList.remove('show'));
 
-  /* ========= Promo + Tip bindings ========= */
   $('#checkoutApplyPromo').addEventListener('click', ()=>{
-    const res=evalPromoDiscount($('#checkoutPromo').value);
-    const badge=$('#promoStatus');
-    if(res && res.ok){ activePromo=res; badge.textContent=`${res.code} • -${fmt(res.discount)}`; badge.style.display='inline-flex'; }
-    else if(res){ activePromo=null; badge.textContent=res.label||'Invalid'; badge.style.display='inline-flex'; }
-    else { activePromo=null; badge.style.display='none'; }
+    const code=$('#checkoutPromo').value.trim().toUpperCase();
+    const def=PROMO_TABLE[code]; const badge=$('#promoStatus');
+    if(!def){ activePromo=null; badge.textContent='Invalid code'; badge.style.display='inline-flex'; return updateCheckoutBreakdown(); }
+    let subtotal=0; for(const[,info] of cart) subtotal+=info.price*info.qty;
+    let discount=def.type==='percent'? subtotal*def.value : Math.min(def.value, subtotal);
+    activePromo={code,discount}; badge.textContent=`${code} • -${fmt(discount)}`; badge.style.display='inline-flex';
     updateCheckoutBreakdown();
   });
   $('#tipGroup').addEventListener('click', e=>{
     const btn=e.target.closest('.tip-btn'); if(!btn) return;
     $$('#tipGroup .tip-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
-    const spec=btn.getAttribute('data-tip')||'none';
-    const [k,v='0']=spec.split(':');
-    const {subtotal,disc}=computeTotals();
+    const spec=btn.getAttribute('data-tip'); if(!spec){activeTip={kind:'none',amount:0}; return;}
+    const [k,v]=spec.split(':'); const {subtotal,disc}=computeTotals();
     if(k==='percent'){ const base=Math.max(0, subtotal-disc); activeTip={kind:'percent',amount:base*(+v/100)}; }
-    else if(k==='amount'){ activeTip={kind:'amount',amount:+v}; }
-    else { activeTip={kind:'none',amount:0}; }
+    if(k==='amount'){ activeTip={kind:'amount',amount:+v}; }
     updateCheckoutBreakdown();
   });
   $('#tipApplyCustom').addEventListener('click', ()=>{
-    const v=+($('#tipCustomAmount').value||0);
-    activeTip={kind:'amount',amount:Math.max(0,v)};
-    updateCheckoutBreakdown();
+    const v=+($('#tipCustomAmount').value||0); activeTip={kind:'amount',amount:v}; updateCheckoutBreakdown();
   });
 
-  /* ========= IFTTT (no-preflight POST + image GET fallback) ========= */
-  const IFTTT_EVENT = 'Fitsnack_order';
-  const IFTTT_KEY   = 'MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA';
-  const IFTTT_POST  = `https://maker.ifttt.com/trigger/${IFTTT_EVENT}/with/key/${IFTTT_KEY}`; // x-www-form-urlencoded
-  const IFTTT_GET   = `https://maker.ifttt.com/trigger/${IFTTT_EVENT}/with/key/${IFTTT_KEY}`;
-
-  function buildOrderSummary(order){
-    return `${order.name} @ ${order.location} • Total ${fmt(order.total)}`;
-  }
-  function buildOrderLineItems(order){
-    return order.lines.map(l => `${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('\n');
-  }
-  async function sendIftttOrder(order){
-    const v1 = buildOrderSummary(order);
-    const v2 = buildOrderLineItems(order);
-    const v3 = order.notes || '';
-
-    // 1) Form-POST (simple request, no OPTIONS preflight)
-    try{
-      const body = new URLSearchParams({ value1:v1, value2:v2, value3:v3 }).toString();
-      await fetch(IFTTT_POST, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-        body
-      });
-    }catch(_){} // ignore; fallback covers us
-
-    // 2) GET beacon fallback (works through strict blockers)
-    try{
-      const qs = new URLSearchParams({ value1:v1, value2:v2, value3:v3 }).toString();
-      new Image().src = `${IFTTT_GET}?${qs}`;
-    }catch(_){}
-  }
-
-  /* ========= Orders & History ========= */
+  /* ========= Orders + IFTTT ========= */
   function addOrderFromCart(name,loc,notes,discount,tip){
     const lines=[]; let total=0;
     for(const [n,info] of cart){ const line=info.price*info.qty; total+=line; lines.push({name:n,price:info.price,qty:info.qty,line}); }
     total=Math.max(0,total-(discount||0))+(tip||0);
     const order={when:new Date().toISOString(),name,location:loc,notes:notes||'',lines,total};
     const list=loadOrders(); list.unshift(order); saveOrders(list);
-    lines.forEach(l=>{ const m=(prodAnalytics[l.name] ||= {opens:0,adds:0,addedQty:0,purchasedQty:0,revenue:0}); m.purchasedQty+=l.qty; m.revenue+=l.line; });
-    saveObj(ANALYTICS_KEY,prodAnalytics);
     const d=new Date(), dow=d.getDay(), hr=d.getHours();
     sales[dow][hr]=(sales[dow][hr]||0)+1; saveSales(sales);
     return order;
   }
 
-  function renderOrders(){
-    const list=loadOrders(), box=$('#ordersList'); if(!box) return;
-    if(!list.length){ box.textContent='No orders yet'; return; }
-    box.innerHTML=list.map((o,i)=>{
-      const items=o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
-      const when=new Date(o.when).toLocaleString();
-      return `<div class="order-item" data-idx="${i}" style="padding:8px;border-bottom:1px solid #2a2a30;cursor:pointer">
-        <div style="font-weight:700">${when}</div>
-        <div>${o.name} @ ${o.location}</div>
-        <div>${items}</div>
-        <div style="font-weight:700">Total ${fmt(o.total)}</div>
-      </div>`;
-    }).join('');
-  }
-
-  function renderHistory(){
-    const list=loadDelivered(), box=$('#historyList'); if(!box) return;
-    if(!list.length){ box.textContent='No delivered orders'; return; }
-    box.innerHTML=list.map(o=>{
-      const items=o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
-      const placed=new Date(o.when).toLocaleString();
-      const del=o.deliveredWhen?new Date(o.deliveredWhen).toLocaleString():'--';
-      return `<div style="padding:8px;border-bottom:1px solid #2a2a30">
-        <div style="font-weight:700">Delivered: ${del}</div>
-        <div style="color:#bbb;margin-top:2px">Placed: ${placed}</div>
-        <div style="color:#bbb;margin-top:2px">${o.name} @ ${o.location}</div>
-        <div style="margin-top:6px">${items}</div>
-        <div style="font-weight:700;margin-top:6px">Total: ${fmt(o.total)}</div>
-      </div>`;
-    }).join('');
-  }
-
-  /* ========= Place order ========= */
-  $('#checkoutSubmit').addEventListener('click', async ()=>{
+  $('#checkoutSubmit').addEventListener('click', ()=>{
     const name=$('#checkoutName').value.trim();
     const loc=$('#checkoutLocation').value.trim();
-    const notes=''; // add a notes field if you expose one in UI
     if(!name||!loc){ $('#checkoutError').style.display='block'; return; }
     saveProfile(name,loc);
-
     const {disc,tip}=computeTotals();
-    const order=addOrderFromCart(name,loc,notes,disc,tip);
-
+    const order=addOrderFromCart(name,loc,$('#checkoutNotes')?.value||'',disc,tip);
     cart.clear(); renderCart();
     $('#checkoutOverlay').classList.remove('show');
     updateGreeting(); showToast('Order placed 🎉');
-
-    await sendIftttOrder(order);
+    // IFTTT via image beacon (works like GET)
+    const summary=`${order.name} @ ${order.location} • Total ${fmt(order.total)}`;
+    const items=order.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join(', ');
+    const notes=order.notes||'';
+    const u=`${IFTTT_URL}?value1=${encodeURIComponent(summary)}&value2=${encodeURIComponent(items)}&value3=${encodeURIComponent(notes)}`;
+    const img=new Image(); img.src=u;
   });
 
-  /* ========= Admin tabs + subtabs ========= */
+  /* ========= Admin ========= */
   function switchTab(which){
     const g=$('#tabGeneral'), a=$('#tabAdmin'), pg=$('#panelGeneral'), pa=$('#panelAdmin');
-    if(which==='admin'){
-      g.classList.remove('active'); g.setAttribute('aria-selected','false');
-      a.classList.add('active');    a.setAttribute('aria-selected','true');
-      pg.style.display='none'; pa.style.display='block'; ensureAdminLoginVisible();
-    }else{
-      a.classList.remove('active'); a.setAttribute('aria-selected','false');
-      g.classList.add('active');    g.setAttribute('aria-selected','true');
-      pa.style.display='none'; pg.style.display='block';
-    }
+    if(which==='admin'){ g.classList.remove('active'); a.classList.add('active'); pg.style.display='none'; pa.style.display='block'; ensureAdminLoginVisible();}
+    else { a.classList.remove('active'); g.classList.add('active'); pa.style.display='none'; pg.style.display='block'; }
   }
   function ensureAdminLoginVisible(){
-    const logged=(localStorage.getItem(UNLOCK_KEY)==='1');
+    const logged=isUnlocked();
     $('#adminLogin').style.display=logged?'none':'block';
     $('#adminContent').style.display=logged?'block':'none';
-    if(logged){
-      renderOrders(); renderHistory(); renderAnalytics(); renderInventory();
-      document.querySelector('.admin-subtabs')?.querySelector('.subtab[data-subtab="orders"]')?.click();
-    }
+    if(logged){ renderOrders(); renderHistory(); renderInventory(); renderAnalytics(); renderHeat(); }
   }
-  // Explicit bindings so they always work
-  (function bindAdminTabs(){
-    const g=document.getElementById('tabGeneral');
-    const a=document.getElementById('tabAdmin');
-    g?.addEventListener('click', ()=>switchTab('general'));
-    a?.addEventListener('click', ()=>switchTab('admin'));
-
-    document.getElementById('adminSubmit')?.addEventListener('click', ()=>{
+  document.addEventListener('click', e=>{
+    if(e.target.closest('#tabGeneral')) switchTab('general');
+    if(e.target.closest('#tabAdmin')) switchTab('admin');
+    if(e.target.closest('#adminSubmit')){
       const ok=$('#adminPassword').value===ADMIN_PASSWORD;
-      if(ok){ localStorage.setItem(UNLOCK_KEY,'1'); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
+      if(ok){ setUnlocked(true); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
       else { $('#adminError').style.display='block'; }
-    });
-    document.getElementById('adminLock')?.addEventListener('click', ()=>{ localStorage.setItem(UNLOCK_KEY,'0'); ensureAdminLoginVisible(); });
+    }
+    if(e.target.closest('#adminLock')){ setUnlocked(false); ensureAdminLoginVisible(); }
+    if(e.target.closest('.subtab')){
+      const sub=e.target.getAttribute('data-subtab');
+      $$('.subtab').forEach(s=>s.classList.toggle('active',s===e.target));
+      ['orders','inventory','analytics','history'].forEach(id=>$('#subtab-'+id).style.display=(id===sub)?'block':'none');
+    }
+    if(e.target.closest('#historyClear')){ saveDelivered([]); renderHistory(); }
+  }, {passive:true});
 
-    // Subtabs
-    const wrap=document.querySelector('.admin-subtabs');
-    if(!wrap) return;
-    const sections={
-      orders:    document.getElementById('subtab-orders'),
-      inventory: document.getElementById('subtab-inventory'),
-      analytics: document.getElementById('subtab-analytics'),
-      history:   document.getElementById('subtab-history'),
-    };
-    function showSubtab(which){
-      wrap.querySelectorAll('.subtab').forEach(b=>b.classList.toggle('active', b.dataset.subtab===which));
-      Object.entries(sections).forEach(([k,el])=>{ if(el) el.style.display=(k===which)?'block':'none'; });
-      if(which==='orders')    renderOrders();
-      if(which==='inventory') renderInventory();
-      if(which==='analytics') renderAnalytics();
-      if(which==='history')   renderHistory();
+  /* ========= Analytics ========= */
+  function renderOrders(){ const list=loadOrders(), box=$('#ordersList'); if(!box) return; box.innerHTML=list.map((o,i)=>`<div class="order-item" data-idx="${i}" style="padding:8px;border-bottom:1px solid #2a2a30;cursor:pointer"><div style="font-weight:700">${new Date(o.when).toLocaleString()}</div><div>${o.name} @ ${o.location}</div><div>Total ${fmt(o.total)}</div></div>`).join('')||'No orders yet'; }
+  function renderHistory(){ const list=loadDelivered(), box=$('#historyList'); if(!box) return; box.innerHTML=list.map(o=>`<div style="padding:8px;border-bottom:1px solid #2a2a30"><div style="font-weight:700">Delivered ${new Date(o.when).toLocaleString()}</div><div>${o.name} @ ${o.location}</div><div>Total ${fmt(o.total)}</div></div>`).join('')||'No delivered orders'; }
+  function renderInventory(){ const wrap=$('#inventoryList'); if(!wrap) return; wrap.innerHTML=getProducts().map(p=>`<div class="field" data-prod="${p.name}"><div style="flex:1;font-weight:600">${p.name}</div><label>Stock</label><input type="number" value="${stockQty[p.name]||''}" data-k="qty"><label>Low</label><input type="number" value="${stockLow[p.name]||''}" data-k="low"></div>`).join(''); }
+  function getProducts(){ return $$('.card').map(c=>({name:c.dataset.name, price:+c.dataset.price, img:c.dataset.img, tags:(c.dataset.tags||'').toLowerCase()})); }
+  function renderAnalytics(){ const orders=loadOrders(),del=loadDelivered(),all=orders.concat(del); let rev=0,items=0; all.forEach(o=>{ rev+=o.total; o.lines.forEach(l=>items+=l.qty); }); const cnt=all.length,aov=cnt?(rev/cnt):0; $('#kpiRevenue').textContent=fmt(rev); $('#kpiOrders').textContent=cnt; $('#kpiAOV').textContent=fmt(aov); $('#kpiItems').textContent=items; }
+  function renderHeat(){ const grid=$('#heatGrid'); if(!grid) return; grid.innerHTML=''; let max=0; for(let d=0;d<7;d++)for(let h=0;h<24;h++) if(sales[d][h]>max) max=sales[d][h]; for(let d=0;d<7;d++){ for(let h=0;h<24;h++){ const v=sales[d][h]; const alpha=max?(0.08+0.62*(v/max)):0.10; const cell=document.createElement('div'); cell.className='heat-cell'; cell.style.background=`rgba(110,168,254,${alpha})`; grid.appendChild(cell); } } }
+    /* ========= Order detail sheet ========= */
+  let currentOrderIndex=null;
+  function openOrderSheet(idx){
+    const orders=loadOrders(); const o=orders[idx]; if(!o) return;
+    currentOrderIndex=idx;
+    $('#orderMeta').textContent=`${new Date(o.when).toLocaleString()} • ${o.name} @ ${o.location}`;
+    $('#orderLines').innerHTML=o.lines.map(l=>`<div class="row-between" style="padding:6px 0"><div>${l.name} × ${l.qty}</div><div style="font-weight:700">${fmt(l.line)}</div></div>`).join('');
+    $('#orderTotal').textContent=fmt(o.total);
+    $('#orderSheet').classList.add('show');
+  }
+  function closeOrderSheet(){ $('#orderSheet').classList.remove('show'); currentOrderIndex=null; }
+  document.addEventListener('click', e=>{
+    const row=e.target.closest('.order-item'); if(!row) return;
+    openOrderSheet(parseInt(row.getAttribute('data-idx'),10));
+  },{passive:true});
+  $('#orderClose')?.addEventListener('click', closeOrderSheet);
+  $('#orderCancel')?.addEventListener('click', closeOrderSheet);
+  $('#orderDelivered')?.addEventListener('click', ()=>{
+    const idx=currentOrderIndex; if(idx==null) return;
+    const active=loadOrders(); if(idx>=0&&idx<active.length){
+      const delivered=active.splice(idx,1)[0];
+      delivered.deliveredWhen=new Date().toISOString();
+      const hist=loadDelivered(); hist.unshift(delivered);
+      saveDelivered(hist); saveOrders(active);
+      renderOrders(); renderHistory();
     }
-    wrap.addEventListener('click', e=>{
-      const btn=e.target.closest('.subtab'); if(!btn) return;
-      showSubtab(btn.dataset.subtab||'orders');
-    }, {passive:true});
-    showSubtab('orders'); // default
-  })();
-
-  /* ========= Inventory & stock UI ========= */
-  function getProducts(){
-    return $$('.card').map(c=>({
-      name: c.dataset.name,
-      price: +c.dataset.price,
-      img: c.dataset.img,
-      tags: (c.dataset.tags||'').toLowerCase()
-    }));
-  }
-  function renderInventory(){
-    const wrap = $('#inventoryList'); if(!wrap) return;
-    const products = getProducts();
-    if(!products.length){ wrap.textContent = 'No products'; return; }
-    wrap.innerHTML = products.map(p=>{
-      const hasQ = Object.prototype.hasOwnProperty.call(stockQty, p.name);
-      const hasL = Object.prototype.hasOwnProperty.call(stockLow, p.name);
-      const qty  = hasQ ? Number(stockQty[p.name]||0) : '';
-      const low  = hasL ? Number(stockLow[p.name]||0) : '';
-      return `<div class="field" data-prod="${p.name}">
-        <div style="flex:1;font-weight:600">${p.name}</div>
-        <label style="font-size:12px;color:#c7c7cc">Stock</label>
-        <input type="number" min="0" value="${qty}" data-k="qty" placeholder="--">
-        <label style="font-size:12px;color:#c7c7cc">Low</label>
-        <input type="number" min="0" value="${low}" data-k="low" placeholder="--">
-      </div>`;
-    }).join('');
-  }
-  function ensureBadgeWrap(card){
-    let w = card.querySelector('.badge-wrap');
-    if(!w){ w = document.createElement('div'); w.className='badge-wrap'; card.appendChild(w); }
-    return w;
-  }
-  function updateStockBadges(){
-    $$('.card').forEach(card=>{
-      const name = card.dataset.name;
-      const wrap = ensureBadgeWrap(card);
-      wrap.innerHTML = '';
-      if(!Object.prototype.hasOwnProperty.call(stockQty,name)) return;
-      const qty = Number(stockQty[name]||0);
-      const low = Number(stockLow[name]||0);
-      const b = document.createElement('div');
-      b.className = 'stock-badge';
-      b.textContent = 'Stock: ' + qty;
-      wrap.appendChild(b);
-      if(Number.isFinite(low) && low>0 && qty<=low){
-        const l = document.createElement('div');
-        l.className = 'stock-badge low-badge';
-        l.textContent = `Only ${qty} left`;
-        wrap.appendChild(l);
-      }
-    });
-  }
-  function refreshMiniIfOpen(){
-    const ov=$('#productSheet');
-    if(!ov || !ov.classList.contains('show') || !currentProduct) return;
-    const name=currentProduct.name;
-    if(Object.prototype.hasOwnProperty.call(stockQty,name)){
-      const q=Number(stockQty[name]||0);
-      const l=Number(stockLow[name]||0);
-      $('#sheetStock').textContent='Stock: '+q;
-      if(Number.isFinite(l) && l>0 && q<=l){
-        $('#sheetLowWarn').style.display='block';
-        $('#sheetLowWarn').textContent='Low stock ('+q+' ≤ '+l+')';
-      }else{
-        $('#sheetLowWarn').style.display='none';
-      }
-    }else{
-      $('#sheetStock').textContent='Stock: --';
-      $('#sheetLowWarn').style.display='none';
-    }
-  }
-  document.addEventListener('input', (e)=>{
-    const row=e.target.closest('.field[data-prod]'); if(!row) return;
-    const name=row.getAttribute('data-prod');
-    if(e.target.matches('input[data-k="qty"]')){
-      const v=(e.target.value||'').trim();
-      if(v===''){ delete stockQty[name]; } else { stockQty[name]=Number(v); }
-      saveObj(STOCK_KEY, stockQty);
-      updateStockBadges(); refreshMiniIfOpen();
-    }
-    if(e.target.matches('input[data-k="low"]')){
-      const v2=(e.target.value||'').trim();
-      if(v2===''){ delete stockLow[name]; } else { stockLow[name]=Number(v2); }
-      saveObj(LOW_KEY, stockLow);
-      updateStockBadges(); refreshMiniIfOpen();
-    }
+    closeOrderSheet();
   });
 
-  /* ========= Sales Heat Map & Analytics ========= */
-  function renderHeat(){
-    const grid=$('#heatGrid'); if(!grid) return;
-    let max=0;
-    for(let d=0; d<7; d++) for(let h=0; h<24; h++) if(sales[d][h]>max) max=sales[d][h];
-    grid.innerHTML='';
-    for(let d=0; d<7; d++){
-      for(let h=0; h<24; h++){
-        const v=sales[d][h];
-        const alpha = max ? (0.08 + 0.62*(v/max)) : 0.10;
-        const cell=document.createElement('div');
-        cell.className='heat-cell';
-        cell.title=`Day ${d}, ${h}:00 -- ${v}`;
-        cell.style.background=`rgba(110,168,254,${alpha})`;
-        grid.appendChild(cell);
-      }
-    }
-  }
-  function renderAnalytics(){
-    const orders=loadOrders(), delivered=loadDelivered(), all=orders.concat(delivered);
-    let rev=0, items=0; all.forEach(o=>{ rev+=o.total; o.lines.forEach(l=>items+=l.qty); });
-    const cnt=all.length, aov=cnt?(rev/cnt):0;
-    $('#kpiRevenue').textContent=fmt(rev);
-    $('#kpiOrders').textContent=cnt;
-    $('#kpiAOV').textContent=fmt(aov);
-    $('#kpiItems').textContent=items;
-
-    const days=Array(7).fill(0), now=new Date();
-    all.forEach(o=>{
-      const d=new Date(o.when); const diff=Math.floor((now-d)/(24*3600*1000));
-      if(diff>=0 && diff<7) days[6-diff]+=o.total;
+  /* ========= Trap focus in modals ========= */
+  function trapFocus(modal){
+    const focusable=modal.querySelectorAll('button,[href],input,textarea,[tabindex]:not([tabindex="-1"])');
+    if(!focusable.length) return;
+    const first=focusable[0], last=focusable[focusable.length-1];
+    modal.addEventListener('keydown',e=>{
+      if(e.key!=='Tab') return;
+      if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
     });
-    drawSpark(days);
-
-    const rows={};
-    all.forEach(o=>o.lines.forEach(l=>{
-      if(!rows[l.name]) rows[l.name]={qty:0,rev:0};
-      rows[l.name].qty+=l.qty; rows[l.name].rev+=l.line;
-    }));
-    const sorted=Object.entries(rows).sort((a,b)=>b[1].rev-a[1].rev).slice(0,8);
-    $('#topProducts').innerHTML=sorted.length? sorted.map(([n,v])=>
-      `<div class="rowd"><div>${n}</div><div>${v.qty}</div><div>${fmt(v.rev)}</div><div>-</div></div>`
-    ).join('') : '<div class="rowd"><div>No sales</div></div>';
-
-    const funnels=sorted.map(([n,v])=>(
-      `<div style="padding:8px;border-bottom:1px solid rgba(255,255,255,.08)">
-        <div style="font-weight:700">${n}</div>
-        <div>Sold: ${v.qty} • Revenue: ${fmt(v.rev)}</div>
-      </div>`
-    )).join('');
-    $('#funnels').innerHTML=funnels || '<div>No funnel data</div>';
   }
-  function drawSpark(b){
-    const svg=$('#revSpark'); if(!svg) return;
-    const max=Math.max(1,...b), step=100/(b.length-1||1);
-    const pts=b.map((v,i)=>`${i*step},${40-(v/max)*36-2}`).join(' ');
-    svg.innerHTML=`<polyline points="${pts}" fill="none" stroke="url(#g)" stroke-width="2"/>
-      <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0%" stop-color="#6ea8fe"/><stop offset="100%" stop-color="#3cd27f"/>
-      </linearGradient></defs>`;
-  }
+  $$('.overlay').forEach(ov=>{
+    ov.addEventListener('transitionend',()=>{ if(ov.classList.contains('show')) trapFocus(ov); });
+  });
 
-  /* ========= Delivered auto-prune ========= */
-  function pruneDelivered(hours=72){
-    const list=loadDelivered();
-    const cutoff=Date.now()-hours*3600*1000;
-    const keep=list.filter(o=>{
-      const t=Date.parse(o.deliveredWhen||o.when||0);
-      return isFinite(t) && t>=cutoff;
-    });
-    if(keep.length!==list.length) saveDelivered(keep);
-  }
-
-  /* ========= First paints for this chunk ========= */
-  renderInventory();
-  updateStockBadges();
-  renderHeat();
-  renderHistory();
+  /* ========= Init ========= */
+  buildPromos();
+  renderCart();
+  refreshBadge();
+  updateGreeting();
+  syncFavStars();
   renderOrders();
+  renderHistory();
+  renderInventory();
   renderAnalytics();
-  pruneDelivered(72);
+  renderHeat();
+  ensureAdminLoginVisible();
 
-  /* ========= Safety net ========= */
-  window.addEventListener('error', (e)=>{
-    try{ console.error('[FitSnacks] Uncaught error:', e.message, e.error); }catch{}
-    try{ showToast && showToast('App error: '+e.message, 2800); }catch{}
-  });
   </script>
 </body>
 </html>
