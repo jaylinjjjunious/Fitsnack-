@@ -2046,7 +2046,145 @@
         try{ showToast('Init error: '+err.message, 3000); }catch{}
       }
     };
+/* ---------- Delegated UI handlers & modal helpers ---------- */
+/* This assumes you already have globals: cart (Map), favorites (Set),
+   saveCart(), renderCart(), refreshBadge(), showToast(), saveArr(),
+   FAVORITES_KEY. If any are missing in your file, stop and tell me.  */
 
+// Click anywhere: handle add-to-cart, favorites, open/close modals, checkout
+document.addEventListener('click', (e) => {
+  // + Add button on product cards
+  const addBtn = e.target.closest('.add');
+  if (addBtn) {
+    e.preventDefault();
+    const card = addBtn.closest('.card');
+    if (!card) return;
+
+    const name  = card.dataset.name;
+    const price = parseFloat(card.dataset.price || '0');
+    const item  = cart.get(name) || { price, qty: 0 };
+    item.qty += 1;
+    cart.set(name, item);
+
+    try { saveCart(cart); } catch {}
+    try { renderCart && renderCart(); } catch {}
+    try { refreshBadge && refreshBadge(); } catch {}
+    try { showToast && showToast(`Added 1 × ${name}`); } catch {}
+
+    return;
+  }
+
+  // ⭐ Favorite toggle
+  const favBtn = e.target.closest('.fav');
+  if (favBtn) {
+    const card = favBtn.closest('.card');
+    if (!card) return;
+    const name = card.dataset.name;
+
+    if (favorites.has(name)) favorites.delete(name);
+    else favorites.add(name);
+
+    try { saveArr && saveArr(FAVORITES_KEY, Array.from(favorites)); } catch {}
+    try {
+      // re-sync star UI
+      document.querySelectorAll('.card').forEach(c => {
+        const on = favorites.has(c.dataset.name);
+        c.querySelector('.fav')?.classList.toggle('active', on);
+      });
+    } catch {}
+    return;
+  }
+
+  // Open/close cart
+  if (e.target.closest('#cartBtn')) {
+    e.preventDefault();
+    document.getElementById('cartOverlay')?.classList.add('show');
+    return;
+  }
+  if (e.target.closest('#cartBack')) {
+    document.getElementById('cartOverlay')?.classList.remove('show');
+    return;
+  }
+
+  // Settings open/close
+  if (e.target.closest('#settingsBtn')) {
+    document.getElementById('settingsOverlay')?.classList.add('show');
+    return;
+  }
+  if (e.target.closest('#settingsClose')) {
+    document.getElementById('settingsOverlay')?.classList.remove('show');
+    return;
+  }
+
+  // Checkout open from cart/ sticky bar
+  if (e.target.closest('#cartCheckout') || e.target.closest('#cartBarCheckout')) {
+    // Only open if we have something in the cart
+    let count = 0; for (const v of cart.values()) count += v.qty||0;
+    if (count <= 0) {
+      try { showToast && showToast('Your cart is empty'); } catch {}
+      return;
+    }
+    document.getElementById('checkoutOverlay')?.classList.add('show');
+    return;
+  }
+
+  // Checkout close
+  if (e.target.closest('#checkoutClose')) {
+    document.getElementById('checkoutOverlay')?.classList.remove('show');
+    return;
+  }
+});
+
+// "Add" button inside the product mini-sheet (id="sheetAdd")
+(() => {
+  const btn = document.getElementById('sheetAdd');
+  if (!btn) return; // runs safely if not present yet
+  const getQty = () => {
+    const el = document.getElementById('qtyVal');
+    const n  = parseInt((el && el.textContent) || '1', 10);
+    return Math.max(1, isFinite(n) ? n : 1);
+  };
+  btn.addEventListener('click', () => {
+    try {
+      const title = document.getElementById('sheetTitle')?.textContent?.trim();
+      const price = parseFloat(
+        (document.getElementById('sheetPrice')?.textContent || '')
+          .replace(/[^0-9.]/g, '') || '0'
+      );
+      if (!title) return;
+
+      const qty  = getQty();
+      const line = cart.get(title) || { price, qty: 0 };
+      line.qty += qty;
+      cart.set(title, line);
+
+      saveCart(cart);
+      renderCart && renderCart();
+      refreshBadge && refreshBadge();
+      showToast && showToast(`Added ${qty} × ${title}`);
+    } catch {}
+    // Close the mini-sheet if it’s open
+    document.getElementById('productSheet')?.classList.remove('show');
+    // Show the cart so the user sees the result
+    document.getElementById('cartOverlay')?.classList.add('show');
+  }, { passive: true });
+})();
+
+// Click outside to close any overlay
+document.querySelectorAll('.overlay').forEach(ov => {
+  ov.addEventListener('click', (e) => {
+    if (e.target === ov) ov.classList.remove('show');
+  });
+});
+
+// Esc closes open overlays
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.overlay.show').forEach(ov => ov.classList.remove('show'));
+  }
+});
+
+/* ---------- End delegated handlers ---------- */
     if (document.readyState === 'loading'){
       document.addEventListener('DOMContentLoaded', start, {once:true});
     } else {
@@ -2054,7 +2192,7 @@
       start();
     }
   })();
-
+  
 </script>
 </body>
 </html>
