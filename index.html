@@ -11,7 +11,7 @@
   <link rel="preload" as="image" href="assets/carousel-3.jpg">
 
   <style>
-    :root {
+    :root{
       --bg:#0b0b0d;
       --card:rgba(20,20,24,0.6);
       --text:#e9e9ec;
@@ -29,7 +29,7 @@
     .app{max-width:393px;min-height:100svh;margin:0 auto;padding:12px 12px 32px;box-sizing:border-box}
 
     /* Glass look + glow */
-    .card, .sheet, .btn, .search, .chip, .tab, .ghost, .primary, .field{
+    .card,.sheet,.btn,.search,.chip,.tab,.ghost,.primary,.field{
       backdrop-filter: blur(var(--blur));
       -webkit-backdrop-filter: blur(var(--blur));
       background: var(--card);
@@ -39,11 +39,11 @@
 
     /* Header */
     .row{position:relative;display:flex;align-items:center;gap:0}
-    .search-wrap{flex:none;width:calc(100% - 200px);}
+    .search-wrap{flex:none;width:calc(100% - 200px)}
     .search{width:100%;border-radius:999px;padding:12px 44px;color:var(--text);outline:none;border:1px solid #2a2a2e}
     .search::placeholder{color:#6c6c70}
     .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
-    .icon-rights{position:absolute; right:8px; top:50%; transform:translateY(-50%); display:flex; gap:10px; margin-left:0}
+    .icon-rights{position:absolute;right:8px;top:50%;transform:translateY(-50%);display:flex;gap:10px;margin-left:0}
     .btn{-webkit-appearance:none;appearance:none;border-radius:14px;width:44px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
     #cartBtn{position:relative;display:flex;align-items:center;justify-content:center}
     .badge{position:absolute;top:-6px;right:-8px;background:var(--badge);color:#fff;border-radius:999px;padding:1px 6px;font-size:12px;font-weight:700;display:none;align-items:center;justify-content:center}
@@ -130,7 +130,7 @@
     .stock-badge{background:#0f172acc;color:#dbeafe;border:1px solid #1f2a44;padding:4px 8px;border-radius:10px;font-size:12px}
     .low-badge{background:#2a1a10cc;color:#ffd8b0;border:1px solid #3b2412}
 
-    /* Order sheet priority */
+    /* Order sheet on top of settings */
     #orderSheet{z-index:10050}
 
     /* Analytics UI */
@@ -144,31 +144,11 @@
     .rowh,.rowd{display:grid;grid-template-columns:1fr 70px 70px 70px;gap:8px;padding:8px}
     .rowh{background:rgba(255,255,255,.05);font-weight:700}
     .rowd{border-top:1px solid rgba(255,255,255,.06)}
-    .spark{width:100%;height:42px;display:block}
 
     /* Toasts */
     #toastHost{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;z-index:11000}
     .toast{pointer-events:auto;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(24,24,32,.9);font-weight:600;opacity:0;transform:translateY(8px);transition:opacity .22s ease,transform .22s ease}
     .toast.show{opacity:1;transform:translateY(0)}
-
-    /* Sticky cart bar */
-    #cartBar{position:fixed;left:0;right:0;bottom:0;display:none;z-index:10040;padding:8px}
-    #cartBar.show{display:block}
-    #cartBar .inner{max-width:393px;margin:0 auto;border-radius:16px;padding:10px;display:flex;gap:8px;align-items:center;justify-content:space-between;border:1px solid rgba(255,255,255,.1);background:rgba(20,20,24,.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-
-    /* Promo/Tip/Notes */
-    .breakdown{margin-top:12px;border:1px solid rgba(255,255,255,.10);border-radius:12px;overflow:hidden}
-    .break-row{display:flex;justify-content:space-between;gap:8px;padding:8px;border-top:1px solid rgba(255,255,255,.06)}
-    .break-row:first-child{border-top:none}
-    .break-row .muted{color:#c7c7cc}
-    .field-inline{display:flex;gap:8px;align-items:center}
-    .promo-ok{color:#3cd27f;font-weight:700}
-    .promo-bad{color:#ff6b6b;font-weight:700}
-    .tip-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
-    .tip-btn{padding:8px 10px;border-radius:10px;border:1px solid #2a2a30;background:#18181d;cursor:pointer}
-    .tip-btn.active{background:#24242a;box-shadow:0 0 0 1px rgba(110,168,254,.35)}
-    .notes{width:100%;min-height:64px;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec}
-    .badge-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(0,0,0,.25);font-size:12px}
   </style>
 </head>
 <body>
@@ -311,11 +291,13 @@
       </div>
 
       <div class="sheet-body">
+        <!-- Profile -->
         <div style="margin-top:6px;">Your name:</div>
         <input id="checkoutName" class="field" style="width:100%;padding:10px;border-radius:10px">
         <div style="margin-top:10px;">Where are you on campus?</div>
         <input id="checkoutLocation" class="field" style="width:100%;padding:10px;border-radius:10px">
 
+        <!-- Promo -->
         <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px">
           <div class="field-inline" style="flex:1">
             <input id="checkoutPromo" placeholder="Promo code" class="field" style="flex:1;min-width:0;padding:10px;border-radius:10px">
@@ -324,6 +306,7 @@
           <div id="promoStatus" class="badge-pill" style="display:none"></div>
         </div>
 
+        <!-- Tip -->
         <div style="margin-top:12px;">Tip (optional)</div>
         <div class="tip-group" id="tipGroup">
           <button class="tip-btn" data-tip="none">No tip</button>
@@ -336,9 +319,11 @@
           </div>
         </div>
 
+        <!-- Notes -->
         <div style="margin-top:12px;">Delivery notes (optional)</div>
         <textarea id="checkoutNotes" class="notes" placeholder="e.g., Meet at library entrance, 2nd floor."></textarea>
 
+        <!-- Breakdown -->
         <div class="breakdown" style="margin-top:12px">
           <div class="break-row"><div class="muted">Subtotal</div><div id="ckSub">$0.00</div></div>
           <div class="break-row"><div class="muted">Discount</div><div id="ckDisc">-$0.00</div></div>
@@ -379,6 +364,7 @@
 
         <!-- Admin -->
         <div id="panelAdmin" role="tabpanel" aria-labelledby="tabAdmin" style="display:none">
+          <!-- Login -->
           <div id="adminLogin">
             <div style="margin-top:6px;">Admin password:</div>
             <input id="adminPassword" type="password" class="field" style="width:100%;padding:10px;border-radius:10px">
@@ -388,6 +374,7 @@
             </div>
           </div>
 
+          <!-- Content (locked until unlock) -->
           <div id="adminContent" style="display:none">
             <div class="admin-subtabs">
               <button class="subtab active" data-subtab="orders">Orders</button>
@@ -451,7 +438,7 @@
     </div>
   </div>
 
-  <!-- Sticky cart bar + Toast host -->
+  <!-- Sticky cart bar + Toast host (no quick-checkout feature) -->
   <div id="cartBar">
     <div class="inner">
       <div><strong id="cartBarTotal">$0.00</strong></div>
@@ -463,35 +450,24 @@
   </div>
   <div id="toastHost"></div>
 
+  <!-- ===== App Script ===== -->
   <script>
-    /* ===== Boot + schema + SW ===== */
-    const APP_SCHEMA_VERSION=3, SCHEMA_KEY='fitsnacks.schema';
+    /* Schema + SW */
+    const APP_SCHEMA_VERSION = 3, SCHEMA_KEY = 'fitsnacks.schema';
     try{
-      const cur=JSON.parse(localStorage.getItem(SCHEMA_KEY)||'0')||0;
-      if(cur<APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY,JSON.stringify(APP_SCHEMA_VERSION));
+      const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY) || '0') || 0;
+      if(cur < APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
     }catch{
-      localStorage.setItem(SCHEMA_KEY,JSON.stringify(APP_SCHEMA_VERSION));
+      localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
     }
     if('serviceWorker' in navigator){
-      window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));
+      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
     }
 
-    /* ===== Safe selectors + event helpers (stabilizer) ===== */
-    const $  = (s,root=document)=>root.querySelector(s);
-    const $$ = (s,root=document)=>Array.from(root.querySelectorAll(s));
-    function on(el, type, selectorOrHandler, handler, opts){
-      if(!el) return;
-      if(typeof selectorOrHandler === 'function'){
-        el.addEventListener(type, selectorOrHandler, opts); return;
-      }
-      el.addEventListener(type, (e)=>{
-        const t = e.target.closest(selectorOrHandler);
-        if(t && el.contains(t)) handler.call(t, e);
-      }, opts);
-    }
-    function noop(){}
+    const $  = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
 
-    /* ===== Keys / constants ===== */
+    /* Keys */
     const CART_KEY='fitsnacks.cart.v1';
     const ORDERS_KEY='fitsnacks.orders';
     const UNLOCK_KEY='fitsnacks.admin.unlocked';
@@ -507,58 +483,44 @@
     const PROFILE_LOC_KEY='fitsnacks.profile.location';
 
     const ADMIN_PASSWORD='8TSB077';
-    const fmt=n=>'$'+(Number(n)||0).toFixed(2);
+    const fmt = n => '$' + n.toFixed(2);
 
-    /* ===== Load/save helpers ===== */
-    function loadCart(){try{return new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]'))}catch{return new Map()}}
-    function saveCart(m){try{localStorage.setItem(CART_KEY,JSON.stringify(Array.from(m.entries())))}catch{}}
-    function loadObj(k){try{return JSON.parse(localStorage.getItem(k)||'{}')}catch{return{}}}
-    function saveObj(k,o){localStorage.setItem(k,JSON.stringify(o||{}))}
-    function loadArr(k){try{return JSON.parse(localStorage.getItem(k)||'[]')}catch{return[]}}
-    function saveArr(k,a){localStorage.setItem(k,JSON.stringify(a||[]))}
-    function loadOrders(){try{return JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]')}catch{return[]}}
-    function saveOrders(v){localStorage.setItem(ORDERS_KEY,JSON.stringify(v||[]))}
-    function loadDelivered(){try{return JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]')}catch{return[]}}
-    function saveDelivered(v){localStorage.setItem(DELIVERED_KEY,JSON.stringify(v||[]))}
+    /* Load/save helpers */
+    function loadCart(){ try{ return new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]')); }catch{ return new Map(); } }
+    function saveCart(m){ try{ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(m.entries())));}catch{} }
+    function loadObj(k){ try{ return JSON.parse(localStorage.getItem(k)||'{}'); }catch{ return {}; } }
+    function saveObj(k,o){ localStorage.setItem(k, JSON.stringify(o||{})); }
+    function loadArr(k){ try{ return JSON.parse(localStorage.getItem(k)||'[]'); }catch{ return []; } }
+    function saveArr(k,a){ localStorage.setItem(k, JSON.stringify(a||[])); }
+    function loadOrders(){ try{ return JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]'); }catch{ return []; } }
+    function saveOrders(v){ localStorage.setItem(ORDERS_KEY, JSON.stringify(v||[])); }
+    function loadDelivered(){ try{ return JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]'); }catch{ return []; } }
+    function saveDelivered(v){ localStorage.setItem(DELIVERED_KEY, JSON.stringify(v||[])); }
     function loadSales(){
       try{
-        const raw=JSON.parse(localStorage.getItem(SALES_KEY)||'null');
-        if(raw&&raw.length===7&&raw[0].length===24) return raw;
+        const raw = JSON.parse(localStorage.getItem(SALES_KEY)||'null');
+        if(raw && raw.length===7 && raw[0].length===24) return raw;
       }catch{}
-      return Array.from({length:7},()=>Array(24).fill(0));
+      return Array.from({length:7}, ()=>Array(24).fill(0));
     }
-    function saveSales(m){localStorage.setItem(SALES_KEY,JSON.stringify(m))}
-    function loadProfile(){return {name:localStorage.getItem(PROFILE_NAME_KEY)||'',loc:localStorage.getItem(PROFILE_LOC_KEY)||''}}
-    function saveProfile(n,l){try{localStorage.setItem(PROFILE_NAME_KEY,n||'');localStorage.setItem(PROFILE_LOC_KEY,l||'')}catch{}}
+    function saveSales(m){ localStorage.setItem(SALES_KEY, JSON.stringify(m)); }
+    function loadProfile(){ return {name:localStorage.getItem(PROFILE_NAME_KEY)||'', loc:localStorage.getItem(PROFILE_LOC_KEY)||''}; }
+    function saveProfile(n,l){ try{ localStorage.setItem(PROFILE_NAME_KEY,n||''); localStorage.setItem(PROFILE_LOC_KEY,l||''); }catch{} }
 
-    /* ===== State ===== */
-    let cart=loadCart();
-    let stockQty=loadObj(STOCK_KEY);
-    let stockLow=loadObj(LOW_KEY);
-    let stockSet=loadObj(STOCK_SET_KEY); if(!Object.keys(stockSet).length){stockSet={};saveObj(STOCK_SET_KEY,stockSet)}
-    let sales=loadSales();
-    let favorites=new Set(loadArr(FAVORITES_KEY));
-    let prodAnalytics=loadObj(ANALYTICS_KEY);
+    /* State */
+    let cart        = loadCart();
+    let stockQty    = loadObj(STOCK_KEY);
+    let stockLow    = loadObj(LOW_KEY);
+    let stockSet    = loadObj(STOCK_SET_KEY); if(!Object.keys(stockSet).length){ stockSet={}; saveObj(STOCK_SET_KEY,stockSet); }
+    let sales       = loadSales();
+    let favorites   = new Set(loadArr(FAVORITES_KEY));
+    let prodAnalytics = loadObj(ANALYTICS_KEY);
 
-    /* ===== Utils ===== */
-    function haptic(ms=15){try{if(navigator.vibrate)navigator.vibrate(ms)}catch{}}
-    function fmtTotal(){let t=0;for(const[,info]of cart)t+=info.price*info.qty;return t}
-    function showToast(msg,ms=1800){
-      const host=$('#toastHost'); if(!host) return;
-      const el=document.createElement('div');
-      el.className='toast'; el.textContent=msg;
-      host.appendChild(el);
-      requestAnimationFrame(()=>el.classList.add('show'));
-      setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),250)},ms);
-    }
-    function updateGreeting(){
-      const g=$('#greet'); const p=loadProfile();
-      if(g) g.textContent = p.name ? `Hi, ${p.name} 👋` : 'Welcome 👋';
-    }
-    function isUnlocked(){return localStorage.getItem(UNLOCK_KEY)==='1'}
-    function setUnlocked(v){localStorage.setItem(UNLOCK_KEY,v?'1':'0')}
+    function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY)==='1'; }
+    function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v?'1':'0'); }
+    setUnlocked(false); // locked by default
 
-    /* ===== Seed promos (once) ===== */
+    /* Seed promos once */
     if(!localStorage.getItem(PROMOS_KEY)){
       saveArr(PROMOS_KEY, [
         {img:'assets/carousel-1.jpg', title:'Fuel your study grind', cta:'Shop snacks', action:'scrollGrid'},
@@ -567,12 +529,25 @@
       ]);
     }
 
-    /* ===== Promos (card-snap carousel) ===== */
-    function promoAction(p){
-      if(p.action==='openSettings'){ $('#settingsOverlay')?.classList.add('show'); switchTab('general'); }
-      if(p.action==='filter'){ activateChip(p.value||''); }
-      if(p.action==='scrollGrid'){ document.getElementById('grid')?.scrollIntoView({behavior:'smooth',block:'start'}); }
+    /* Utils */
+    function haptic(ms=15){ try{ if(navigator.vibrate) navigator.vibrate(ms); }catch{} }
+    function fmtTotal(){ let t=0; for(const [,info] of cart) t+=info.price*info.qty; return t; }
+    function showToast(msg,ms=1800){
+      const host=$('#toastHost');
+      const el=document.createElement('div');
+      el.className='toast';
+      el.textContent=msg;
+      host.appendChild(el);
+      requestAnimationFrame(()=>el.classList.add('show'));
+      setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),250); }, ms);
     }
+    function updateGreeting(){
+      const g=$('#greet'); const p=loadProfile();
+      if(g) g.textContent = p.name ? `Hi, ${p.name} 👋` : 'Welcome 👋';
+    }
+    function updateCartBar(){} // no sticky bar in this app
+
+    /* ----- Promos (card-snap carousel) ----- */
     function buildPromos(){
       const data=loadArr(PROMOS_KEY), snapper=$('#snapper'); if(!snapper) return;
       snapper.querySelectorAll('.snap-card').forEach(n=>n.remove());
@@ -588,22 +563,35 @@
           </div>`;
         snapper.insertBefore(c, after);
         if(p.action){
-          on(c, 'click', (e)=>{
+          c.addEventListener('click',e=>{
             if(e.target.closest('.snap-cta')) return;
             promoAction(p);
-          });
-          const cta=c.querySelector('.snap-cta');
-          if(cta){ on(cta,'click',()=>promoAction(p)); }
+          }, {passive:true});
+          c.querySelector('.snap-cta')?.addEventListener('click',e=>{
+            e.stopPropagation(); promoAction(p);
+          }, {passive:true});
         }
       });
     }
+
+    function promoAction(p){
+      if(p.action==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
+      if(p.action==='filter'){ activateChip(p.value||''); }
+      if(p.action==='scrollGrid'){ document.getElementById('grid')?.scrollIntoView({behavior:'smooth',block:'start'}); }
+    }
+
     function initCarousel(){
       const snapper=$('#snapper'); if(!snapper) return;
-      const cards=$$('.snap-card', snapper), dotsWrap=$('#snapDots');
+      const cards=$$('.snap-card'), dotsWrap=$('#snapDots');
       dotsWrap.innerHTML = cards.map(()=>'<div class="snap-dot"></div>').join('');
-      const dots=$$('.snap-dot', dotsWrap), banners=$$('.banner', snapper);
+      const dots=$$('.snap-dot'), banners=$$('.banner');
+
       function setDot(i){ dots.forEach((d,k)=>d.classList.toggle('active',k===i)); }
+
       let idx=0, holdMs=5000, slideMs=3000, paused=false, af=null, tId=null, loaded=0;
+
+      function centerOf(el){ const r=el.getBoundingClientRect(); return r.left+r.width/2; }
+      function containerCenter(){ const r=snapper.getBoundingClientRect(); return r.left+r.width/2; }
 
       function snapTo(i,dur){
         i=(i+cards.length)%cards.length; idx=i; setDot(idx);
@@ -619,8 +607,9 @@
         }
         af=requestAnimationFrame(step);
       }
+
       function autoLoop(){
-        if(paused || cards.length===0) return;
+        if(paused) return;
         tId=setTimeout(()=>{
           if(paused) return;
           snapTo(idx+1, slideMs);
@@ -636,66 +625,50 @@
       });
       function mark(){ loaded++; if(loaded>=banners.length){ start(); } }
 
-      ['pointerdown','touchstart','mousedown','mouseenter'].forEach(ev=>on(snapper,ev,()=>stop()));
-      ['pointerup','touchend','mouseup','mouseleave'].forEach(ev=>on(snapper,ev,()=>start()));
-      on(snapper,'scroll',()=>{
-        const c = snapper.getBoundingClientRect().left + snapper.clientWidth/2;
-        let best=Infinity,bestI=0;
-        cards.forEach((card,i)=>{ const r=card.getBoundingClientRect(); const cc=r.left+r.width/2; const d=Math.abs(c-cc); if(d<best){best=d;bestI=i} });
+      ['pointerdown','touchstart','mousedown','mouseenter'].forEach(ev=>snapper.addEventListener(ev,()=>stop()));
+      ['pointerup','touchend','mouseup','mouseleave'].forEach(ev=>snapper.addEventListener(ev,()=>start()));
+
+      snapper.addEventListener('scroll',()=>{
+        const c=containerCenter(); let best=Infinity,bestI=0;
+        const now=$$('.snap-card');
+        now.forEach((card,i)=>{ const d=Math.abs(c-centerOf(card)); if(d<best){best=d;bestI=i} });
         if(bestI!==idx){ idx=bestI; setDot(idx); }
       });
-      dots.forEach((dot,i)=>on(dot,'click',()=>{ stop(); snapTo(i,400); start(); }));
+
+      dots.forEach((dot,i)=>dot.addEventListener('click',()=>{ stop(); snapTo(i,400); start(); }));
       setDot(0); snapTo(0,0);
     }
 
-    /* ===== Search ===== */
-    on(document,'input','#search',(e)=>{
-      const q=(e.target.value||'').toLowerCase();
+    /* ----- Search ----- */
+    $('#search').addEventListener('input', e=>{
+      const q=e.target.value.toLowerCase();
       $$('.card').forEach(c=>c.style.display = c.dataset.name.toLowerCase().includes(q) ? '' : 'none');
     });
 
-    /* ===== Chips + Favorites ===== */
+    /* ----- Chips + Favorites filter ----- */
     function activateChip(val){
-      $$('#chips .chip').forEach(ch=>ch.classList.toggle('active',ch.dataset.filter===val));
+      $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch.dataset.filter===val));
       $$('.card').forEach(c=>{
         const tags=(c.dataset.tags||'').toLowerCase();
         const name=c.dataset.name;
-        const hit = !val || val==='' || (val==='favorites' ? favorites.has(name) : tags.includes(val));
-        c.style.display = hit ? '' : 'none';
+        const show = !val || val==='' || (val==='favorites' ? favorites.has(name) : tags.includes(val));
+        c.style.display = show ? '' : 'none';
       });
     }
-    on(document,'click','#chips .chip', function(){
-      activateChip(this.dataset.filter||'');
-    });
+    document.getElementById('chips').addEventListener('click', e=>{
+      const chip=e.target.closest('.chip'); if(!chip) return;
+      activateChip(chip.dataset.filter||'');
+    }, {passive:true});
     activateChip('');
 
-    function syncFavStars(){
-      $$('.card').forEach(c=>{
-        const f=c.querySelector('.fav'); if(!f) return;
-        f.classList.toggle('active', favorites.has(c.dataset.name));
-      });
-    }
-    on(document,'click','.fav', function(e){
-      const card=this.closest('.card'); if(!card) return;
-      const name=card.dataset.name;
-      favorites.has(name) ? favorites.delete(name) : favorites.add(name);
-      saveArr(FAVORITES_KEY, Array.from(favorites));
-      syncFavStars();
-    });
-
-    /* ===== Cart ===== */
+    /* ----- Cart badge + renderer ----- */
     function refreshBadge(){
       let n=0; for(const v of cart.values()) n+=v.qty;
       const b=$('#cartBadge'); if(!b) return;
       if(n>0){ b.textContent=n; b.style.display='inline-flex'; }
       else { b.style.display='none'; }
     }
-    function updateCartBar(){
-      const bar=$('#cartBar'); if(!bar) return;
-      const total=fmtTotal(); let count=0; for(const v of cart.values()) count+=v.qty;
-      if(count>0 && total>0){ $('#cartBarTotal').textContent=fmt(total); bar.classList.add('show'); }
-      else { bar.classList.remove('show'); }
-    }
+
     function renderCart(){
       let total=0, html='';
       for(const [name,info] of cart){
@@ -705,64 +678,86 @@
             <button data-act="-" data-name="${name}" class="ghost" style="padding:4px 8px">−</button>
             <div style="min-width:24px;text-align:center">${info.qty}</div>
             <button data-act="+" data-name="${name}" class="ghost" style="padding:4px 8px">+</button>
-            <button data-act="x" data-name="${name}" class="ghost" style="padding:4px 8px">Remove</button>
             <div style="font-weight:700;margin-left:8px">${name}</div>
           </div>
-          <div style="font-weight:700">${fmt(line)}</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button data-act="x" data-name="${name}" class="ghost" title="Remove" style="padding:4px 8px">✕</button>
+            <div style="font-weight:700">${fmt(line)}</div>
+          </div>
         </div>`;
       }
-      const content = $('#cartContent');
-      if(content){
-        content.innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
-      }
-      $('#cartTotal') && ($('#cartTotal').textContent = fmt(total));
-      saveCart(cart); refreshBadge(); updateCartBar();
+      $('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
+      $('#cartTotal').textContent = fmt(total);
+      saveCart(cart); refreshBadge();
     }
-    on(document,'click','[data-act][data-name]', function(){
-      const name=this.getAttribute('data-name');
-      const act=this.getAttribute('data-act');
-      const entry=cart.get(name); if(!entry) return;
-      if(act==='+') entry.qty = Math.min(99, entry.qty+1);
-      if(act==='-') entry.qty = Math.max(1, entry.qty-1);
-      if(act==='x') cart.delete(name);
-      renderCart();
-    });
 
-    /* ===== Product sheet + analytics capture ===== */
-    let current=null;
-    function ensureMetrics(n){
-      if(!prodAnalytics[n]) prodAnalytics[n]={opens:0,adds:0,addedQty:0,purchasedQty:0,revenue:0};
-      return prodAnalytics[n];
+    /* +/-/remove in cart list */
+    document.addEventListener('click', (e)=>{
+      const b=e.target.closest('button'); if(!b) return;
+      if(b.matches('[data-act][data-name]')){
+        const name=b.getAttribute('data-name');
+        const act=b.getAttribute('data-act');
+        const entry=cart.get(name); if(!entry && act!=='x') return;
+
+        if(act==='+'){ entry.qty=Math.min(99, entry.qty+1); }
+        if(act==='-'){ entry.qty=Math.max(1, entry.qty-1); }
+        if(act==='x'){ cart.delete(name); }
+
+        renderCart();
+      }
+    }, {passive:true});
+
+    /* ----- Favorites toggle (star on product cards) ----- */
+    function syncFavStars(){
+      $$('.card').forEach(c=>{
+        const f=c.querySelector('.fav'); if(!f) return;
+        f.classList.toggle('active', favorites.has(c.dataset.name));
+      });
     }
+    document.addEventListener('click', e=>{
+      const btn=e.target.closest('.fav'); if(!btn) return;
+      const card=btn.closest('.card'); if(!card) return;
+      const name=card.dataset.name;
+      favorites.has(name) ? favorites.delete(name) : favorites.add(name);
+      saveArr(FAVORITES_KEY, Array.from(favorites));
+      syncFavStars();
+    }, {passive:true});
+
+    /* ----- Product mini sheet ----- */
+    let current=null;
+
     function openProductSheet(card){
-      if(!card) return;
-      current={name:card.dataset.name, price:parseFloat(card.dataset.price), img:card.dataset.img};
+      current={name:card.dataset.name, price:+card.dataset.price, img:card.dataset.img};
       $('#sheetTitle').textContent=current.name;
       $('#sheetImg').src=current.img||''; $('#sheetImg').alt=current.name||'';
       $('#sheetPrice').textContent=fmt(current.price);
       $('#qtyVal').textContent=1; $('#sheetAdd').textContent='Add • '+fmt(current.price);
 
-      ensureMetrics(current.name).opens++; saveObj(ANALYTICS_KEY, prodAnalytics);
-
-      if(stockSet[current.name]){
-        const q=Number(stockQty[current.name]||0), l=Number(stockLow[current.name]||0);
+      // stock block (only show if stock is set for that item)
+      const name=current.name;
+      if(stockSet[name]){
+        const q=Number(stockQty[name]||0), l=Number(stockLow[name]||0);
         $('#sheetStock').textContent='Stock: '+q;
-        const w=$('#sheetLowWarn');
-        if(l>0 && q<=l){ w.style.display='block'; w.textContent='Low stock ('+q+' ≤ '+l+')'; }
-        else { w.style.display='none'; }
+        const lw=$('#sheetLowWarn');
+        if(l>0 && q<=l){ lw.style.display='block'; lw.textContent='Low stock ('+q+' ≤ '+l+')'; }
+        else { lw.style.display='none'; }
       }else{
-        $('#sheetStock').textContent='Stock: --'; $('#sheetLowWarn').style.display='none';
+        $('#sheetStock').textContent='Stock: --';
+        $('#sheetLowWarn').style.display='none';
       }
-      $('#productSheet')?.classList.add('show');
+
+      $('#productSheet').classList.add('show');
     }
+
+    /* open sheet: whole card (except + and star) */
     $$('.card').forEach(card=>{
-      on(card,'click', (e)=>{
+      card.addEventListener('click', e=>{
         if(e.target.closest('.add') || e.target.closest('.fav')) return;
         openProductSheet(card);
       });
     });
 
-    /* Add button: press-and-hold quick add OR open sheet */
+    /* Add button behavior: short click opens sheet; long-press quick add */
     function attachAddButtonEnhancements(btn){
       let timer=null, long=false;
       const start=()=>{
@@ -770,67 +765,60 @@
         timer=setTimeout(()=>{
           long=true;
           const card=btn.closest('.card');
-          if(!card) return;
           const name=card.dataset.name; const price=+card.dataset.price;
           const item=cart.get(name)||{price,qty:0};
           item.qty+=1; cart.set(name,item); saveCart(cart); renderCart();
-          haptic(12); showToast(`Added 1 × ${name}`);
+          showToast(`Added 1 × ${name}`);
         }, 520);
       };
       const cancel=()=>clearTimeout(timer);
-      on(btn,'touchstart',start,{passive:true});
-      on(btn,'mousedown',start);
-      ['touchend','touchcancel','mouseup','mouseleave'].forEach(ev=>on(btn,ev,cancel));
-      on(btn,'click',(e)=>{
+      btn.addEventListener('touchstart', start, {passive:true});
+      btn.addEventListener('mousedown', start);
+      ['touchend','touchcancel','mouseup','mouseleave'].forEach(ev=>btn.addEventListener(ev,cancel));
+      btn.addEventListener('click', e=>{
         if(long){ e.preventDefault(); e.stopPropagation(); return; }
         const card=btn.closest('.card'); openProductSheet(card);
       });
     }
     $$('.add').forEach(attachAddButtonEnhancements);
 
-    on($('#qtyPlus'),'click',()=>{ if(!current) return; const n=Math.min(99, parseInt($('#qtyVal').textContent||'1')+1); $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price*n); } );
-    on($('#qtyMinus'),'click',()=>{ if(!current) return; const n=Math.max(1, parseInt($('#qtyVal').textContent||'1')-1); $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price*n); } );
-    function closeSheet(){ $('#productSheet')?.classList.remove('show'); }
-    on($('#sheetClose'),'click',closeSheet);
-    on($('#sheetAdd'),'click',()=>{
-      if(!current) return;
-      const n=parseInt($('#qtyVal').textContent||'1');
-      const m=ensureMetrics(current.name); m.adds++; m.addedQty+=n; saveObj(ANALYTICS_KEY, prodAnalytics);
+    /* qty buttons inside mini sheet */
+    $('#qtyPlus').addEventListener('click', ()=>{
+      const n=Math.min(99, parseInt($('#qtyVal').textContent)+1);
+      $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price*n);
+    });
+    $('#qtyMinus').addEventListener('click', ()=>{
+      const n=Math.max(1, parseInt($('#qtyVal').textContent)-1);
+      $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price*n);
+    });
+    function closeSheet(){ $('#productSheet').classList.remove('show'); }
+    $('#sheetClose').addEventListener('click', closeSheet);
+
+    /* confirm add from mini sheet */
+    $('#sheetAdd').addEventListener('click', ()=>{
+      const n=parseInt($('#qtyVal').textContent);
       const e=cart.get(current.name)||{price:current.price,qty:0};
       e.qty+=n; cart.set(current.name,e);
-      closeSheet(); renderCart(); $('#cartOverlay')?.classList.add('show'); haptic(12);
+      closeSheet(); renderCart();
+      $('#cartOverlay').classList.add('show');
     });
 
-    /* ===== Overlays open/close ===== */
-    function openCart(){ $('#cartOverlay')?.classList.add('show'); }
-    function closeCart(){ $('#cartOverlay')?.classList.remove('show'); }
-    function openSettings(def=false){ $('#settingsOverlay')?.classList.add('show'); switchTab(def?'admin':'general'); if(def) ensureAdminLoginVisible(); }
-    function closeSettings(){ $('#settingsOverlay')?.classList.remove('show'); }
-    on($('#cartBtn'),'click',openCart);
-    on($('#cartBack'),'click',closeCart);
-    on($('#settingsBtn'),'click',()=>openSettings(false));
-    on($('#settingsClose'),'click',closeSettings);
+    /* Open/close core overlays */
+    function openCart(){ $('#cartOverlay').classList.add('show'); }
+    function closeCart(){ $('#cartOverlay').classList.remove('show'); }
+    function openSettings(def=false){ $('#settingsOverlay').classList.add('show'); switchTab(def?'admin':'general'); if(def) ensureAdminLoginVisible(); }
+    function closeSettings(){ $('#settingsOverlay').classList.remove('show'); }
+    $('#cartBtn').addEventListener('click', openCart);
+    $('#cartBack').addEventListener('click', closeCart);
+    $('#settingsBtn').addEventListener('click', ()=>openSettings(false));
+    $('#settingsClose').addEventListener('click', closeSettings);
 
-    /* ===== Re-order last ===== */
-    function reorderLast(){
-      const active=loadOrders(), hist=loadDelivered();
-      const src=active[0]||hist[0];
-      if(!src){ showToast('No previous orders'); return; }
-      cart=new Map();
-      for(const line of src.lines){ cart.set(line.name, {price:line.price, qty:line.qty}); }
-      saveCart(cart); renderCart(); openCart(); haptic(12);
-    }
-    on($('#reorderLast'),'click',reorderLast);
-
-    /* ===== Orders, Delivered/History, Sales ===== */
+    /* ----- Orders, Delivered/History, Sales ----- */
     function addOrderFromCart(name, location, notes, discount, tip){
       const lines=[]; let total=0;
       for(const [n,info] of cart){
         const line=info.price*info.qty; total+=line; lines.push({name:n, price:info.price, qty:info.qty, line});
-        const m=ensureMetrics(n); m.purchasedQty += info.qty; m.revenue += line;
       }
-      saveObj(ANALYTICS_KEY, prodAnalytics);
-
       total = Math.max(0, total - (discount||0)) + (tip||0);
 
       const order={when:new Date().toISOString(), name, location, notes:notes||'', lines, total, discount:discount||0, tip:tip||0};
@@ -839,8 +827,12 @@
       const d=new Date(), dow=d.getDay(), hr=d.getHours();
       sales[dow][hr]=(sales[dow][hr]||0)+1; saveSales(sales);
 
-      // Webhook trigger
-      sendOrderWebhook(order);
+      // webhook: notify via IFTTT
+      fetch("https://maker.ifttt.com/trigger/Fitsnack_order/with/key/MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({value1:name,value2:location,value3:`$${total.toFixed(2)}`})
+      }).catch(console.error);
 
       return order;
     }
@@ -866,7 +858,7 @@
       }).join('');
     }
 
-    /* ===== Inventory + Heat + Badges ===== */
+    /* ----- Inventory + Heat + Stock Badges ----- */
     function getProducts(){ return $$('.card').map(c=>({name:c.dataset.name, price:+c.dataset.price, img:c.dataset.img, tags:(c.dataset.tags||'').toLowerCase()})); }
 
     function renderInventory(){
@@ -893,7 +885,7 @@
       grid.innerHTML='';
       for(let d=0; d<7; d++){
         for(let h=0; h<24; h++){
-          const v=sales[d][h], alpha=max ? (0.08 + 0.62*(v/max)) : 0.10; // 0.10..0.70
+          const v=sales[d][h], alpha=max ? (0.08 + 0.62*(v/max)) : 0.10;
           const cell=document.createElement('div');
           cell.className='heat-cell';
           cell.title=`Day ${d}, ${h}:00 -- ${v}`;
@@ -912,7 +904,7 @@
       $$('.card').forEach(card=>{
         const name=card.dataset.name, wrap=ensureBadgeWrap(card);
         wrap.innerHTML='';
-        if(!stockSet[name]) return; // only show when stock set
+        if(!stockSet[name]) return;
         const qty=Number(stockQty[name]||0), low=Number(stockLow[name]||0);
         const b=document.createElement('div'); b.className='stock-badge'; b.textContent='Stock: '+qty; wrap.appendChild(b);
         if(low>0 && qty<=low){
@@ -934,7 +926,7 @@
       }
     }
 
-    /* ===== Admin Tabs + Lock/Unlock + History ===== */
+    /* ----- Admin Tabs + Lock/Unlock + History ----- */
     function switchTab(which){
       const tabG=$('#tabGeneral'), tabA=$('#tabAdmin'),
             panG=$('#panelGeneral'), panA=$('#panelAdmin');
@@ -951,7 +943,7 @@
     }
     function showAdminState(){
       const el=$('#adminStateVal'); if(!el) return;
-      el.textContent = isUnlocked() ? 'Unlocked' : 'Locked';
+      el.textContent = isUnlocked() ? 'Unlocked' : 'Locked (password required)';
     }
     function focusAdminPassword(){ const el=$('#adminPassword'); if(el){ el.focus(); el.select && el.select(); } }
 
@@ -1002,29 +994,48 @@
       if(keep.length!==list.length) saveDelivered(keep);
     }
 
-    // Tab clicks
-    on(document,'click','#tabGeneral',()=>switchTab('general'));
-    on(document,'click','#tabAdmin',()=>switchTab('admin'));
+    /* ----- Main tab click handlers (General/Admin) ----- */
+    document.addEventListener('click',(e)=>{
+      if(e.target.closest('#tabGeneral')) switchTab('general');
+      if(e.target.closest('#tabAdmin'))   switchTab('admin');
+    }, {passive:true});
 
-    // Admin auth + history clear
-    on(document,'click','#adminSubmit',()=>{
-      const ok = $('#adminPassword').value===ADMIN_PASSWORD;
-      if(ok){ setUnlocked(true); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
-      else { $('#adminError').style.display='block'; }
-    });
-    on(document,'click','#adminLock',()=>{ setUnlocked(false); ensureAdminLoginVisible(); });
-    on(document,'click','#historyClear',()=>{ saveDelivered([]); renderHistory(); });
+    /* ----- Admin auth + history clear + lock ----- */
+    document.addEventListener('click',(e)=>{
+      if(e.target.closest('#adminSubmit')){
+        const ok = ($('#adminPassword').value||'') === ADMIN_PASSWORD;
+        if(ok){ setUnlocked(true); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
+        else { $('#adminError').style.display='block'; }
+      }
+      if(e.target && e.target.id==='adminLock'){ setUnlocked(false); ensureAdminLoginVisible(); }
+      if(e.target && e.target.id==='historyClear'){ saveDelivered([]); renderHistory(); }
+    }, {passive:true});
 
-    /* ===== Order sheet open/deliver ===== */
-    on(document,'click','.order-item', function(){
-      const idx = parseInt(this.getAttribute('data-idx'),10);
-      openOrderSheet(idx);
+    /* ----- Admin subtabs ----- */
+    document.addEventListener('click',(e)=>{
+      const btn=e.target.closest('.subtab'); if(!btn) return;
+      $$('.subtab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const id=btn.getAttribute('data-subtab');
+      $('#subtab-orders').style.display    = (id==='orders')   ? 'block' : 'none';
+      $('#subtab-inventory').style.display = (id==='inventory')? 'block' : 'none';
+      $('#subtab-analytics').style.display = (id==='analytics')? 'block' : 'none';
+      $('#subtab-history').style.display   = (id==='history')  ? 'block' : 'none';
+      if(id==='orders')    renderOrders();
+      if(id==='inventory'){renderInventory(); updateStockBadges();}
+      if(id==='analytics') renderAnalytics?.();
+      if(id==='history'){  pruneDelivered(72); renderHistory(); }
+    }, {passive:true});
+
+    /* ----- Order details sheet: open/close/deliver ----- */
+    document.addEventListener('click', e=>{
+      const row=e.target.closest('.order-item'); if(!row) return;
+      openOrderSheet(parseInt(row.getAttribute('data-idx'),10));
     });
-    on(document,'keydown','.order-item', function(e){
+    document.addEventListener('keydown', e=>{
       if(e.key!=='Enter' && e.key!==' ') return;
-      e.preventDefault();
-      const idx = parseInt(this.getAttribute('data-idx'),10);
-      openOrderSheet(idx);
+      const row=e.target.closest('.order-item'); if(!row) return;
+      e.preventDefault(); openOrderSheet(parseInt(row.getAttribute('data-idx'),10));
     });
 
     let currentOrderIndex=null;
@@ -1034,14 +1045,16 @@
       $('#orderMeta').textContent = `${new Date(o.when).toLocaleString()} • ${o.name} @ ${o.location}`;
       $('#orderLines').innerHTML = o.lines.map(l=>`<div class="row-between" style="padding:6px 0"><div>${l.name} × ${l.qty}</div><div style="font-weight:700">${fmt(l.line)}</div></div>`).join('');
       $('#orderTotal').textContent = fmt(o.total);
-      // Ensure this overlay is last so it sits on top of Settings
-      const os=$('#orderSheet'); if(os) { document.body.appendChild(os); os.classList.add('show'); }
+      const os=$('#orderSheet');
+      // Make sure it sits above Settings overlay
+      document.body.appendChild(os);
+      os.classList.add('show');
       $('#orderClose')?.focus();
     }
-    function closeOrderSheet(){ $('#orderSheet')?.classList.remove('show'); currentOrderIndex=null; }
-    on($('#orderClose'),'click',closeOrderSheet);
-    on($('#orderCancel'),'click',closeOrderSheet);
-    on($('#orderDelivered'),'click', ()=>{
+    function closeOrderSheet(){ $('#orderSheet').classList.remove('show'); currentOrderIndex=null; }
+    $('#orderClose').addEventListener('click', closeOrderSheet);
+    $('#orderCancel').addEventListener('click', closeOrderSheet);
+    $('#orderDelivered').addEventListener('click', ()=>{
       const idx=currentOrderIndex; if(idx==null) return;
       const active=loadOrders();
       if(idx>=0 && idx<active.length){
@@ -1054,184 +1067,80 @@
       closeOrderSheet();
     });
 
-    /* ===== Checkout (promo, tips, notes) + Profile ===== */
-    const PROMO_TABLE = {
-      'SAVE10': {type:'percent', value:0.10, label:'10% off sitewide'},
-      'BAR1':   {type:'amount',  value:1.00, label:'$1 off protein items', rule:'tag:protein'}
-    };
-    let activePromo = null;        // {code,type,value,label,rule,discount,ok}
-    let activeTip = {kind:'none', amount:0};
+    /* ----- Inventory inputs (update stock + badges + mini sheet if open) ----- */
+    document.addEventListener('input', (e)=>{
+      const row=e.target.closest('.field[data-prod]'); if(!row) return;
+      const name=row.getAttribute('data-prod');
 
-    function evalPromoDiscount(code){
-      code=(code||'').trim().toUpperCase();
-      if(!code || !PROMO_TABLE[code]) return null;
-      const p = PROMO_TABLE[code];
-      let subtotal = 0; for(const[,info] of cart) subtotal += info.price*info.qty;
-      if(subtotal<=0) return null;
-
-      let discount=0;
-      if(p.rule && p.rule.startsWith('tag:')){
-        const t = p.rule.slice(4).toLowerCase();
-        let eligible = 0;
-        $$('.card').forEach(c=>{
-          const name=c.dataset.name;
-          const tags=(c.dataset.tags||'').toLowerCase();
-          const entry=cart.get(name);
-          if(!entry) return;
-          if(tags.includes(t)){
-            eligible += entry.price*entry.qty;
-          }
-        });
-        if(eligible<=0) return {code, label:`No eligible items for ${code}`, type:'none', value:0, discount:0, ok:false};
-        discount = p.type==='percent' ? eligible * p.value : Math.min(p.value, eligible);
-      }else{
-        discount = p.type==='percent' ? subtotal * p.value : Math.min(p.value, subtotal);
+      if(e.target.matches('input[data-k="qty"]')){
+        const v=(e.target.value||'').trim();
+        if(v===''){ delete stockQty[name]; delete stockSet[name]; }
+        else { stockQty[name]=Number(v); stockSet[name]=1; }
+        saveObj(STOCK_KEY,stockQty); saveObj(STOCK_SET_KEY,stockSet);
+        updateStockBadges(); refreshMiniIfOpen();
       }
-      return {code, type:p.type, value:p.value, label:p.label, rule:p.rule||'', discount:Math.max(0,discount), ok:true};
-    }
-
-    function computeTotals(){
-      let subtotal=0; for(const[,info] of cart) subtotal+=info.price*info.qty;
-      const disc = activePromo?.discount || 0;
-      const tip  = Math.max(0, activeTip.amount||0);
-      const total = Math.max(0, subtotal - disc) + tip;
-      return {subtotal, disc, tip, total};
-    }
-
-    function updateCheckoutBreakdown(){
-      const {subtotal, disc, tip, total} = computeTotals();
-      $('#ckSub') && ($('#ckSub').textContent = fmt(subtotal));
-      $('#ckDisc') && ($('#ckDisc').textContent = `-${fmt(disc)}`);
-      $('#ckTip') && ($('#ckTip').textContent = fmt(tip));
-      $('#ckTotal') && ($('#ckTotal').textContent = fmt(total));
-    }
-
-    function setTip(kind, amount){
-      activeTip = {kind, amount:Math.max(0, +amount||0)};
-      $$('#tipGroup .tip-btn').forEach(b=>b.classList.remove('active'));
-      if(kind==='none'){
-        const btn=[...$('#tipGroup').children].find(el=>el.matches('.tip-btn[data-tip="none"]'));
-        btn && btn.classList.add('active');
+      if(e.target.matches('input[data-k="low"]')){
+        const v2=(e.target.value||'').trim();
+        if(v2===''){ delete stockLow[name]; }
+        else { stockLow[name]=Number(v2); }
+        saveObj(LOW_KEY,stockLow);
+        updateStockBadges(); refreshMiniIfOpen();
       }
-      updateCheckoutBreakdown();
-    }
+    });
 
-    function selectQuickTip(btn){
-      $$('#tipGroup .tip-btn').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      const spec=btn.getAttribute('data-tip')||'none';
-      if(spec==='none'){ setTip('none',0); return; }
-      const [k,v]=spec.split(':'); const {subtotal, disc}=computeTotals();
-      if(k==='percent'){ const base=Math.max(0, subtotal - disc); setTip('percent', base*(+v/100)); }
-      if(k==='amount'){ setTip('amount', +v); }
-    }
-
-    on($('#cartCheckout'),'click', ()=>{
+    /* ----- Checkout flow (opens from cart; validates; posts order; clears cart) ----- */
+    function openCheckoutFromCart(){
       const p=loadProfile();
       $('#checkoutName').value=p.name||'';
       $('#checkoutLocation').value=p.loc||'';
       $('#checkoutError').style.display='none';
-      $('#checkoutPromo').value='';
-      activePromo=null; $('#promoStatus').style.display='none'; $('#promoStatus').textContent='';
-      setTip('none',0); $('#tipCustomAmount').value='';
-      updateCheckoutBreakdown();
-      $('#cartOverlay')?.classList.remove('show');
-      $('#checkoutOverlay')?.classList.add('show');
+      $('#checkoutOverlay').classList.add('show');
+    }
+
+    $('#cartCheckout').addEventListener('click', ()=>{
+      if(cart.size===0){ showToast('Your cart is empty'); return; }
+      $('#cartOverlay').classList.remove('show');
+      openCheckoutFromCart();
     });
+    $('#checkoutClose').addEventListener('click', ()=>$('#checkoutOverlay').classList.remove('show'));
 
-    on($('#cartBarView'),'click', openCart);
-    on($('#cartBarCheckout'),'click', ()=>{
-      if(fmtTotal()<=0){ showToast('Your cart is empty'); return; }
-      const p=loadProfile();
-      $('#checkoutName').value=p.name||'';
-      $('#checkoutLocation').value=p.loc||'';
-      $('#checkoutError').style.display='none';
-      $('#checkoutPromo').value='';
-      activePromo=null; $('#promoStatus').style.display='none'; $('#promoStatus').textContent='';
-      setTip('none',0); $('#tipCustomAmount').value='';
-      updateCheckoutBreakdown();
-      $('#checkoutOverlay')?.classList.add('show');
-    });
-
-    on($('#checkoutClose'),'click', ()=>$('#checkoutOverlay')?.classList.remove('show'));
-
-    // Apply promo
-    on($('#checkoutApplyPromo'),'click', ()=>{
-      const code=$('#checkoutPromo').value;
-      const res=evalPromoDiscount(code);
-      const badge=$('#promoStatus');
-      if(res && res.ok){
-        activePromo = res;
-        badge.textContent = `${res.code} • ${res.label} • -${fmt(res.discount)}`;
-        badge.style.display='inline-flex'; badge.classList.remove('promo-bad'); badge.classList.add('promo-ok');
-      }else{
-        activePromo = null;
-        badge.textContent = res ? (res.label || 'Not eligible') : 'Invalid code';
-        badge.style.display='inline-flex'; badge.classList.add('promo-bad'); badge.classList.remove('promo-ok');
-      }
-      updateCheckoutBreakdown();
-    });
-
-    // Tip quick buttons and custom
-    on($('#tipGroup'),'click','.tip-btn', function(){ selectQuickTip(this); });
-    on($('#tipApplyCustom'),'click', ()=>{
-      const v=+($('#tipCustomAmount').value||0);
-      setTip('amount', v);
-      $$('#tipGroup .tip-btn').forEach(b=>b.classList.remove('active'));
-    });
-
-    on($('#checkoutSubmit'),'click', ()=>{
+    $('#checkoutSubmit').addEventListener('click', ()=>{
       const name=$('#checkoutName').value.trim();
       const loc=$('#checkoutLocation').value.trim();
-      const notes=$('#checkoutNotes')?.value.trim() || '';
+      const notes=$('#checkoutNotes')?.value.trim()||'';
       if(!name || !loc){ $('#checkoutError').style.display='block'; return; }
 
       // persist profile
       saveProfile(name,loc);
 
-      // totals w/ promo + tip
-      const totals=computeTotals();
+      // add order (webhook fires inside this function)
+      addOrderFromCart(name, loc, notes, /*discount*/0, /*tip*/0);
 
-      // add order (also triggers webhook)
-      addOrderFromCart(name, loc, notes, totals.disc, totals.tip);
-
-      // clear cart & close
+      // clear cart and close
       cart.clear(); renderCart();
-      $('#checkoutOverlay')?.classList.remove('show');
+      $('#checkoutOverlay').classList.remove('show');
       updateGreeting();
       showToast('Order placed 🎉');
     });
 
-    /* ===== Webhook SMS trigger (IFTTT) =====
-       Uses the exact Maker URL you gave me. Non-blocking, errors are swallowed.
-    */
-    const IFTTT_URL = 'https://maker.ifttt.com/trigger/Fitsnack_order/with/key/MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA';
-    function sendOrderWebhook(order){
-      try{
-        const items = order.lines.map(l=>`${l.name} x${l.qty} = ${fmt(l.line)}`).join('; ');
-        const value1 = `${order.name} @ ${order.location}`;
-        const value2 = items;
-        const value3 = `Total ${fmt(order.total)} • Notes: ${order.notes||'--'}`;
-        fetch(IFTTT_URL, {
-          method:'POST',
-          headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({value1, value2, value3})
-        }).catch(()=>{/* ignore */});
-      }catch(e){/* ignore */}
-    }
+    /* ----- a11y focus/keys on clickable UI ----- */
+    $$('.btn,.add,.ghost,.primary,.tab,.subtab').forEach(el=>{
+      el.tabIndex=0;
+      el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
+    });
 
-    /* ===== Analytics render ===== */
+    /* ----- Analytics renderer ----- */
     function renderAnalytics(){
       const orders=loadOrders(), delivered=loadDelivered(), all=orders.concat(delivered);
       let rev=0, items=0;
       all.forEach(o=>{ rev+=o.total; o.lines.forEach(l=>items+=l.qty); });
       const cnt=all.length, aov=cnt?(rev/cnt):0;
-      $('#kpiRevenue') && ($('#kpiRevenue').textContent=fmt(rev));
-      $('#kpiOrders')  && ($('#kpiOrders').textContent=cnt);
-      $('#kpiAOV')     && ($('#kpiAOV').textContent=fmt(aov));
-      $('#kpiItems')   && ($('#kpiItems').textContent=items);
+      $('#kpiRevenue').textContent = fmt(rev);
+      $('#kpiOrders').textContent  = cnt;
+      $('#kpiAOV').textContent     = fmt(aov);
+      $('#kpiItems').textContent   = items;
 
-      // last 7 days spark
+      // last 7 days sparkline buckets
       const days=Array(7).fill(0), now=new Date();
       all.forEach(o=>{
         const d=new Date(o.when);
@@ -1240,30 +1149,35 @@
       });
       drawSpark(days);
 
-      // ensure metrics for any current product cards (safe-guard)
-      getProducts().forEach(p=>ensureMetrics(p.name));
-      saveObj(ANALYTICS_KEY, prodAnalytics);
+      // simple per-product stats (opens/adds purchased captured elsewhere or inferred)
+      const byName = {};
+      all.forEach(o=>{
+        o.lines.forEach(l=>{
+          byName[l.name] = byName[l.name] || {name:l.name, qty:0, revenue:0, opens:0, adds:0};
+          byName[l.name].qty     += l.qty;
+          byName[l.name].revenue += l.line;
+        });
+      });
 
-      // top products table + simple funnel bars
-      const rows=Object.entries(prodAnalytics).map(([name,m])=>({
-        name, opens:m.opens||0, adds:m.adds||0, addedQty:m.addedQty||0, purchasedQty:m.purchasedQty||0, revenue:m.revenue||0
-      }));
-      const top=rows.slice().sort((a,b)=>b.revenue-a.revenue).slice(0,8);
-      const maxR=Math.max(1,...top.map(r=>r.revenue));
-      const maxQ=Math.max(1,...top.map(r=>r.purchasedQty));
-      $('#topProducts') && ($('#topProducts').innerHTML = top.length ? top.map(r=>{
-        const conv = r.opens ? Math.round((r.purchasedQty/r.opens)*100) : 0;
+      const rows = Object.values(byName);
+      const top  = rows.slice().sort((a,b)=>b.revenue-a.revenue).slice(0,8);
+      const maxR = Math.max(1, ...top.map(r=>r.revenue));
+      const maxQ = Math.max(1, ...top.map(r=>r.qty));
+
+      $('#topProducts').innerHTML = top.length ? top.map(r=>{
+        const conv = r.opens ? Math.round((r.qty/Math.max(1,r.opens))*100) : 0;
         return `<div class="rowd">
-                  <div>${r.name}</div><div>${r.purchasedQty}</div><div>${fmt(r.revenue)}</div><div>${conv}%</div>
+                  <div>${r.name}</div><div>${r.qty}</div><div>${fmt(r.revenue)}</div><div>${conv}%</div>
                 </div>
                 <div style="padding:0 8px 8px">
                   <div class="bar"><i style="width:${(r.revenue/maxR)*100}%"></i></div>
-                  <div class="bar" style="margin-top:6px"><i style="width:${(r.purchasedQty/maxQ)*100}%"></i></div>
+                  <div class="bar" style="margin-top:6px"><i style="width:${(r.qty/maxQ)*100}%"></i></div>
                 </div>`;
-      }).join('') : '<div class="rowd"><div>No sales yet</div><div></div><div></div><div></div></div>');
+      }).join('') : '<div class="rowd"><div>No sales yet</div><div></div><div></div><div></div></div>';
 
+      // basic funnels placeholder (kept minimal; remove if not needed)
       const funnelHtml = rows.map(r=>{
-        const a=r.opens||0, b=r.adds||0, c=r.purchasedQty||0;
+        const a=r.opens||0, b=r.adds||0, c=r.qty||0;
         const ab=a?Math.round((b/a)*100):0, bc=b?Math.round((c/b)*100):0, ac=a?Math.round((c/a)*100):0;
         return `<div style="padding:8px;border-bottom:1px solid rgba(255,255,255,.08)">
           <div style="font-weight:700">${r.name}</div>
@@ -1286,9 +1200,10 @@
           </div>
         </div>`;
       }).join('');
-      $('#funnels') && ($('#funnels').innerHTML = funnelHtml || '<div>No funnel data yet</div>');
+      $('#funnels').innerHTML = funnelHtml || '<div>No funnel data yet</div>';
     }
 
+    /* ----- Tiny sparkline helper ----- */
     function drawSpark(b){
       const svg=$('#revSpark'); if(!svg) return;
       const max=Math.max(1,...b), step=100/(b.length-1||1);
@@ -1303,42 +1218,10 @@
         </defs>`;
     }
 
-    /* ===== Inventory inputs → persist + badges + mini refresh ===== */
-    on(document,'input','.field[data-prod] input', e=>{
-      const row=e.target.closest('.field[data-prod]'); if(!row) return;
-      const name=row.getAttribute('data-prod');
-
-      if(e.target.matches('input[data-k="qty"]')){
-        const v=(e.target.value||'').trim();
-        if(v===''){ delete stockQty[name]; delete stockSet[name]; }
-        else { stockQty[name]=Number(v); stockSet[name]=1; }
-        saveObj(STOCK_KEY,stockQty); saveObj(STOCK_SET_KEY,stockSet);
-        updateStockBadges(); refreshMiniIfOpen();
-      }
-      if(e.target.matches('input[data-k="low"]')){
-        const v2=(e.target.value||'').trim();
-        if(v2===''){ delete stockLow[name]; }
-        else { stockLow[name]=Number(v2); }
-        saveObj(LOW_KEY,stockLow);
-        updateStockBadges(); refreshMiniIfOpen();
-      }
-    });
-
-    /* ===== a11y keyboard activation ===== */
-    $$('.btn,.add,.ghost,.primary,.tab,.subtab').forEach(el=>{
-      el.tabIndex=0;
-      el.addEventListener('keydown', e=>{
-        if(e.key==='Enter'||e.key===' '){
-          e.preventDefault();
-          el.click && el.click();
-        }
-      });
-    });
-
-    /* ===== History prune on boot ===== */
+    /* ----- Boot / Init ----- */
     function pruneDeliveredInit(){
       const list=loadDelivered();
-      const cutoff=Date.now()-72*3600*1000; // 72h
+      const cutoff=Date.now()-72*3600*1000; // 72h window
       const keep=list.filter(o=>{
         const t=Date.parse(o.deliveredWhen||o.when||0);
         return isFinite(t)&&t>=cutoff;
@@ -1346,57 +1229,16 @@
       if(keep.length!==list.length) saveDelivered(keep);
     }
 
-    /* ===== Final init wiring ===== */
-    buildPromos();         // inject promo cards
-    initCarousel();        // start 5s auto-scrolling snap carousel
-    pruneDeliveredInit();  // trim history older than 72h
-    renderCart();          // build cart UI
-    refreshBadge();        // show/hide cart badge
-    updateStockBadges();   // badges on product cards if stock set
-    syncFavStars();        // star state from saved favorites
-    updateGreeting();      // personalize greeting if profile saved
-    ensureAdminLoginVisible(); // set correct Admin state (locked by default)
-
-    // Safety: if any overlay got stuck open in previous session, close them
-    ['productSheet','orderSheet','cartOverlay','checkoutOverlay','settingsOverlay'].forEach(id=>{
-      const el=document.getElementById(id);
-      if(el) el.classList.remove('show');
-    });
-
-    /* ===== Optional UX helpers (safe) ===== */
-    // Close top-most open overlay on ESC
-    document.addEventListener('keydown', (e)=>{
-      if(e.key !== 'Escape') return;
-      const open = ['orderSheet','checkoutOverlay','cartOverlay','productSheet','settingsOverlay']
-        .map(id=>document.getElementById(id))
-        .filter(el=>el && el.classList.contains('show'));
-      if(!open.length) return;
-      // Close the last opened (assumed last in DOM)
-      const top = open[open.length-1];
-      top.classList.remove('show');
-    });
-
-    // Click outside sheet → close (but not Settings/Admin to avoid accidental close)
-    document.addEventListener('click', (e)=>{
-      const ov = e.target.closest('.overlay.show');
-      if(!ov) return;
-      const sheet = ov.querySelector('.sheet');
-      if(!sheet) return;
-      // if click is on overlay backdrop (not inside sheet)
-      if(!sheet.contains(e.target)){
-        if(ov.id === 'settingsOverlay') return; // keep settings open unless user taps explicit Close
-        ov.classList.remove('show');
-      }
-    }, {passive:true});
-
-    // Prevent background scroll when any overlay is open
-    const observer = new MutationObserver(()=>{
-      const anyOpen = !!document.querySelector('.overlay.show');
-      document.documentElement.style.overflow = anyOpen ? 'hidden' : '';
-      document.body.style.overflow = anyOpen ? 'hidden' : '';
-    });
-    observer.observe(document.body, {subtree:true, attributes:true, attributeFilter:['class']});
-
+    // Build promos, start snap carousel, clean history, render cart & UI
+    buildPromos();
+    initCarousel();
+    pruneDeliveredInit();
+    renderCart();
+    refreshBadge();
+    updateStockBadges();
+    syncFavStars();
+    updateGreeting();
+    ensureAdminLoginVisible(); // make sure Admin tab reflects lock state on first open
   </script>
 </body>
 </html>
