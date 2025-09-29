@@ -11,7 +11,7 @@
   <link rel="preload" as="image" href="assets/carousel-3.jpg">
 
   <style>
-    :root{
+    :root {
       --bg:#0b0b0d;
       --card:rgba(20,20,24,0.6);
       --text:#e9e9ec;
@@ -29,7 +29,7 @@
     .app{max-width:393px;min-height:100svh;margin:0 auto;padding:12px 12px 32px;box-sizing:border-box}
 
     /* Glass look + glow */
-    .card,.sheet,.btn,.search,.chip,.tab,.ghost,.primary,.field{
+    .card, .sheet, .btn, .search, .chip, .tab, .ghost, .primary, .field{
       backdrop-filter: blur(var(--blur));
       -webkit-backdrop-filter: blur(var(--blur));
       background: var(--card);
@@ -39,11 +39,11 @@
 
     /* Header */
     .row{position:relative;display:flex;align-items:center;gap:0}
-    .search-wrap{flex:none;width:calc(100% - 200px)}
+    .search-wrap{flex:none;width:calc(100% - 200px);}
     .search{width:100%;border-radius:999px;padding:12px 44px;color:var(--text);outline:none;border:1px solid #2a2a2e}
     .search::placeholder{color:#6c6c70}
     .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
-    .icon-rights{position:absolute;right:8px;top:50%;transform:translateY(-50%);display:flex;gap:10px;margin-left:0}
+    .icon-rights{position:absolute; right:8px; top:50%; transform:translateY(-50%); display:flex; gap:10px; margin-left:0}
     .btn{-webkit-appearance:none;appearance:none;border-radius:14px;width:44px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
     #cartBtn{position:relative;display:flex;align-items:center;justify-content:center}
     .badge{position:absolute;top:-6px;right:-8px;background:var(--badge);color:#fff;border-radius:999px;padding:1px 6px;font-size:12px;font-weight:700;display:none;align-items:center;justify-content:center}
@@ -74,81 +74,6 @@
     .snap-dot{width:6px;height:6px;border-radius:999px;background:#2c3447;border:1px solid rgba(255,255,255,.18)}
     .snap-dot.active{background:#7fb1ff}
 
-    /* Chips */
-    .chips{display:flex;gap:10px;margin:6px 0 12px;flex-wrap:wrap}
-    .chip{padding:6px 10px;border-radius:999px;font-size:13px;cursor:pointer}
-    .chip.active{outline:2px solid rgba(110,168,254,.5)}
-
-    /* Grid */
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    .card{border-radius:var(--radius);padding:12px;position:relative;display:flex;flex-direction:column;min-height:190px}
-    .thumb{height:90px;border-radius:12px;overflow:hidden;margin-bottom:8px;display:flex;align-items:center;justify-content:center;background:#0e0e12}
-    .thumb img{width:100%;height:100%;object-fit:contain}
-    .title{font-weight:700;margin:4px 0 2px;letter-spacing:0.2px}
-    .price{color:#c7c7cc;font-weight:600;margin-top:auto}
-    .add{position:absolute;right:12px;bottom:12px;background:var(--accent);border:none;color:#001230;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer}
-    .fav{position:absolute;right:12px;top:12px;width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);cursor:pointer}
-    .fav.active{background:rgba(255,215,0,.15);box-shadow:0 0 0 1px rgba(255,215,0,.35) inset}
-
-    /* Overlays */
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
-    .overlay.show{display:flex}
-    .sheet{width:92%;max-width:480px;border-radius:20px;padding:16px}
-    #cartOverlay,#checkoutOverlay,#settingsOverlay,#orderSheet{align-items:flex-end}
-    #cartOverlay .sheet,#checkoutOverlay .sheet,#settingsOverlay .sheet,#orderSheet .sheet{
-      width:100%;border-top-left-radius:24px;border-top-right-radius:24px;border-bottom-left-radius:0;border-bottom-right-radius:0;
-      padding-bottom:calc(16px + env(safe-area-inset-bottom));
-      transform:translateY(100%);animation:slideUp 220ms ease-out forwards
-    }
-    @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-    .row-between{display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .qty{display:flex;align-items:center;gap:10px}
-    .qty button{width:36px;height:36px;border-radius:10px;border:1px solid #2a2a30;background:#1c1c22;color:var(--text);font-size:20px;font-weight:700}
-    .primary{background:var(--accent);border:0;color:#081425;font-weight:800;border-radius:12px;padding:12px 14px}
-    .ghost{border:1px solid #2a2a30;color:#e7e7eb;border-radius:12px;padding:10px 12px;background:#1b1b20}
-    .actions{display:flex;gap:10px;margin-top:12px}
-
-    /* Settings + admin */
-    .tabs{display:flex;gap:8px;margin:6px 0 12px}
-    .tab{padding:8px 10px;border-radius:10px;cursor:pointer;border:1px solid #2a2a30;background:#18181d}
-    .tab.active{background:#24242a}
-    .sheet-body{max-height:70svh;overflow:auto;padding-right:4px}
-    .admin-subtabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
-    .subtab{padding:6px 10px;border-radius:10px;cursor:pointer;border:1px solid #2a2a30;background:#18181d;font-size:13px}
-    .subtab.active{background:#24242a}
-    .admin-list{border:1px solid #2a2a30;border-radius:12px;padding:8px;margin-top:8px}
-    .field{display:flex;align-items:center;gap:8px;padding:8px;border-radius:12px}
-    .field input{width:72px;padding:8px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec}
-
-    /* Heat map */
-    .heat-wrap{margin-top:8px}
-    .heat-grid{display:grid;grid-template-columns:repeat(24, minmax(10px,1fr));gap:var(--grid-gap)}
-    .heat-cell{width:100%;aspect-ratio:1/1;border-radius:6px;background:rgba(110,168,254,0.08)}
-
-    /* Stock badges */
-    .badge-wrap{position:absolute;left:12px;bottom:12px;display:flex;gap:6px;align-items:center}
-    .stock-badge{background:#0f172acc;color:#dbeafe;border:1px solid #1f2a44;padding:4px 8px;border-radius:10px;font-size:12px}
-    .low-badge{background:#2a1a10cc;color:#ffd8b0;border:1px solid #3b2412}
-
-    /* Order sheet on top of settings */
-    #orderSheet{z-index:10050}
-
-    /* Analytics UI */
-    .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .kpi{padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.1)}
-    .kpi .label{color:#c7c7cc;font-size:12px}
-    .kpi .value{font-weight:800;font-size:18px;margin-top:4px}
-    .bar{height:8px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden}
-    .bar>i{display:block;height:100%;background:linear-gradient(90deg,#6ea8fe,#3cd27f)}
-    .table{margin-top:8px;border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden}
-    .rowh,.rowd{display:grid;grid-template-columns:1fr 70px 70px 70px;gap:8px;padding:8px}
-    .rowh{background:rgba(255,255,255,.05);font-weight:700}
-    .rowd{border-top:1px solid rgba(255,255,255,.06)}
-
-    /* Toasts */
-    #toastHost{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;z-index:11000}
-    .toast{pointer-events:auto;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(24,24,32,.9);font-weight:600;opacity:0;transform:translateY(8px);transition:opacity .22s ease,transform .22s ease}
-    .toast.show{opacity:1;transform:translateY(0)}
   </style>
 </head>
 <body>
@@ -282,7 +207,7 @@
     </div>
   </div>
 
-  <!-- Checkout bottom-sheet -->
+  <!-- Checkout bottom-sheet (with Promo, Tips, Notes) -->
   <div id="checkoutOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Checkout">
     <div class="sheet" role="document">
       <div class="row-between">
@@ -438,7 +363,7 @@
     </div>
   </div>
 
-  <!-- Sticky cart bar + Toast host (no quick-checkout feature) -->
+  <!-- Sticky cart bar + Toast host -->
   <div id="cartBar">
     <div class="inner">
       <div><strong id="cartBarTotal">$0.00</strong></div>
@@ -450,22 +375,20 @@
   </div>
   <div id="toastHost"></div>
 
-  <!-- ===== App Script ===== -->
   <script>
     /* Schema + SW */
-    const APP_SCHEMA_VERSION = 3, SCHEMA_KEY = 'fitsnacks.schema';
+    const APP_SCHEMA_VERSION=3, SCHEMA_KEY='fitsnacks.schema';
     try{
-      const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY) || '0') || 0;
-      if(cur < APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
+      const cur=JSON.parse(localStorage.getItem(SCHEMA_KEY)||'0')||0;
+      if(cur<APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY,JSON.stringify(APP_SCHEMA_VERSION));
     }catch{
-      localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
+      localStorage.setItem(SCHEMA_KEY,JSON.stringify(APP_SCHEMA_VERSION));
     }
     if('serviceWorker' in navigator){
-      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+      window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'));
     }
 
-    const $  = s => document.querySelector(s);
-    const $$ = s => Array.from(document.querySelectorAll(s));
+    const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
 
     /* Keys */
     const CART_KEY='fitsnacks.cart.v1';
@@ -483,41 +406,41 @@
     const PROFILE_LOC_KEY='fitsnacks.profile.location';
 
     const ADMIN_PASSWORD='8TSB077';
-    const fmt = n => '$' + n.toFixed(2);
+    const fmt=n=>'$'+n.toFixed(2);
 
     /* Load/save helpers */
-    function loadCart(){ try{ return new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]')); }catch{ return new Map(); } }
-    function saveCart(m){ try{ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(m.entries())));}catch{} }
-    function loadObj(k){ try{ return JSON.parse(localStorage.getItem(k)||'{}'); }catch{ return {}; } }
-    function saveObj(k,o){ localStorage.setItem(k, JSON.stringify(o||{})); }
-    function loadArr(k){ try{ return JSON.parse(localStorage.getItem(k)||'[]'); }catch{ return []; } }
-    function saveArr(k,a){ localStorage.setItem(k, JSON.stringify(a||[])); }
-    function loadOrders(){ try{ return JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]'); }catch{ return []; } }
-    function saveOrders(v){ localStorage.setItem(ORDERS_KEY, JSON.stringify(v||[])); }
-    function loadDelivered(){ try{ return JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]'); }catch{ return []; } }
-    function saveDelivered(v){ localStorage.setItem(DELIVERED_KEY, JSON.stringify(v||[])); }
+    function loadCart(){try{return new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]'))}catch{return new Map()}}
+    function saveCart(m){try{localStorage.setItem(CART_KEY,JSON.stringify(Array.from(m.entries())))}catch{}}
+    function loadObj(k){try{return JSON.parse(localStorage.getItem(k)||'{}')}catch{return{}}}
+    function saveObj(k,o){localStorage.setItem(k,JSON.stringify(o||{}))}
+    function loadArr(k){try{return JSON.parse(localStorage.getItem(k)||'[]')}catch{return[]}}
+    function saveArr(k,a){localStorage.setItem(k,JSON.stringify(a||[]))}
+    function loadOrders(){try{return JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]')}catch{return[]}}
+    function saveOrders(v){localStorage.setItem(ORDERS_KEY,JSON.stringify(v||[]))}
+    function loadDelivered(){try{return JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]')}catch{return[]}}
+    function saveDelivered(v){localStorage.setItem(DELIVERED_KEY,JSON.stringify(v||[]))}
     function loadSales(){
       try{
-        const raw = JSON.parse(localStorage.getItem(SALES_KEY)||'null');
-        if(raw && raw.length===7 && raw[0].length===24) return raw;
+        const raw=JSON.parse(localStorage.getItem(SALES_KEY)||'null');
+        if(raw&&raw.length===7&&raw[0].length===24) return raw;
       }catch{}
-      return Array.from({length:7}, ()=>Array(24).fill(0));
+      return Array.from({length:7},()=>Array(24).fill(0));
     }
-    function saveSales(m){ localStorage.setItem(SALES_KEY, JSON.stringify(m)); }
-    function loadProfile(){ return {name:localStorage.getItem(PROFILE_NAME_KEY)||'', loc:localStorage.getItem(PROFILE_LOC_KEY)||''}; }
-    function saveProfile(n,l){ try{ localStorage.setItem(PROFILE_NAME_KEY,n||''); localStorage.setItem(PROFILE_LOC_KEY,l||''); }catch{} }
+    function saveSales(m){localStorage.setItem(SALES_KEY,JSON.stringify(m))}
+    function loadProfile(){return {name:localStorage.getItem(PROFILE_NAME_KEY)||'',loc:localStorage.getItem(PROFILE_LOC_KEY)||''}}
+    function saveProfile(n,l){try{localStorage.setItem(PROFILE_NAME_KEY,n||'');localStorage.setItem(PROFILE_LOC_KEY,l||'')}catch{}}
 
     /* State */
-    let cart        = loadCart();
-    let stockQty    = loadObj(STOCK_KEY);
-    let stockLow    = loadObj(LOW_KEY);
-    let stockSet    = loadObj(STOCK_SET_KEY); if(!Object.keys(stockSet).length){ stockSet={}; saveObj(STOCK_SET_KEY,stockSet); }
-    let sales       = loadSales();
-    let favorites   = new Set(loadArr(FAVORITES_KEY));
-    let prodAnalytics = loadObj(ANALYTICS_KEY);
+    let cart=loadCart();
+    let stockQty=loadObj(STOCK_KEY);
+    let stockLow=loadObj(LOW_KEY);
+    let stockSet=loadObj(STOCK_SET_KEY); if(!Object.keys(stockSet).length){stockSet={};saveObj(STOCK_SET_KEY,stockSet)}
+    let sales=loadSales();
+    let favorites=new Set(loadArr(FAVORITES_KEY));
+    let prodAnalytics=loadObj(ANALYTICS_KEY);
 
-    function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY)==='1'; }
-    function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v?'1':'0'); }
+    function isUnlocked(){return localStorage.getItem(UNLOCK_KEY)==='1'}
+    function setUnlocked(v){localStorage.setItem(UNLOCK_KEY,v?'1':'0')}
     setUnlocked(false); // locked by default
 
     /* Seed promos once */
@@ -530,22 +453,26 @@
     }
 
     /* Utils */
-    function haptic(ms=15){ try{ if(navigator.vibrate) navigator.vibrate(ms); }catch{} }
-    function fmtTotal(){ let t=0; for(const [,info] of cart) t+=info.price*info.qty; return t; }
+    function haptic(ms=15){try{if(navigator.vibrate)navigator.vibrate(ms)}catch{}}
+    function fmtTotal(){let t=0;for(const[,info]of cart)t+=info.price*info.qty;return t}
     function showToast(msg,ms=1800){
       const host=$('#toastHost');
       const el=document.createElement('div');
-      el.className='toast';
-      el.textContent=msg;
+      el.className='toast'; el.textContent=msg;
       host.appendChild(el);
       requestAnimationFrame(()=>el.classList.add('show'));
-      setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),250); }, ms);
+      setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),250)},ms);
     }
     function updateGreeting(){
       const g=$('#greet'); const p=loadProfile();
       if(g) g.textContent = p.name ? `Hi, ${p.name} 👋` : 'Welcome 👋';
     }
-    function updateCartBar(){} // no sticky bar in this app
+    function updateCartBar(){
+      const bar=$('#cartBar'); if(!bar) return;
+      const total=fmtTotal(); let count=0; for(const v of cart.values()) count+=v.qty;
+      if(count>0 && total>0){ $('#cartBarTotal').textContent=fmt(total); bar.classList.add('show'); }
+      else { bar.classList.remove('show'); }
+    }
 
     /* ----- Promos (card-snap carousel) ----- */
     function buildPromos(){
@@ -573,21 +500,17 @@
         }
       });
     }
-
     function promoAction(p){
       if(p.action==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
       if(p.action==='filter'){ activateChip(p.value||''); }
       if(p.action==='scrollGrid'){ document.getElementById('grid')?.scrollIntoView({behavior:'smooth',block:'start'}); }
     }
-
     function initCarousel(){
       const snapper=$('#snapper'); if(!snapper) return;
       const cards=$$('.snap-card'), dotsWrap=$('#snapDots');
       dotsWrap.innerHTML = cards.map(()=>'<div class="snap-dot"></div>').join('');
       const dots=$$('.snap-dot'), banners=$$('.banner');
-
       function setDot(i){ dots.forEach((d,k)=>d.classList.toggle('active',k===i)); }
-
       let idx=0, holdMs=5000, slideMs=3000, paused=false, af=null, tId=null, loaded=0;
 
       function centerOf(el){ const r=el.getBoundingClientRect(); return r.left+r.width/2; }
@@ -607,7 +530,6 @@
         }
         af=requestAnimationFrame(step);
       }
-
       function autoLoop(){
         if(paused) return;
         tId=setTimeout(()=>{
@@ -627,14 +549,12 @@
 
       ['pointerdown','touchstart','mousedown','mouseenter'].forEach(ev=>snapper.addEventListener(ev,()=>stop()));
       ['pointerup','touchend','mouseup','mouseleave'].forEach(ev=>snapper.addEventListener(ev,()=>start()));
-
       snapper.addEventListener('scroll',()=>{
         const c=containerCenter(); let best=Infinity,bestI=0;
         const now=$$('.snap-card');
         now.forEach((card,i)=>{ const d=Math.abs(c-centerOf(card)); if(d<best){best=d;bestI=i} });
         if(bestI!==idx){ idx=bestI; setDot(idx); }
       });
-
       dots.forEach((dot,i)=>dot.addEventListener('click',()=>{ stop(); snapTo(i,400); start(); }));
       setDot(0); snapTo(0,0);
     }
@@ -647,12 +567,12 @@
 
     /* ----- Chips + Favorites filter ----- */
     function activateChip(val){
-      $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch.dataset.filter===val));
+      $$('#chips .chip').forEach(ch=>ch.classList.toggle('active',ch.dataset.filter===val));
       $$('.card').forEach(c=>{
         const tags=(c.dataset.tags||'').toLowerCase();
         const name=c.dataset.name;
-        const show = !val || val==='' || (val==='favorites' ? favorites.has(name) : tags.includes(val));
-        c.style.display = show ? '' : 'none';
+        const hit = !val || val==='' || (val==='favorites' ? favorites.has(name) : tags.includes(val));
+        c.style.display = hit ? '' : 'none';
       });
     }
     document.getElementById('chips').addEventListener('click', e=>{
@@ -661,14 +581,13 @@
     }, {passive:true});
     activateChip('');
 
-    /* ----- Cart badge + renderer ----- */
+    /* ----- Cart ----- */
     function refreshBadge(){
       let n=0; for(const v of cart.values()) n+=v.qty;
       const b=$('#cartBadge'); if(!b) return;
       if(n>0){ b.textContent=n; b.style.display='inline-flex'; }
       else { b.style.display='none'; }
     }
-
     function renderCart(){
       let total=0, html='';
       for(const [name,info] of cart){
@@ -680,34 +599,25 @@
             <button data-act="+" data-name="${name}" class="ghost" style="padding:4px 8px">+</button>
             <div style="font-weight:700;margin-left:8px">${name}</div>
           </div>
-          <div style="display:flex;gap:8px;align-items:center">
-            <button data-act="x" data-name="${name}" class="ghost" title="Remove" style="padding:4px 8px">✕</button>
-            <div style="font-weight:700">${fmt(line)}</div>
-          </div>
+          <div style="font-weight:700">${fmt(line)}</div>
         </div>`;
       }
       $('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
       $('#cartTotal').textContent = fmt(total);
-      saveCart(cart); refreshBadge();
+      saveCart(cart); refreshBadge(); updateCartBar();
     }
-
-    /* +/-/remove in cart list */
     document.addEventListener('click', (e)=>{
       const b=e.target.closest('button'); if(!b) return;
       if(b.matches('[data-act][data-name]')){
         const name=b.getAttribute('data-name');
         const act=b.getAttribute('data-act');
-        const entry=cart.get(name); if(!entry && act!=='x') return;
-
-        if(act==='+'){ entry.qty=Math.min(99, entry.qty+1); }
-        if(act==='-'){ entry.qty=Math.max(1, entry.qty-1); }
-        if(act==='x'){ cart.delete(name); }
-
+        const entry=cart.get(name); if(!entry) return;
+        entry.qty = Math.max(act==='+' ? entry.qty+1 : entry.qty-1, 1);
         renderCart();
       }
-    }, {passive:true});
+    });
 
-    /* ----- Favorites toggle (star on product cards) ----- */
+    /* ----- Favorites toggle ----- */
     function syncFavStars(){
       $$('.card').forEach(c=>{
         const f=c.querySelector('.fav'); if(!f) return;
@@ -723,33 +633,33 @@
       syncFavStars();
     }, {passive:true});
 
-    /* ----- Product mini sheet ----- */
+    /* ----- Product sheet + analytics capture ----- */
     let current=null;
-
+    function ensureMetrics(n){
+      if(!prodAnalytics[n]) prodAnalytics[n]={opens:0,adds:0,addedQty:0,purchasedQty:0,revenue:0};
+      return prodAnalytics[n];
+    }
     function openProductSheet(card){
-      current={name:card.dataset.name, price:+card.dataset.price, img:card.dataset.img};
+      current={name:card.dataset.name, price:parseFloat(card.dataset.price), img:card.dataset.img};
       $('#sheetTitle').textContent=current.name;
       $('#sheetImg').src=current.img||''; $('#sheetImg').alt=current.name||'';
       $('#sheetPrice').textContent=fmt(current.price);
       $('#qtyVal').textContent=1; $('#sheetAdd').textContent='Add • '+fmt(current.price);
 
-      // stock block (only show if stock is set for that item)
-      const name=current.name;
-      if(stockSet[name]){
-        const q=Number(stockQty[name]||0), l=Number(stockLow[name]||0);
+      ensureMetrics(current.name).opens++; saveObj(ANALYTICS_KEY, prodAnalytics);
+
+      if(stockSet[current.name]){
+        const q=Number(stockQty[current.name]||0), l=Number(stockLow[current.name]||0);
         $('#sheetStock').textContent='Stock: '+q;
-        const lw=$('#sheetLowWarn');
-        if(l>0 && q<=l){ lw.style.display='block'; lw.textContent='Low stock ('+q+' ≤ '+l+')'; }
-        else { lw.style.display='none'; }
+        const w=$('#sheetLowWarn');
+        if(l>0 && q<=l){ w.style.display='block'; w.textContent='Low stock ('+q+' ≤ '+l+')'; }
+        else { w.style.display='none'; }
       }else{
-        $('#sheetStock').textContent='Stock: --';
-        $('#sheetLowWarn').style.display='none';
+        $('#sheetStock').textContent='Stock: --'; $('#sheetLowWarn').style.display='none';
       }
 
       $('#productSheet').classList.add('show');
     }
-
-    /* open sheet: whole card (except + and star) */
     $$('.card').forEach(card=>{
       card.addEventListener('click', e=>{
         if(e.target.closest('.add') || e.target.closest('.fav')) return;
@@ -757,7 +667,7 @@
       });
     });
 
-    /* Add button behavior: short click opens sheet; long-press quick add */
+    /* Add button: press-and-hold quick add */
     function attachAddButtonEnhancements(btn){
       let timer=null, long=false;
       const start=()=>{
@@ -768,7 +678,7 @@
           const name=card.dataset.name; const price=+card.dataset.price;
           const item=cart.get(name)||{price,qty:0};
           item.qty+=1; cart.set(name,item); saveCart(cart); renderCart();
-          showToast(`Added 1 × ${name}`);
+          haptic(12); showToast(`Added 1 × ${name}`);
         }, 520);
       };
       const cancel=()=>clearTimeout(timer);
@@ -782,7 +692,6 @@
     }
     $$('.add').forEach(attachAddButtonEnhancements);
 
-    /* qty buttons inside mini sheet */
     $('#qtyPlus').addEventListener('click', ()=>{
       const n=Math.min(99, parseInt($('#qtyVal').textContent)+1);
       $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(current.price*n);
@@ -793,17 +702,15 @@
     });
     function closeSheet(){ $('#productSheet').classList.remove('show'); }
     $('#sheetClose').addEventListener('click', closeSheet);
-
-    /* confirm add from mini sheet */
     $('#sheetAdd').addEventListener('click', ()=>{
       const n=parseInt($('#qtyVal').textContent);
+      const m=ensureMetrics(current.name); m.adds++; m.addedQty+=n; saveObj(ANALYTICS_KEY, prodAnalytics);
       const e=cart.get(current.name)||{price:current.price,qty:0};
       e.qty+=n; cart.set(current.name,e);
-      closeSheet(); renderCart();
-      $('#cartOverlay').classList.add('show');
+      closeSheet(); renderCart(); $('#cartOverlay').classList.add('show'); haptic(12);
     });
 
-    /* Open/close core overlays */
+    /* ----- Overlays open/close ----- */
     function openCart(){ $('#cartOverlay').classList.add('show'); }
     function closeCart(){ $('#cartOverlay').classList.remove('show'); }
     function openSettings(def=false){ $('#settingsOverlay').classList.add('show'); switchTab(def?'admin':'general'); if(def) ensureAdminLoginVisible(); }
@@ -813,52 +720,89 @@
     $('#settingsBtn').addEventListener('click', ()=>openSettings(false));
     $('#settingsClose').addEventListener('click', closeSettings);
 
+    /* Re-order last */
+    function reorderLast(){
+      const active=loadOrders(), hist=loadDelivered();
+      const src=active[0]||hist[0];
+      if(!src){ showToast('No previous orders'); return; }
+      cart=new Map();
+      for(const line of src.lines){ cart.set(line.name, {price:line.price, qty:line.qty}); }
+      saveCart(cart); renderCart(); openCart(); haptic(12);
+    }
+    $('#reorderLast').addEventListener('click', reorderLast);
+
+    /* ===== IFTTT Webhook Sender (robust, non-blocking) =====
+       Uses your event name and key. Tries sendBeacon, then fetch(no-cors),
+       then an <img> GET fallback. */
+    const IFTTT_EVENT = 'Fitsnack_order';
+    const IFTTT_KEY   = 'MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA'; // you asked me to include the key
+    const IFTTT_URL   = `https://maker.ifttt.com/trigger/${IFTTT_EVENT}/with/key/${IFTTT_KEY}`;
+
+    function sendIFTTT(order){
+      try{
+        const payload = {
+          value1: `${order.name} @ ${order.location}`,
+          value2: order.lines.map(l=>`${l.name} x${l.qty} = ${fmt(l.line)}`).join('; '),
+          value3: `Total ${fmt(order.total)} • Notes: ${order.notes||'-'}`
+        };
+        const body = JSON.stringify(payload);
+
+        // 1) Try sendBeacon (best for background POST without CORS headaches)
+        if(navigator.sendBeacon){
+          const ok = navigator.sendBeacon(IFTTT_URL, new Blob([body], {type:'text/plain;charset=UTF-8'}));
+          if(ok) return true;
+        }
+
+        // 2) Fetch with no-cors
+        fetch(IFTTT_URL, {
+          method:'POST',
+          mode:'no-cors',
+          headers:{'Content-Type':'application/json'},
+          body
+        }).catch(()=>{/* swallow */});
+
+        // 3) Image GET fallback with query params (URL length safe for small orders)
+        const img = new Image();
+        const q = new URLSearchParams({
+          value1: payload.value1,
+          value2: payload.value2,
+          value3: payload.value3
+        }).toString();
+        img.src = `${IFTTT_URL}?${q}`;
+        // not added to DOM--just fires
+        return true;
+      }catch(e){
+        // fail silent; don’t break checkout UX
+        return false;
+      }
+    }
+
     /* ----- Orders, Delivered/History, Sales ----- */
     function addOrderFromCart(name, location, notes, discount, tip){
-      const lines=[]; let total=0;
+      const lines=[]; let subtotal=0;
       for(const [n,info] of cart){
-        const line=info.price*info.qty; total+=line; lines.push({name:n, price:info.price, qty:info.qty, line});
+        const line=info.price*info.qty; subtotal+=line; lines.push({name:n, price:info.price, qty:info.qty, line});
+        ensureMetrics(n).purchasedQty += info.qty;
+        ensureMetrics(n).revenue += line;
       }
-      total = Math.max(0, total - (discount||0)) + (tip||0);
+      saveObj(ANALYTICS_KEY, prodAnalytics);
+
+      const total = Math.max(0, subtotal - (discount||0)) + (tip||0);
 
       const order={when:new Date().toISOString(), name, location, notes:notes||'', lines, total, discount:discount||0, tip:tip||0};
       const list=loadOrders(); list.unshift(order); saveOrders(list);
 
+      // fire-and-forget SMS webhook
+      sendIFTTT(order);
+
+      // analytics time bucket
       const d=new Date(), dow=d.getDay(), hr=d.getHours();
       sales[dow][hr]=(sales[dow][hr]||0)+1; saveSales(sales);
-
-      // webhook: notify via IFTTT
-      fetch("https://maker.ifttt.com/trigger/Fitsnack_order/with/key/MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({value1:name,value2:location,value3:`$${total.toFixed(2)}`})
-      }).catch(console.error);
 
       return order;
     }
 
-    function renderOrders(){
-      const list=loadOrders(), box=$('#ordersList'); if(!box) return;
-      if(!list.length){ box.innerHTML='No orders yet'; return; }
-      box.innerHTML = list.map((o,i)=>{
-        const items = o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
-        const when = new Date(o.when).toLocaleString();
-        return `<div class="order-item" data-idx="${i}" role="button" tabindex="0"
-                  style="padding:8px;border-bottom:1px solid #2a2a30;cursor:pointer">
-                  <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
-                    <div>
-                      <div style="font-weight:700">${when}</div>
-                      <div style="color:#bbb;margin-top:4px">${o.name} @ ${o.location}</div>
-                    </div>
-                    <div style="font-weight:700">${fmt(o.total)}</div>
-                  </div>
-                  <div style="margin-top:6px">${items}</div>
-                  ${o.notes?`<div style="margin-top:6px;color:#c7c7cc;font-size:12px">📝 ${o.notes}</div>`:''}
-                </div>`;
-      }).join('');
-    }
-
-    /* ----- Inventory + Heat + Stock Badges ----- */
+    /* ----- Inventory + Heat + Badges ----- */
     function getProducts(){ return $$('.card').map(c=>({name:c.dataset.name, price:+c.dataset.price, img:c.dataset.img, tags:(c.dataset.tags||'').toLowerCase()})); }
 
     function renderInventory(){
@@ -885,7 +829,7 @@
       grid.innerHTML='';
       for(let d=0; d<7; d++){
         for(let h=0; h<24; h++){
-          const v=sales[d][h], alpha=max ? (0.08 + 0.62*(v/max)) : 0.10;
+          const v=sales[d][h], alpha=max ? (0.08 + 0.62*(v/max)) : 0.10; // 0.10..0.70
           const cell=document.createElement('div');
           cell.className='heat-cell';
           cell.title=`Day ${d}, ${h}:00 -- ${v}`;
@@ -904,7 +848,7 @@
       $$('.card').forEach(card=>{
         const name=card.dataset.name, wrap=ensureBadgeWrap(card);
         wrap.innerHTML='';
-        if(!stockSet[name]) return;
+        if(!stockSet[name]) return; // only show when stock set
         const qty=Number(stockQty[name]||0), low=Number(stockLow[name]||0);
         const b=document.createElement('div'); b.className='stock-badge'; b.textContent='Stock: '+qty; wrap.appendChild(b);
         if(low>0 && qty<=low){
@@ -943,7 +887,7 @@
     }
     function showAdminState(){
       const el=$('#adminStateVal'); if(!el) return;
-      el.textContent = isUnlocked() ? 'Unlocked' : 'Locked (password required)';
+      el.textContent = isUnlocked() ? 'Unlocked (no password shown)' : 'Locked (password required)';
     }
     function focusAdminPassword(){ const el=$('#adminPassword'); if(el){ el.focus(); el.select && el.select(); } }
 
@@ -994,16 +938,16 @@
       if(keep.length!==list.length) saveDelivered(keep);
     }
 
-    /* ----- Main tab click handlers (General/Admin) ----- */
+    // Tab clicks
     document.addEventListener('click',(e)=>{
       if(e.target.closest('#tabGeneral')) switchTab('general');
       if(e.target.closest('#tabAdmin'))   switchTab('admin');
     }, {passive:true});
 
-    /* ----- Admin auth + history clear + lock ----- */
+    // Admin auth + history clear
     document.addEventListener('click',(e)=>{
       if(e.target.closest('#adminSubmit')){
-        const ok = ($('#adminPassword').value||'') === ADMIN_PASSWORD;
+        const ok = $('#adminPassword').value===ADMIN_PASSWORD;
         if(ok){ setUnlocked(true); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
         else { $('#adminError').style.display='block'; }
       }
@@ -1011,7 +955,7 @@
       if(e.target && e.target.id==='historyClear'){ saveDelivered([]); renderHistory(); }
     }, {passive:true});
 
-    /* ----- Admin subtabs ----- */
+    // Subtabs
     document.addEventListener('click',(e)=>{
       const btn=e.target.closest('.subtab'); if(!btn) return;
       $$('.subtab').forEach(b=>b.classList.remove('active'));
@@ -1023,11 +967,11 @@
       $('#subtab-history').style.display   = (id==='history')  ? 'block' : 'none';
       if(id==='orders')    renderOrders();
       if(id==='inventory'){renderInventory(); updateStockBadges();}
-      if(id==='analytics') renderAnalytics?.();
+      if(id==='analytics') renderAnalytics();
       if(id==='history'){  pruneDelivered(72); renderHistory(); }
     }, {passive:true});
 
-    /* ----- Order details sheet: open/close/deliver ----- */
+    /* ----- Order sheet open/deliver ----- */
     document.addEventListener('click', e=>{
       const row=e.target.closest('.order-item'); if(!row) return;
       openOrderSheet(parseInt(row.getAttribute('data-idx'),10));
@@ -1045,11 +989,7 @@
       $('#orderMeta').textContent = `${new Date(o.when).toLocaleString()} • ${o.name} @ ${o.location}`;
       $('#orderLines').innerHTML = o.lines.map(l=>`<div class="row-between" style="padding:6px 0"><div>${l.name} × ${l.qty}</div><div style="font-weight:700">${fmt(l.line)}</div></div>`).join('');
       $('#orderTotal').textContent = fmt(o.total);
-      const os=$('#orderSheet');
-      // Make sure it sits above Settings overlay
-      document.body.appendChild(os);
-      os.classList.add('show');
-      $('#orderClose')?.focus();
+      const os=$('#orderSheet'); document.body.appendChild(os); os.classList.add('show'); $('#orderClose')?.focus();
     }
     function closeOrderSheet(){ $('#orderSheet').classList.remove('show'); currentOrderIndex=null; }
     $('#orderClose').addEventListener('click', closeOrderSheet);
@@ -1067,7 +1007,160 @@
       closeOrderSheet();
     });
 
-    /* ----- Inventory inputs (update stock + badges + mini sheet if open) ----- */
+    /* ===== Checkout + Profile + Sticky bar (with Promo & Tips/Notes) ===== */
+    // promo table: type 'percent' value 0..1  OR  type 'amount' flat $
+    const PROMO_TABLE = {
+      'SAVE10': {type:'percent', value:0.10, label:'10% off sitewide'},
+      'BAR1':   {type:'amount',  value:1.00, label:'$1 off protein items', rule:'tag:protein'}
+    };
+
+    let activePromo = null;        // {code,type,value,label,rule,discount}
+    let activeTip = {kind:'none', amount:0};
+
+    function evalPromoDiscount(code){
+      code=(code||'').trim().toUpperCase();
+      if(!code || !PROMO_TABLE[code]) return null;
+      const p = PROMO_TABLE[code];
+      // base subtotal
+      let subtotal = 0; for(const[,info] of cart) subtotal += info.price*info.qty;
+      if(subtotal<=0) return null;
+
+      // optional rule: tag:protein (only discount lines matching tag)
+      let discount=0;
+      if(p.rule && p.rule.startsWith('tag:')){
+        const t = p.rule.slice(4).toLowerCase();
+        let eligible = 0;
+        $$('.card').forEach(c=>{
+          const name=c.dataset.name;
+          const tags=(c.dataset.tags||'').toLowerCase();
+          const entry=cart.get(name);
+          if(!entry) return;
+          if(tags.includes(t)){
+            eligible += entry.price*entry.qty;
+          }
+        });
+        if(eligible<=0) return {code, label:`No eligible items for ${code}`, type:'none', value:0, discount:0, ok:false};
+        discount = p.type==='percent' ? eligible * p.value : Math.min(p.value, eligible);
+      }else{
+        discount = p.type==='percent' ? subtotal * p.value : Math.min(p.value, subtotal);
+      }
+      return {code, type:p.type, value:p.value, label:p.label, rule:p.rule||'', discount:Math.max(0,discount), ok:true};
+    }
+
+    function computeTotals(){
+      let subtotal=0; for(const[,info] of cart) subtotal+=info.price*info.qty;
+      const disc = activePromo?.discount || 0;
+      const tip  = Math.max(0, activeTip.amount||0);
+      const total = Math.max(0, subtotal - disc) + tip;
+      return {subtotal, disc, tip, total};
+    }
+
+    function updateCheckoutBreakdown(){
+      const {subtotal, disc, tip, total} = computeTotals();
+      $('#ckSub').textContent = fmt(subtotal);
+      $('#ckDisc').textContent = `-${fmt(disc)}`;
+      $('#ckTip').textContent = fmt(tip);
+      $('#ckTotal').textContent = fmt(total);
+    }
+
+    function setTip(kind, amount){
+      activeTip = {kind, amount:Math.max(0, +amount||0)};
+      $$('#tipGroup .tip-btn').forEach(b=>b.classList.remove('active'));
+      if(kind==='none'){
+        const btn=[...$('#tipGroup').children].find(el=>el.matches('.tip-btn[data-tip="none"]'));
+        btn && btn.classList.add('active');
+      }
+      updateCheckoutBreakdown();
+    }
+
+    function selectQuickTip(btn){
+      $$('#tipGroup .tip-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const spec=btn.getAttribute('data-tip')||'none';
+      if(spec==='none'){ setTip('none',0); return; }
+      const [k,v]=spec.split(':'); const {subtotal, disc}=computeTotals();
+      if(k==='percent'){ const base=Math.max(0, subtotal - disc); setTip('percent', base*(+v/100)); }
+      if(k==='amount'){ setTip('amount', +v); }
+    }
+
+    $('#cartCheckout').addEventListener('click', ()=>{
+      const p=loadProfile();
+      $('#checkoutName').value=p.name||'';
+      $('#checkoutLocation').value=p.loc||'';
+      $('#checkoutError').style.display='none';
+      $('#checkoutPromo').value='';
+      activePromo=null; $('#promoStatus').style.display='none'; $('#promoStatus').textContent='';
+      setTip('none',0); $('#tipCustomAmount').value='';
+      updateCheckoutBreakdown();
+      $('#cartOverlay').classList.remove('show');
+      $('#checkoutOverlay').classList.add('show');
+    });
+
+    $('#cartBarView').addEventListener('click', openCart);
+    $('#cartBarCheckout').addEventListener('click', ()=>{
+      if(fmtTotal()<=0){ showToast('Your cart is empty'); return; }
+      const p=loadProfile();
+      $('#checkoutName').value=p.name||'';
+      $('#checkoutLocation').value=p.loc||'';
+      $('#checkoutError').style.display='none';
+      $('#checkoutPromo').value='';
+      activePromo=null; $('#promoStatus').style.display='none'; $('#promoStatus').textContent='';
+      setTip('none',0); $('#tipCustomAmount').value='';
+      updateCheckoutBreakdown();
+      $('#checkoutOverlay').classList.add('show');
+    });
+
+    $('#checkoutClose').addEventListener('click', ()=>$('#checkoutOverlay').classList.remove('show'));
+
+    // Apply promo
+    $('#checkoutApplyPromo').addEventListener('click', ()=>{
+      const code=$('#checkoutPromo').value;
+      const res=evalPromoDiscount(code);
+      const badge=$('#promoStatus');
+      if(res && res.ok){
+        activePromo = res;
+        badge.textContent = `${res.code} • ${res.label} • -${fmt(res.discount)}`;
+        badge.style.display='inline-flex'; badge.classList.remove('promo-bad'); badge.classList.add('promo-ok');
+      }else{
+        activePromo = null;
+        badge.textContent = res ? res.label || 'Not eligible' : 'Invalid code';
+        badge.style.display='inline-flex'; badge.classList.add('promo-bad'); badge.classList.remove('promo-ok');
+      }
+      updateCheckoutBreakdown();
+    });
+
+    // Tip quick buttons
+    document.getElementById('tipGroup').addEventListener('click', e=>{
+      const btn=e.target.closest('.tip-btn'); if(!btn) return;
+      selectQuickTip(btn); 
+    }, {passive:true});
+
+    // Tip custom amount
+    document.getElementById('tipApplyCustom').addEventListener('click', ()=>{
+      const v=+($('#tipCustomAmount').value||0);
+      setTip('amount', v);
+      $$('#tipGroup .tip-btn').forEach(b=>b.classList.remove('active'));
+    });
+
+    $('#checkoutSubmit').addEventListener('click', ()=>{
+      const name=$('#checkoutName').value.trim();
+      const loc=$('#checkoutLocation').value.trim();
+      const notes=$('#checkoutNotes').value.trim();
+      if(!name || !loc){ $('#checkoutError').style.display='block'; return; }
+
+      saveProfile(name,loc);
+
+      const totals=computeTotals();
+
+      addOrderFromCart(name, loc, notes, totals.disc, totals.tip);
+
+      cart.clear(); renderCart();
+      $('#checkoutOverlay').classList.remove('show');
+      updateGreeting();
+      showToast('Order placed 🎉');
+    });
+
+    /* Inputs from inventory */
     document.addEventListener('input', (e)=>{
       const row=e.target.closest('.field[data-prod]'); if(!row) return;
       const name=row.getAttribute('data-prod');
@@ -1088,59 +1181,24 @@
       }
     });
 
-    /* ----- Checkout flow (opens from cart; validates; posts order; clears cart) ----- */
-    function openCheckoutFromCart(){
-      const p=loadProfile();
-      $('#checkoutName').value=p.name||'';
-      $('#checkoutLocation').value=p.loc||'';
-      $('#checkoutError').style.display='none';
-      $('#checkoutOverlay').classList.add('show');
-    }
-
-    $('#cartCheckout').addEventListener('click', ()=>{
-      if(cart.size===0){ showToast('Your cart is empty'); return; }
-      $('#cartOverlay').classList.remove('show');
-      openCheckoutFromCart();
-    });
-    $('#checkoutClose').addEventListener('click', ()=>$('#checkoutOverlay').classList.remove('show'));
-
-    $('#checkoutSubmit').addEventListener('click', ()=>{
-      const name=$('#checkoutName').value.trim();
-      const loc=$('#checkoutLocation').value.trim();
-      const notes=$('#checkoutNotes')?.value.trim()||'';
-      if(!name || !loc){ $('#checkoutError').style.display='block'; return; }
-
-      // persist profile
-      saveProfile(name,loc);
-
-      // add order (webhook fires inside this function)
-      addOrderFromCart(name, loc, notes, /*discount*/0, /*tip*/0);
-
-      // clear cart and close
-      cart.clear(); renderCart();
-      $('#checkoutOverlay').classList.remove('show');
-      updateGreeting();
-      showToast('Order placed 🎉');
-    });
-
-    /* ----- a11y focus/keys on clickable UI ----- */
+    /* a11y keys */
     $$('.btn,.add,.ghost,.primary,.tab,.subtab').forEach(el=>{
       el.tabIndex=0;
       el.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); } });
     });
 
-    /* ----- Analytics renderer ----- */
+    /* ----- Analytics render ----- */
     function renderAnalytics(){
       const orders=loadOrders(), delivered=loadDelivered(), all=orders.concat(delivered);
       let rev=0, items=0;
       all.forEach(o=>{ rev+=o.total; o.lines.forEach(l=>items+=l.qty); });
       const cnt=all.length, aov=cnt?(rev/cnt):0;
-      $('#kpiRevenue').textContent = fmt(rev);
-      $('#kpiOrders').textContent  = cnt;
-      $('#kpiAOV').textContent     = fmt(aov);
-      $('#kpiItems').textContent   = items;
+      $('#kpiRevenue').textContent=fmt(rev);
+      $('#kpiOrders').textContent=cnt;
+      $('#kpiAOV').textContent=fmt(aov);
+      $('#kpiItems').textContent=items;
 
-      // last 7 days sparkline buckets
+      // last 7 days spark
       const days=Array(7).fill(0), now=new Date();
       all.forEach(o=>{
         const d=new Date(o.when);
@@ -1149,35 +1207,30 @@
       });
       drawSpark(days);
 
-      // simple per-product stats (opens/adds purchased captured elsewhere or inferred)
-      const byName = {};
-      all.forEach(o=>{
-        o.lines.forEach(l=>{
-          byName[l.name] = byName[l.name] || {name:l.name, qty:0, revenue:0, opens:0, adds:0};
-          byName[l.name].qty     += l.qty;
-          byName[l.name].revenue += l.line;
-        });
-      });
+      // ensure metrics for any current product cards
+      getProducts().forEach(p=>ensureMetrics(p.name));
+      saveObj(ANALYTICS_KEY, prodAnalytics);
 
-      const rows = Object.values(byName);
-      const top  = rows.slice().sort((a,b)=>b.revenue-a.revenue).slice(0,8);
-      const maxR = Math.max(1, ...top.map(r=>r.revenue));
-      const maxQ = Math.max(1, ...top.map(r=>r.qty));
-
+      // top products table + simple funnel bars
+      const rows=Object.entries(prodAnalytics).map(([name,m])=>({
+        name, opens:m.opens||0, adds:m.adds||0, addedQty:m.addedQty||0, purchasedQty:m.purchasedQty||0, revenue:m.revenue||0
+      }));
+      const top=rows.slice().sort((a,b)=>b.revenue-a.revenue).slice(0,8);
+      const maxR=Math.max(1,...top.map(r=>r.revenue));
+      const maxQ=Math.max(1,...top.map(r=>r.purchasedQty));
       $('#topProducts').innerHTML = top.length ? top.map(r=>{
-        const conv = r.opens ? Math.round((r.qty/Math.max(1,r.opens))*100) : 0;
+        const conv = r.opens ? Math.round((r.purchasedQty/r.opens)*100) : 0;
         return `<div class="rowd">
-                  <div>${r.name}</div><div>${r.qty}</div><div>${fmt(r.revenue)}</div><div>${conv}%</div>
+                  <div>${r.name}</div><div>${r.purchasedQty}</div><div>${fmt(r.revenue)}</div><div>${conv}%</div>
                 </div>
                 <div style="padding:0 8px 8px">
                   <div class="bar"><i style="width:${(r.revenue/maxR)*100}%"></i></div>
-                  <div class="bar" style="margin-top:6px"><i style="width:${(r.qty/maxQ)*100}%"></i></div>
+                  <div class="bar" style="margin-top:6px"><i style="width:${(r.purchasedQty/maxQ)*100}%"></i></div>
                 </div>`;
       }).join('') : '<div class="rowd"><div>No sales yet</div><div></div><div></div><div></div></div>';
 
-      // basic funnels placeholder (kept minimal; remove if not needed)
       const funnelHtml = rows.map(r=>{
-        const a=r.opens||0, b=r.adds||0, c=r.qty||0;
+        const a=r.opens||0, b=r.adds||0, c=r.purchasedQty||0;
         const ab=a?Math.round((b/a)*100):0, bc=b?Math.round((c/b)*100):0, ac=a?Math.round((c/a)*100):0;
         return `<div style="padding:8px;border-bottom:1px solid rgba(255,255,255,.08)">
           <div style="font-weight:700">${r.name}</div>
@@ -1203,7 +1256,6 @@
       $('#funnels').innerHTML = funnelHtml || '<div>No funnel data yet</div>';
     }
 
-    /* ----- Tiny sparkline helper ----- */
     function drawSpark(b){
       const svg=$('#revSpark'); if(!svg) return;
       const max=Math.max(1,...b), step=100/(b.length-1||1);
@@ -1218,10 +1270,10 @@
         </defs>`;
     }
 
-    /* ----- Boot / Init ----- */
+    /* ----- Init ----- */
     function pruneDeliveredInit(){
       const list=loadDelivered();
-      const cutoff=Date.now()-72*3600*1000; // 72h window
+      const cutoff=Date.now()-72*3600*1000; // 72h
       const keep=list.filter(o=>{
         const t=Date.parse(o.deliveredWhen||o.when||0);
         return isFinite(t)&&t>=cutoff;
@@ -1229,16 +1281,10 @@
       if(keep.length!==list.length) saveDelivered(keep);
     }
 
-    // Build promos, start snap carousel, clean history, render cart & UI
     buildPromos();
     initCarousel();
     pruneDeliveredInit();
-    renderCart();
-    refreshBadge();
-    updateStockBadges();
-    syncFavStars();
-    updateGreeting();
-    ensureAdminLoginVisible(); // make sure Admin tab reflects lock state on first open
+    renderCart(); refreshBadge(); updateStockBadges(); syncFavStars(); updateGreeting();
   </script>
 </body>
 </html>
