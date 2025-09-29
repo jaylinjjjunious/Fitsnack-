@@ -39,7 +39,7 @@
       box-shadow:0 4px 24px rgba(0,255,0,0.08);
     }
 
-    /* ===== Header: search never overlaps buttons ===== */
+    /* Header: search never overlaps buttons */
     .row{position:relative;display:flex;align-items:center;gap:12px}
     .search-wrap{flex:1 1 auto;min-width:0;position:relative}
     .search{width:100%;border-radius:999px;padding:12px 44px;color:var(--text);outline:none;border:1px solid #2a2a2e}
@@ -130,7 +130,7 @@
     .rowh{background:rgba(255,255,255,.05);font-weight:700}
     .rowd{border-top:1px solid rgba(255,255,255,.06)}
 
-    /* Heat map grid */
+    /* Heat map grid (separate tab) */
     #heatGrid{display:grid;grid-template-columns:repeat(24,12px);gap:4px;margin-top:8px}
     .heat-cell{width:12px;height:12px;border-radius:3px;background:rgba(110,168,254,.12);border:1px solid rgba(255,255,255,.06)}
 
@@ -365,6 +365,7 @@
               <button class="subtab active" data-subtab="orders" type="button">Orders</button>
               <button class="subtab" data-subtab="inventory" type="button">Inventory</button>
               <button class="subtab" data-subtab="analytics" type="button">Analytics</button>
+              <button class="subtab" data-subtab="heat" type="button">Heat Map</button>
               <button class="subtab" data-subtab="history" type="button">History</button>
             </div>
 
@@ -407,7 +408,11 @@
               </div>
               <div style="margin-top:12px;font-weight:700">Funnel by Product</div>
               <div id="funnels" class="admin-list"></div>
-              <div style="margin-top:12px;font-weight:700">Sales Heat (7×24)</div>
+            </div>
+
+            <!-- Heat Map (its own tab) -->
+            <div id="subtab-heat" style="display:none">
+              <div style="margin-top:6px;font-weight:700">Sales Heat (7×24)</div>
               <div id="heatGrid"></div>
             </div>
 
@@ -561,7 +566,7 @@
     if(p.action==='scrollGrid'){ document.getElementById('grid')?.scrollIntoView({behavior:'smooth',block:'start'}); }
   }
 
-  /* ========= Search ========= */
+  /* ========= Search + "no results" banner ========= */
   function searchAndFilter(){
     const q=($('#search').value||'').toLowerCase();
     let shown=0;
@@ -573,8 +578,6 @@
     if($('#noResultsBanner')) $('#noResultsBanner').style.display = shown?'none':'block';
   }
   $('#search').addEventListener('input', searchAndFilter);
-
-  // create no results banner
   (function ensureNoResultsBanner(){
     if(document.getElementById('noResultsBanner')) return;
     const n=document.createElement('div');
@@ -671,7 +674,8 @@
     $('#qtyVal').textContent=n;
     $('#sheetAdd').textContent = 'Add • ' + fmt(n*(currentProduct?.price||0));
   });
-    /* ========= Cart ========= */
+
+  /* ========= Cart ========= */
   function refreshBadge(){
     let n=0; for(const v of cart.values()) n+=v.qty;
     const b=$('#cartBadge'); if(!b) return;
@@ -805,6 +809,7 @@
     total=Math.max(0,total-(discount||0))+(tip||0);
     const order={when:new Date().toISOString(),name,location:loc,notes:notes||'',lines,total};
     const list=loadOrders(); list.unshift(order); saveOrders(list);
+    // sales heat bucket
     const d=new Date(), dow=d.getDay(), hr=d.getHours();
     sales[dow][hr]=(sales[dow][hr]||0)+1; saveSales(sales);
     return order;
@@ -827,8 +832,7 @@
     const u=`${IFTTT_URL}?value1=${encodeURIComponent(summary)}&value2=${encodeURIComponent(items)}&value3=${encodeURIComponent(notes)}`;
     const img=new Image(); img.src=u;
   });
-
-  /* ========= Admin ========= */
+    /* ========= Admin ========= */
   function switchTab(which){
     const g=$('#tabGeneral'), a=$('#tabAdmin'), pg=$('#panelGeneral'), pa=$('#panelAdmin');
     if(which==='admin'){ g.classList.remove('active'); a.classList.add('active'); pg.style.display='none'; pa.style.display='block'; ensureAdminLoginVisible();}
@@ -842,7 +846,7 @@
   }
   document.addEventListener('click', e=>{
     if(e.target.closest('#tabGeneral')) switchTab('general');
-    if(e.target.closest('#tabAdmin')) switchTab('admin');
+    if(e.target.closest('#tabAdmin'))   switchTab('admin');
     if(e.target.closest('#adminSubmit')){
       const ok=$('#adminPassword').value===ADMIN_PASSWORD;
       if(ok){ setUnlocked(true); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
@@ -850,21 +854,165 @@
     }
     if(e.target.closest('#adminLock')){ setUnlocked(false); ensureAdminLoginVisible(); }
     if(e.target.closest('.subtab')){
-      const sub=e.target.getAttribute('data-subtab');
-      $$('.subtab').forEach(s=>s.classList.toggle('active',s===e.target));
-      ['orders','inventory','analytics','history'].forEach(id=>$('#subtab-'+id).style.display=(id===sub)?'block':'none');
+      const btn=e.target.closest('.subtab');
+      const sub=btn.getAttribute('data-subtab');
+      $$('.subtab').forEach(s=>s.classList.toggle('active',s===btn));
+      ['orders','inventory','analytics','heat','history'].forEach(id=>{
+        const el=document.getElementById('subtab-'+id);
+        if(el) el.style.display=(id===sub)?'block':'none';
+      });
     }
     if(e.target.closest('#historyClear')){ saveDelivered([]); renderHistory(); }
   }, {passive:true});
 
-  /* ========= Analytics ========= */
-  function renderOrders(){ const list=loadOrders(), box=$('#ordersList'); if(!box) return; box.innerHTML=list.map((o,i)=>`<div class="order-item" data-idx="${i}" style="padding:8px;border-bottom:1px solid #2a2a30;cursor:pointer"><div style="font-weight:700">${new Date(o.when).toLocaleString()}</div><div>${o.name} @ ${o.location}</div><div>Total ${fmt(o.total)}</div></div>`).join('')||'No orders yet'; }
-  function renderHistory(){ const list=loadDelivered(), box=$('#historyList'); if(!box) return; box.innerHTML=list.map(o=>`<div style="padding:8px;border-bottom:1px solid #2a2a30"><div style="font-weight:700">Delivered ${new Date(o.when).toLocaleString()}</div><div>${o.name} @ ${o.location}</div><div>Total ${fmt(o.total)}</div></div>`).join('')||'No delivered orders'; }
-  function renderInventory(){ const wrap=$('#inventoryList'); if(!wrap) return; wrap.innerHTML=getProducts().map(p=>`<div class="field" data-prod="${p.name}"><div style="flex:1;font-weight:600">${p.name}</div><label>Stock</label><input type="number" value="${stockQty[p.name]||''}" data-k="qty"><label>Low</label><input type="number" value="${stockLow[p.name]||''}" data-k="low"></div>`).join(''); }
+  /* ========= Orders list render (rows focusable/clickable) ========= */
+  function renderOrders(){
+    const list=loadOrders(), box=$('#ordersList'); if(!box) return;
+    if(!list.length){ box.textContent='No orders yet'; return; }
+    box.innerHTML=list.map((o,i)=>{
+      const when=new Date(o.when).toLocaleString();
+      return `<div class="order-item" data-idx="${i}" role="button" tabindex="0"
+                style="padding:8px;border-bottom:1px solid #2a2a30;cursor:pointer;outline:none">
+                <div style="font-weight:700">${when}</div>
+                <div>${o.name} @ ${o.location}</div>
+                <div style="font-weight:700">Total ${fmt(o.total)}</div>
+              </div>`;
+    }).join('');
+  }
+  // Click inside orders list opens order sheet
+  document.getElementById('ordersList')?.addEventListener('click', (e)=>{
+    const row=e.target.closest('.order-item'); if(!row) return;
+    const idx=parseInt(row.getAttribute('data-idx'),10);
+    openOrderSheet(idx);
+  }, {passive:true});
+  // Keyboard access on orders rows
+  document.getElementById('ordersList')?.addEventListener('keydown', (e)=>{
+    if(e.key!=='Enter' && e.key!==' ') return;
+    const row=e.target.closest('.order-item'); if(!row) return;
+    e.preventDefault();
+    const idx=parseInt(row.getAttribute('data-idx'),10);
+    openOrderSheet(idx);
+  });
+
+  /* ========= History ========= */
+  function renderHistory(){
+    const list=loadDelivered(), box=$('#historyList'); if(!box) return;
+    if(!list.length){ box.textContent='No delivered orders'; return; }
+    box.innerHTML=list.map(o=>{
+      const when=new Date(o.when).toLocaleString();
+      return `<div style="padding:8px;border-bottom:1px solid #2a2a30">
+        <div style="font-weight:700">Delivered ${when}</div>
+        <div>${o.name} @ ${o.location}</div>
+        <div style="font-weight:700">Total ${fmt(o.total)}</div>
+      </div>`;
+    }).join('');
+  }
+
+  /* ========= Inventory ========= */
   function getProducts(){ return $$('.card').map(c=>({name:c.dataset.name, price:+c.dataset.price, img:c.dataset.img, tags:(c.dataset.tags||'').toLowerCase()})); }
-  function renderAnalytics(){ const orders=loadOrders(),del=loadDelivered(),all=orders.concat(del); let rev=0,items=0; all.forEach(o=>{ rev+=o.total; o.lines.forEach(l=>items+=l.qty); }); const cnt=all.length,aov=cnt?(rev/cnt):0; $('#kpiRevenue').textContent=fmt(rev); $('#kpiOrders').textContent=cnt; $('#kpiAOV').textContent=fmt(aov); $('#kpiItems').textContent=items; }
-  function renderHeat(){ const grid=$('#heatGrid'); if(!grid) return; grid.innerHTML=''; let max=0; for(let d=0;d<7;d++)for(let h=0;h<24;h++) if(sales[d][h]>max) max=sales[d][h]; for(let d=0;d<7;d++){ for(let h=0;h<24;h++){ const v=sales[d][h]; const alpha=max?(0.08+0.62*(v/max)):0.10; const cell=document.createElement('div'); cell.className='heat-cell'; cell.style.background=`rgba(110,168,254,${alpha})`; grid.appendChild(cell); } } }
-    /* ========= Order detail sheet ========= */
+  function renderInventory(){
+    const wrap=$('#inventoryList'); if(!wrap) return;
+    const products=getProducts();
+    if(!products.length){ wrap.textContent='No products'; return; }
+    wrap.innerHTML=products.map(p=>{
+      const qty  = (p.name in stockQty) ? Number(stockQty[p.name]||0) : '';
+      const low  = (p.name in stockLow) ? Number(stockLow[p.name]||0) : '';
+      return `<div class="field" data-prod="${p.name}">
+        <div style="flex:1;font-weight:600">${p.name}</div>
+        <label style="font-size:12px;color:#c7c7cc">Stock</label>
+        <input type="number" min="0" value="${qty}" data-k="qty" placeholder="--">
+        <label style="font-size:12px;color:#c7c7cc">Low</label>
+        <input type="number" min="0" value="${low}" data-k="low" placeholder="--">
+      </div>`;
+    }).join('');
+  }
+  // Persist inventory edits
+  document.addEventListener('input', (e)=>{
+    const row=e.target.closest('.field[data-prod]'); if(!row) return;
+    const name=row.getAttribute('data-prod');
+    if(e.target.matches('input[data-k="qty"]')){
+      const v=(e.target.value||'').trim();
+      if(v===''){ delete stockQty[name]; } else { stockQty[name]=Number(v); }
+      saveObj(STOCK_KEY, stockQty);
+    }
+    if(e.target.matches('input[data-k="low"]')){
+      const v2=(e.target.value||'').trim();
+      if(v2===''){ delete stockLow[name]; } else { stockLow[name]=Number(v2); }
+      saveObj(LOW_KEY, stockLow);
+    }
+  });
+
+  /* ========= Analytics ========= */
+  function renderAnalytics(){
+    const orders=loadOrders(), delivered=loadDelivered(), all=orders.concat(delivered);
+    let rev=0,items=0; all.forEach(o=>{ rev+=o.total; o.lines.forEach(l=>items+=l.qty); });
+    const cnt=all.length,aov=cnt?(rev/cnt):0;
+    $('#kpiRevenue').textContent=fmt(rev);
+    $('#kpiOrders').textContent=cnt;
+    $('#kpiAOV').textContent=fmt(aov);
+    $('#kpiItems').textContent=items;
+
+    // sparkline
+    const days=Array(7).fill(0), now=new Date();
+    all.forEach(o=>{
+      const d=new Date(o.when);
+      const diff=Math.floor((now-d)/(24*3600*1000));
+      if(diff>=0 && diff<7) days[6-diff]+=o.total;
+    });
+    drawSpark(days);
+
+    // Top products + simple funnels
+    const rows={};
+    all.forEach(o=>o.lines.forEach(l=>{
+      if(!rows[l.name]) rows[l.name]={qty:0,rev:0};
+      rows[l.name].qty+=l.qty; rows[l.name].rev+=l.line;
+    }));
+    const sorted=Object.entries(rows).sort((a,b)=>b[1].rev-a[1].rev).slice(0,8);
+    $('#topProducts').innerHTML=sorted.length? sorted.map(([n,v])=>
+      `<div class="rowd"><div>${n}</div><div>${v.qty}</div><div>${fmt(v.rev)}</div><div>-</div></div>`
+    ).join('') : '<div class="rowd"><div>No sales</div></div>';
+
+    const funnels=sorted.map(([n,v])=>`<div style="padding:8px;border-bottom:1px solid rgba(255,255,255,.08)">
+      <div style="font-weight:700">${n}</div>
+      <div>Sold: ${v.qty} • Revenue: ${fmt(v.rev)}</div>
+    </div>`).join('');
+    $('#funnels').innerHTML=funnels || '<div>No funnel data</div>';
+  }
+
+  function drawSpark(b){
+    const svg=$('#revSpark'); if(!svg) return;
+    const max=Math.max(1,...b), step=100/(b.length-1||1);
+    const pts=b.map((v,i)=>`${i*step},${40-(v/max)*36-2}`).join(' ');
+    svg.innerHTML=`
+      <polyline points="${pts}" fill="none" stroke="url(#g)" stroke-width="2"/>
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#6ea8fe"/>
+          <stop offset="100%" stop-color="#3cd27f"/>
+        </linearGradient>
+      </defs>`;
+  }
+
+  /* ========= Heat Map (own tab) ========= */
+  function renderHeat(){
+    const grid=$('#heatGrid'); if(!grid) return;
+    grid.innerHTML='';
+    let max=0;
+    for(let d=0; d<7; d++) for(let h=0; h<24; h++) if(sales[d][h]>max) max=sales[d][h];
+    for(let d=0; d<7; d++){
+      for(let h=0; h<24; h++){
+        const v=sales[d][h];
+        const alpha = max ? (0.08 + 0.62*(v/max)) : 0.10;
+        const cell=document.createElement('div');
+        cell.className='heat-cell';
+        cell.title=`Day ${d}, ${h}:00 -- ${v}`;
+        cell.style.background=`rgba(110,168,254,${alpha})`;
+        grid.appendChild(cell);
+      }
+    }
+  }
+
+  /* ========= Order detail sheet ========= */
   let currentOrderIndex=null;
   function openOrderSheet(idx){
     const orders=loadOrders(); const o=orders[idx]; if(!o) return;
@@ -875,10 +1023,6 @@
     $('#orderSheet').classList.add('show');
   }
   function closeOrderSheet(){ $('#orderSheet').classList.remove('show'); currentOrderIndex=null; }
-  document.addEventListener('click', e=>{
-    const row=e.target.closest('.order-item'); if(!row) return;
-    openOrderSheet(parseInt(row.getAttribute('data-idx'),10));
-  },{passive:true});
   $('#orderClose')?.addEventListener('click', closeOrderSheet);
   $('#orderCancel')?.addEventListener('click', closeOrderSheet);
   $('#orderDelivered')?.addEventListener('click', ()=>{
@@ -920,7 +1064,6 @@
   renderAnalytics();
   renderHeat();
   ensureAdminLoginVisible();
-
   </script>
 </body>
 </html>
