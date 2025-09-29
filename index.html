@@ -1967,27 +1967,93 @@
       if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); }
     });
   });
-
-  /* ========= Init ========= */
-  function pruneDeliveredInit(){
-    const list=loadDelivered();
-    const cutoff=Date.now()-72*3600*1000; // 72h
-    const keep=list.filter(o=>{
-      const t=Date.parse(o.deliveredWhen||o.when||0);
-      return isFinite(t)&&t>=cutoff;
+    /* ========= Init (Hardened) ========= */
+  (function hardInit(){
+    // Catch any unexpected runtime errors so the whole app doesn't "die"
+    window.addEventListener('error', (e)=>{
+      try{ console.error('[FitSnacks] Uncaught error:', e.message, e.error); }catch{}
+      try{ showToast && showToast('App error: '+e.message, 2800); }catch{}
     });
-    if(keep.length!==list.length) saveDelivered(keep);
-  }
 
-  buildPromos();
-  initCarousel();
-  pruneDeliveredInit();
-  renderCart();
-  refreshBadge();
-  updateStockBadges();
-  syncFavStars();
-  updateGreeting();
-  searchAndFilter();
+    // Guarded helper: call fn only if it exists and is a function
+    const safeCall = (name, ...args) => {
+      try{
+        if (typeof window[name] === 'function') { return window[name](...args); }
+      }catch(err){
+        console.error(`[FitSnacks] ${name} failed:`, err);
+      }
+      return undefined;
+    };
+
+    // Safer element binding helper
+    const on = (sel, ev, fn, opts) => {
+      const el = document.querySelector(sel);
+      if (el && typeof el.addEventListener === 'function'){
+        el.addEventListener(ev, fn, opts||{});
+        return true;
+      }
+      return false;
+    };
+
+    // Some builds may place script slightly earlier; ensure DOM is fully parsed
+    const start = () => {
+      try{
+        // Promo/slider init -- guard if not defined in this build
+        safeCall('buildPromos');
+        safeCall('initCarousel');
+
+        // History auto-prune (guard)
+        safeCall('pruneDeliveredInit');
+
+        // Core UI renders -- guard each so one failure doesn't block the rest
+        safeCall('renderCart');
+        safeCall('refreshBadge');
+        safeCall('updateStockBadges');
+        safeCall('syncFavStars');
+        safeCall('updateGreeting');
+        safeCall('searchAndFilter');
+        safeCall('renderOrders');     // admin
+        safeCall('renderInventory');  // admin
+        safeCall('renderHeat');       // admin
+        safeCall('renderHistory');    // admin
+        safeCall('renderAnalytics');  // admin
+
+        // Make sure primary buttons work even if earlier code bailed before binding
+        on('#settingsBtn','click', ()=>{ const o=document.getElementById('settingsOverlay'); if(o){ o.classList.add('show'); safeCall('switchTab','general'); }});
+        on('#cartBtn','click',      ()=>{ const o=document.getElementById('cartOverlay');    if(o) o.classList.add('show'); });
+        on('#cartBack','click',     ()=>{ const o=document.getElementById('cartOverlay');    if(o) o.classList.remove('show'); });
+        on('#checkoutClose','click',()=>{ const o=document.getElementById('checkoutOverlay');if(o) o.classList.remove('show'); });
+
+        // Fallback: delegate close buttons (Close/Cancel text) if any overlay is open
+        document.addEventListener('click',(e)=>{
+          const isClose = e.target.closest('.ghost') && /^(close|cancel)$/i.test(e.target.textContent.trim());
+          if(!isClose) return;
+          const ov = e.target.closest('.overlay');
+          if(ov) ov.classList.remove('show');
+        }, {passive:true});
+
+        // ESC/backdrop close safety (in case earlier binding missed)
+        document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ const open=[...document.querySelectorAll('.overlay.show')]; open.at(-1)?.classList.remove('show'); }});
+        ['productSheet','cartOverlay','checkoutOverlay','settingsOverlay','orderSheet'].forEach(id=>{
+          const ov=document.getElementById(id); if(!ov) return;
+          ov.addEventListener('click',(e)=>{ if(e.target===ov) ov.classList.remove('show'); });
+        });
+
+        // Ensure sticky cart bar reflects current state on load
+        try{ typeof updateCartBar==='function' && updateCartBar(); }catch(e){ console.error(e); }
+      }catch(err){
+        console.error('[FitSnacks] init error:', err);
+        try{ showToast('Init error: '+err.message, 3000); }catch{}
+      }
+    };
+
+    if (document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', start, {once:true});
+    } else {
+      // DOM is already ready
+      start();
+    }
+  })();
 
 </script>
 </body>
