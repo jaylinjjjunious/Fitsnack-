@@ -39,30 +39,11 @@
       box-shadow:0 4px 24px rgba(0,255,0,0.08);
     }
 
-    /* Header (NO OVERLAP) */
-    .row{
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
-    .search-wrap{
-      position:relative;
-      flex:1;       /* search uses remaining space */
-      min-width:0;  /* prevents overflow on small screens */
-    }
-    .icon-rights{
-      display:flex;
-      gap:10px;
-      flex-shrink:0; /* buttons keep width; search shrinks first */
-    }
-    .search{
-      width:100%;
-      border-radius:999px;
-      padding:12px 44px; /* space for left icon */
-      color:var(--text);
-      outline:none;
-      border:1px solid #2a2a2e;
-    }
+    /* Header (no overlap) */
+    .row{display:flex;align-items:center;gap:12px}
+    .search-wrap{position:relative;flex:1;min-width:0}
+    .icon-rights{display:flex;gap:10px;flex-shrink:0}
+    .search{width:100%;border-radius:999px;padding:12px 44px;color:var(--text);outline:none;border:1px solid #2a2a2e}
     .search::placeholder{color:#6c6c70}
     .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
     .btn{-webkit-appearance:none;appearance:none;border-radius:14px;width:44px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
@@ -121,7 +102,7 @@
     .ghost{border:1px solid #2a2a30;color:#e7e7eb;border-radius:12px;padding:10px 12px;background:#1b1b20}
     .actions{display:flex;gap:10px;margin-top:12px}
 
-    /* Admin + analytics + inventory + history */
+    /* Admin */
     .tabs{display:flex;gap:8px;margin:6px 0 12px}
     .tab{padding:8px 10px;border-radius:10px;cursor:pointer;border:1px solid #2a2a30;background:#18181d}
     .tab.active{background:#24242a}
@@ -137,19 +118,17 @@
     .kpi{padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.1)}
     .kpi .label{color:#c7c7cc;font-size:12px}
     .kpi .value{font-weight:800;font-size:18px;margin-top:4px}
-    .bar{height:8px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden}
-    .bar>i{display:block;height:100%;background:linear-gradient(90deg,#6ea8fe,#3cd27f)}
     .table{margin-top:8px;border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden}
     .rowh,.rowd{display:grid;grid-template-columns:1fr 70px 70px 70px;gap:8px;padding:8px}
     .rowh{background:rgba(255,255,255,.05);font-weight:700}
     .rowd{border-top:1px solid rgba(255,255,255,.06)}
 
-    /* Stock badges on cards */
+    /* Stock badges */
     .badge-wrap{position:absolute;left:10px;bottom:10px;display:flex;gap:6px;flex-wrap:wrap}
     .stock-badge{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:2px 6px;border-radius:999px;font-size:11px}
     .low-badge{background:rgba(255,0,0,.15);border-color:rgba(255,0,0,.35)}
 
-    /* Heat Map grid */
+    /* Heat Map */
     #heatGridHM .heat-cell{width:12px;height:12px;display:inline-block;margin:1px;border-radius:3px}
 
     /* Sticky cart bar */
@@ -168,7 +147,7 @@
     .toast{pointer-events:auto;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(24,24,32,.9);font-weight:600;opacity:0;transform:translateY(8px);transition:opacity .22s ease,transform .22s ease}
     .toast.show{opacity:1;transform:translateY(0)}
 
-    /* Z-index fix: order sheet above settings always */
+    /* Z fix: order sheet above settings */
     #settingsOverlay{ z-index: 10000; }
     #orderSheet{ z-index: 10050; }
   </style>
@@ -213,7 +192,7 @@
 
     <!-- Products Grid -->
     <div id="grid" class="grid" role="list">
-      <!-- Product 1 -->
+      <!-- 1 -->
       <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50" data-img="assets/product-funyuns.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Potato Chips" loading="lazy"></div>
@@ -222,7 +201,7 @@
         <button class="add" aria-label="Add Potato Chips">+</button>
       </div>
 
-      <!-- Product 2 -->
+      <!-- 2 -->
       <div class="card" role="listitem" data-name="Protein Bar" data-price="2.99" data-img="assets/product-chesters.jpg" data-tags="protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-chesters.jpg" alt="Protein Bar" loading="lazy"></div>
@@ -231,13 +210,78 @@
         <button class="add" aria-label="Add Protein Bar">+</button>
       </div>
 
-      <!-- Product 3 -->
+      <!-- 3 -->
       <div class="card" role="listitem" data-name="Trail Mix" data-price="3.49" data-img="assets/product-cheetos.jpg" data-tags="vegan,gluten-free">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-cheetos.jpg" alt="Trail Mix" loading="lazy"></div>
         <div class="title">Trail Mix</div>
         <div class="price">$3.49</div>
         <button class="add" aria-label="Add Trail Mix">+</button>
+      </div>
+
+      <!-- Added products -->
+
+      <!-- 4 -->
+      <div class="card" role="listitem" data-name="Roasted Almonds" data-price="3.29" data-img="assets/product-funyuns.jpg" data-tags="vegan,gluten-free,protein">
+        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
+        <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Roasted Almonds" loading="lazy"></div>
+        <div class="title">Roasted Almonds</div>
+        <div class="price">$3.29</div>
+        <button class="add" aria-label="Add Roasted Almonds">+</button>
+      </div>
+
+      <!-- 5 -->
+      <div class="card" role="listitem" data-name="Greek Yogurt Cup" data-price="2.49" data-img="assets/product-chesters.jpg" data-tags="protein,gluten-free">
+        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
+        <div class="thumb"><img src="assets/product-chesters.jpg" alt="Greek Yogurt Cup" loading="lazy"></div>
+        <div class="title">Greek Yogurt Cup</div>
+        <div class="price">$2.49</div>
+        <button class="add" aria-label="Add Greek Yogurt Cup">+</button>
+      </div>
+
+      <!-- 6 -->
+      <div class="card" role="listitem" data-name="Beef Jerky" data-price="4.99" data-img="assets/product-cheetos.jpg" data-tags="protein,gluten-free">
+        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
+        <div class="thumb"><img src="assets/product-cheetos.jpg" alt="Beef Jerky" loading="lazy"></div>
+        <div class="title">Beef Jerky</div>
+        <div class="price">$4.99</div>
+        <button class="add" aria-label="Add Beef Jerky">+</button>
+      </div>
+
+      <!-- 7 -->
+      <div class="card" role="listitem" data-name="Fruit Cup" data-price="2.19" data-img="assets/product-funyuns.jpg" data-tags="vegan,gluten-free">
+        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
+        <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Fruit Cup" loading="lazy"></div>
+        <div class="title">Fruit Cup</div>
+        <div class="price">$2.19</div>
+        <button class="add" aria-label="Add Fruit Cup">+</button>
+      </div>
+
+      <!-- 8 -->
+      <div class="card" role="listitem" data-name="Granola Bites" data-price="2.39" data-img="assets/product-chesters.jpg" data-tags="vegan,protein">
+        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
+        <div class="thumb"><img src="assets/product-chesters.jpg" alt="Granola Bites" loading="lazy"></div>
+        <div class="title">Granola Bites</div>
+        <div class="price">$2.39</div>
+        <button class="add" aria-label="Add Granola Bites">+</button>
+      </div>
+
+      <!-- 9 -->
+      <div class="card" role="listitem" data-name="Pretzel Twists" data-price="1.89" data-img="assets/product-cheetos.jpg" data-tags="snack">
+        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
+        <div class="thumb"><img src="assets/product-cheetos.jpg" alt="Pretzel Twists" loading="lazy"></div>
+        <div class="title">Pretzel Twists</div>
+        <div class="price">$1.89</div>
+        <button class="add" aria-label="Add Pretzel Twists">+</button>
+      </div>
+
+      <!-- 10 -->
+      <div class="card" role="listitem" data-name="Peanut Butter Crackers" data-price="2.29" data-img="assets/product-funyuns.jpg" data-tags="protein">
+        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
+        <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Peanut Butter Crackers" loading="lazy"></div>
+        <div class="title">Peanut Butter Crackers</div>
+        <div class="price">$2.29</div>
+        <button class="add" aria-label="Add Peanut Butter Crackers">+</button>
       </div>
     </div>
   </div> <!-- /.app -->
@@ -270,7 +314,7 @@
     </div>
   </div>
 
-  <!-- Order details sheet (always on top via CSS z-index) -->
+  <!-- Order details sheet (kept above settings via CSS z-index) -->
   <div id="orderSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Order details">
     <div class="sheet" role="document">
       <div class="row-between">
@@ -446,7 +490,7 @@
               <div id="funnels" class="admin-list"></div>
             </div>
 
-            <!-- Heat Map (its own tab) -->
+            <!-- Heat Map -->
             <div id="subtab-heat" style="display:none">
               <div style="margin-top:6px;font-weight:700">Sales Heat (7×24)</div>
               <div id="heatGridHM"></div>
@@ -477,571 +521,577 @@
 
   <!-- Toast host -->
   <div id="toastHost"></div>
-  <script>
-/* ========= App boot ========= */
-const APP_SCHEMA_VERSION = 3, SCHEMA_KEY = 'fitsnacks.schema';
-try {
-  const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY) || '0') || 0;
-  if (cur < APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
-} catch {
-  localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
-}
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
-}
-
-const $  = s => document.querySelector(s);
-const $$ = s => Array.from(document.querySelectorAll(s));
-
-/* ========= Keys ========= */
-const CART_KEY='fitsnacks.cart.v1', ORDERS_KEY='fitsnacks.orders', UNLOCK_KEY='fitsnacks.admin.unlocked';
-const STOCK_KEY='fitsnacks.stock.qty', LOW_KEY='fitsnacks.stock.low';
-const SALES_KEY='fitsnacks.sales.buckets', DELIVERED_KEY='fitsnacks.orders.delivered';
-const FAVORITES_KEY='fitsnacks.favorites', PROMOS_KEY='fitsnacks.promos', ANALYTICS_KEY='fitsnacks.analytics.products';
-const PROFILE_NAME_KEY='fitsnacks.profile.name', PROFILE_LOC_KEY='fitsnacks.profile.location';
-
-/* ========= IFTTT ========= */
-const IFTTT_EVENT='Fitsnack_order';
-const IFTTT_KEY='fI-MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA'; // your working key
-const IFTTT_URL=`https://maker.ifttt.com/trigger/${IFTTT_EVENT}/with/key/${IFTTT_KEY}`;
-
-/* ========= Helpers ========= */
-const fmt = n => '$'+n.toFixed(2);
-function loadCart(){ try{ return new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]')); }catch{ return new Map(); } }
-function saveCart(m){ try{ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(m.entries())));}catch{} }
-function loadObj(k){ try{ return JSON.parse(localStorage.getItem(k)||'{}'); }catch{ return {}; } }
-function saveObj(k,o){ localStorage.setItem(k, JSON.stringify(o||{})); }
-function loadArr(k){ try{ return JSON.parse(localStorage.getItem(k)||'[]'); }catch{ return []; } }
-function saveArr(k,a){ localStorage.setItem(k, JSON.stringify(a||[])); }
-
-/* ========= State ========= */
-let cart = loadCart();
-let stockQty = loadObj(STOCK_KEY);
-let stockLow = loadObj(LOW_KEY);
-let sales = loadArr(SALES_KEY).length ? loadArr(SALES_KEY) : Array.from({length:7},()=>Array(24).fill(0));
-let favorites = new Set(loadArr(FAVORITES_KEY));
-let prodAnalytics = loadObj(ANALYTICS_KEY);
-
-/* ========= Toast ========= */
-function showToast(msg, ms=1800){
-  const host=$('#toastHost'); if(!host) return;
-  const el=document.createElement('div');
-  el.className='toast'; el.textContent=msg;
-  host.appendChild(el);
-  requestAnimationFrame(()=>el.classList.add('show'));
-  setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),250); }, ms);
-}
-
-/* ========= Greeting ========= */
-function updateGreeting(){
-  const g=$('#greet');
-  const name=localStorage.getItem(PROFILE_NAME_KEY)||'';
-  g.textContent = name? `Hi, ${name} 👋` : 'Welcome 👋';
-}
-
-/* ========= Cart ========= */
-function refreshBadge(){
-  let n=0; for(const v of cart.values()) n+=v.qty;
-  const b=$('#cartBadge'); if(!b) return;
-  if(n>0){ b.textContent=String(n); b.style.display='inline-flex'; }
-  else { b.style.display='none'; }
-}
-function renderCart(){
-  let total=0, html='';
-  for(const [name,info] of cart){
-    const line=info.price*info.qty; total+=line;
-    html += `<div class="row-between" style="margin-top:6px">
-      <div style="display:flex;gap:10px;align-items:center">
-        <button data-act="-" data-name="${name}" class="ghost" type="button">−</button>
-        <div style="min-width:24px;text-align:center">${info.qty}</div>
-        <button data-act="+" data-name="${name}" class="ghost" type="button">+</button>
-        <div style="font-weight:700;margin-left:8px">${name}</div>
-      </div>
-      <div style="font-weight:700">${fmt(line)}</div>
-    </div>`;
-  }
-  $('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
-  $('#cartTotal').textContent = fmt(total);
-  saveCart(cart); refreshBadge(); updateCartBar();
-}
-document.addEventListener('click',(e)=>{
-  const b=e.target.closest('button[data-act][data-name]'); if(!b) return;
-  const name=b.getAttribute('data-name'); const act=b.getAttribute('data-act');
-  const entry=cart.get(name); if(!entry) return;
-  entry.qty = Math.max((act==='+')? entry.qty+1 : entry.qty-1, 0);
-  if(entry.qty===0) cart.delete(name);
-  renderCart();
-},{passive:true});
-
-/* ========= Sticky cart bar ========= */
-function updateCartBar(){
-  const bar = $('#cartBar'); if(!bar) return;
-  let total=0, count=0;
-  for(const [,info] of cart){ total+=info.price*info.qty; count+=info.qty; }
-  if(count>0){
-    $('#cartBarTotal').textContent = fmt(total);
-    bar.classList.add('show');
-  }else{
-    bar.classList.remove('show');
-  }
-}
-$('#cartBarView').addEventListener('click',()=>$('#cartOverlay').classList.add('show'));
-$('#cartBarCheckout').addEventListener('click',()=>{
-  let count=0; for(const v of cart.values()) count+=v.qty;
-  if(count===0){ showToast('Your cart is empty'); return; }
-  $('#checkoutOverlay').classList.add('show');
-});
-
-/* ========= Promos & Carousel ========= */
-function buildPromos(){
-  const snapper = document.getElementById('snapper');
-  const dotsWrap = document.getElementById('snapDots');
-  if(!snapper || !dotsWrap) return;
-
-  let data;
-  try { data = JSON.parse(localStorage.getItem(PROMOS_KEY)||'[]'); } catch { data = []; }
-  if(!Array.isArray(data) || data.length===0){
-    data = [
-      {img:'assets/carousel-1.jpg', title:'Fuel your study grind', cta:'Shop snacks', action:'scrollGrid'},
-      {img:'assets/carousel-2.jpg', title:'Protein picks',        cta:'Filter: protein', action:'filter', value:'protein'},
-      {img:'assets/carousel-3.jpg', title:'Need help?',           cta:'Open settings', action:'openSettings'}
-    ];
-    localStorage.setItem(PROMOS_KEY, JSON.stringify(data));
-  }
-
-  // Clear old
-  snapper.querySelectorAll('.snap-card').forEach(n=>n.remove());
-  const after = snapper.lastElementChild;
-  data.forEach(p=>{
-    const c=document.createElement('div');
-    c.className='snap-card';
-    c.innerHTML=`
-      <img class="banner" src="${p.img}" alt="${p.title||'promo'}">
-      <div class="snap-meta">
-        <div class="snap-title">${p.title||''}</div>
-        ${p.cta?`<button class="ghost snap-cta" type="button">${p.cta}</button>`:''}
-      </div>`;
-    snapper.insertBefore(c, after);
-    c.addEventListener('click',(e)=>{
-      if(e.target.closest('.snap-cta')) return;
-      promoAction(p);
-    },{passive:true});
-    c.querySelector('.snap-cta')?.addEventListener('click',(e)=>{
-      e.stopPropagation(); promoAction(p);
-    },{passive:true});
-  });
-
-  // Dots
-  dotsWrap.innerHTML = data.map(()=>'<div class="snap-dot"></div>').join('');
-  const cards=$$('.snap-card'), dots=$$('.snap-dot');
-  const setDot=i=>dots.forEach((d,k)=>d.classList.toggle('active',k===i));
-  setDot(0);
-
-  let idx=0; setInterval(()=>{
-    if(!cards.length) return;
-    idx=(idx+1)%cards.length;
-    setDot(idx);
-    cards[idx].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
-  },5000);
-}
-
-function promoAction(p){
-  if(p.action==='openSettings'){ $('#settingsOverlay')?.classList.add('show'); switchTab('general'); }
-  if(p.action==='filter'){ activeFilter=p.value||''; $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch.dataset.filter===activeFilter)); applyFilters(); }
-  if(p.action==='scrollGrid'){ document.getElementById('grid')?.scrollIntoView({behavior:'smooth',block:'start'}); }
-}
-
-buildPromos();
-renderCart(); refreshBadge(); updateGreeting();
-/* ========= Search + Chips + Favorites ========= */
-(function ensureNoResultsBanner(){
-  if(document.getElementById('noResultsBanner')) return;
-  const n=document.createElement('div');
-  n.id='noResultsBanner';
-  n.textContent='No results found';
-  n.style.cssText='display:none;color:#c7c7cc;margin:8px 4px;';
-  const grid=document.getElementById('grid');
-  grid?.parentNode?.insertBefore(n,grid);
-})();
-
-let activeFilter = '';
-
-function applyFilters(){
-  const q = ($('#search').value||'').trim().toLowerCase();
-  let shown = 0;
-  $$('.card').forEach(c=>{
-    const name=(c.dataset.name||'').toLowerCase();
-    const tags=(c.dataset.tags||'').toLowerCase();
-    const matchSearch = !q || name.includes(q);
-    let matchChip = true;
-    if(activeFilter){
-      if(activeFilter==='favorites'){ matchChip = favorites.has(c.dataset.name); }
-      else { matchChip = tags.includes(activeFilter); }
-    }
-    const show = matchSearch && matchChip;
-    c.style.display=show?'':'none';
-    if(show) shown++;
-  });
-  $('#noResultsBanner').style.display = shown?'none':'block';
-}
-
-$('#search').addEventListener('input', applyFilters);
-$('#chips').addEventListener('click',(e)=>{
-  const chip=e.target.closest('.chip'); if(!chip) return;
-  activeFilter=chip.dataset.filter||'';
-  $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch===chip));
-  applyFilters();
-},{passive:true});
-
-function syncFavStars(){
-  $$('.card').forEach(card=>{
-    const favBtn=card.querySelector('.fav');
-    if(!favBtn) return;
-    favBtn.classList.toggle('active', favorites.has(card.dataset.name));
-  });
-}
-
-document.addEventListener('click',(e)=>{
-  const fav=e.target.closest('.fav'); if(!fav) return;
-  e.stopPropagation();
-  const card=fav.closest('.card'); if(!card) return;
-  const name=card.dataset.name;
-  if(favorites.has(name)) favorites.delete(name); else favorites.add(name);
-  saveArr(FAVORITES_KEY, Array.from(favorites));
-  syncFavStars(); applyFilters();
-},{passive:true});
-
-/* ========= Product Sheet ========= */
-let currentProduct=null;
-function openProductSheet(card){
-  currentProduct={name:card.dataset.name,price:+card.dataset.price,img:card.dataset.img};
-  $('#sheetTitle').textContent=currentProduct.name;
-  $('#sheetImg').src=currentProduct.img;
-  $('#sheetPrice').textContent=fmt(currentProduct.price);
-  $('#qtyVal').textContent='1';
-  $('#sheetAdd').textContent='Add • '+fmt(currentProduct.price);
-  $('#productSheet').classList.add('show');
-}
-function closeProductSheet(){ $('#productSheet').classList.remove('show'); }
-
-$$('.card').forEach(card=>{
-  card.addEventListener('click',e=>{
-    if(e.target.closest('.fav')||e.target.closest('.add')) return;
-    openProductSheet(card);
-  });
-});
-$$('.card .add').forEach(btn=>{
-  const card=btn.closest('.card');
-  btn.addEventListener('click',e=>{
-    e.stopPropagation(); openProductSheet(card);
-  });
-});
-
-$('#qtyPlus').addEventListener('click',()=>{
-  let n=+$('#qtyVal').textContent||1; n=Math.min(99,n+1);
-  $('#qtyVal').textContent=n;
-  $('#sheetAdd').textContent='Add • '+fmt(n*(currentProduct?.price||0));
-});
-$('#qtyMinus').addEventListener('click',()=>{
-  let n=+$('#qtyVal').textContent||1; n=Math.max(1,n-1);
-  $('#qtyVal').textContent=n;
-  $('#sheetAdd').textContent='Add • '+fmt(n*(currentProduct?.price||0));
-});
-$('#sheetClose').addEventListener('click',closeProductSheet);
-
-$('#sheetAdd').addEventListener('click',()=>{
-  const n=+$('#qtyVal').textContent||1;
-  if(!currentProduct) return;
-  const entry=cart.get(currentProduct.name)||{price:currentProduct.price,qty:0};
-  entry.qty+=n; cart.set(currentProduct.name,entry);
-  closeProductSheet(); renderCart(); showToast(`Added ${n} × ${currentProduct.name}`);
-  $('#cartOverlay').classList.add('show');
-});
-
-/* ========= Checkout + IFTTT ========= */
-function addOrderFromCart(name,loc,notes){
-  const lines=[]; let total=0;
-  for(const [n,info] of cart){ const line=info.price*info.qty; total+=line; lines.push({name:n,qty:info.qty,line}); }
-  const order={when:new Date().toISOString(),name,location:loc,notes,total,lines};
-  const list=loadArr(ORDERS_KEY); list.unshift(order); saveArr(ORDERS_KEY,list);
-  return order;
-}
-
-$('#checkoutSubmit').addEventListener('click',()=>{
-  const name=$('#checkoutName').value.trim();
-  const loc=$('#checkoutLocation').value.trim();
-  if(!name||!loc){ $('#checkoutError').style.display='block'; return; }
-  const order=addOrderFromCart(name,loc,$('#checkoutNotes')?.value||'');
-
-  cart.clear(); renderCart(); updateGreeting(); showToast('Order placed 🎉');
-  $('#checkoutOverlay').classList.remove('show');
-
+    <script>
+  /* ========= App boot & safe guards ========= */
+  const APP_SCHEMA_VERSION = 3, SCHEMA_KEY = 'fitsnacks.schema';
   try{
-    // Fire same call you tested manually
-    new Image().src = IFTTT_URL;
-    // Send details too
-    const qs=new URLSearchParams({
-      value1:`${order.name} @ ${order.location} • Total ${fmt(order.total)}`,
-      value2:order.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('\n'),
-      value3:order.notes||''
-    }).toString();
-    new Image().src=`${IFTTT_URL}?${qs}`;
-  }catch(e){ console.error('IFTTT failed',e); }
-});
-/* ========= Admin auth ========= */
-const ADMIN_PASSWORD = '8TSB077';
-function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY)==='1'; }
-function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v?'1':'0'); }
-
-function ensureAdminLoginVisible(){
-  const logged=isUnlocked();
-  $('#adminLogin').style.display=logged?'none':'block';
-  $('#adminContent').style.display=logged?'block':'none';
-  $('#adminStateVal').textContent = logged?'unlocked':'locked';
-  if(logged){ renderOrders(); renderInventory(); renderHeat(); renderHistory(); renderAnalytics(); }
-}
-
-/* ========= Settings main tabs ========= */
-function switchTab(which){
-  const g=$('#tabGeneral'), a=$('#tabAdmin'), pg=$('#panelGeneral'), pa=$('#panelAdmin');
-  if(which==='admin'){
-    g.classList.remove('active'); g.setAttribute('aria-selected','false');
-    a.classList.add('active');    a.setAttribute('aria-selected','true');
-    pg.style.display='none';      pa.style.display='block';
-    ensureAdminLoginVisible();
-  }else{
-    a.classList.remove('active'); a.setAttribute('aria-selected','false');
-    g.classList.add('active');    g.setAttribute('aria-selected','true');
-    pa.style.display='none';      pg.style.display='block';
+    const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY)||'0')||0;
+    if(cur < APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
+  }catch{
+    localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
   }
-}
-document.addEventListener('click',(e)=>{
-  if(e.target.closest('#tabGeneral')) switchTab('general');
-  if(e.target.closest('#tabAdmin'))   switchTab('admin');
-},{passive:true});
-
-/* ========= Admin subtabs ========= */
-function switchAdminSub(which){
-  $$('#adminContent .subtab').forEach(btn=>{
-    const on = btn.dataset.subtab===which;
-    btn.classList.toggle('active', on);
-    $('#subtab-'+btn.dataset.subtab).style.display = on ? 'block' : 'none';
-  });
-}
-document.addEventListener('click',(e)=>{
-  const st=e.target.closest('.subtab'); if(!st) return;
-  switchAdminSub(st.dataset.subtab);
-},{passive:true});
-
-/* ========= Admin login / lock ========= */
-document.addEventListener('click',(e)=>{
-  if(e.target.closest('#adminSubmit')){
-    const ok = ($('#adminPassword').value||'') === ADMIN_PASSWORD;
-    if(ok){ setUnlocked(true); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
-    else  { $('#adminError').style.display='block'; }
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js'));
   }
-  if(e.target.closest('#adminLock')){
-    setUnlocked(false); ensureAdminLoginVisible();
+
+  const $  = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+
+  /* ========= Keys ========= */
+  const CART_KEY        = 'fitsnacks.cart.v1';
+  const ORDERS_KEY      = 'fitsnacks.orders';
+  const UNLOCK_KEY      = 'fitsnacks.admin.unlocked';
+  const STOCK_KEY       = 'fitsnacks.stock.qty';
+  const LOW_KEY         = 'fitsnacks.stock.low';
+  const SALES_KEY       = 'fitsnacks.sales.buckets';
+  const DELIVERED_KEY   = 'fitsnacks.orders.delivered';
+  const FAVORITES_KEY   = 'fitsnacks.favorites';
+  const ANALYTICS_KEY   = 'fitsnacks.analytics.products';
+  const PROFILE_NAME_KEY= 'fitsnacks.profile.name';
+  const PROFILE_LOC_KEY = 'fitsnacks.profile.location';
+  const PROMOS_KEY      = 'fitsnacks.promos';
+
+  /* ========= IFTTT webhook config ========= */
+  const IFTTT_EVENT = 'Fitsnack_order';
+  const IFTTT_KEY   = 'fI-MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA';
+  const IFTTT_URL   = `https://maker.ifttt.com/trigger/${IFTTT_EVENT}/with/key/${IFTTT_KEY}`;
+
+  const fmt = n => '$'+n.toFixed(2);
+
+  /* ========= Load/save helpers ========= */
+  function loadCart(){ try{ return new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]')); }catch{ return new Map(); } }
+  function saveCart(m){ try{ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(m.entries())));}catch{} }
+  function loadArr(k){ try{ return JSON.parse(localStorage.getItem(k)||'[]'); }catch{ return []; } }
+  function saveArr(k,a){ localStorage.setItem(k, JSON.stringify(a||[])); }
+  function loadObj(k){ try{ return JSON.parse(localStorage.getItem(k)||'{}'); }catch{ return {}; } }
+  function saveObj(k,o){ localStorage.setItem(k, JSON.stringify(o||{})); }
+
+  /* ========= App state ========= */
+  let cart         = loadCart();
+  let stockQty     = loadObj(STOCK_KEY);
+  let stockLow     = loadObj(LOW_KEY);
+  let sales        = loadArr(SALES_KEY); if(!sales.length){ sales=Array.from({length:7},()=>Array(24).fill(0)); saveArr(SALES_KEY,sales); }
+  let favorites    = new Set(loadArr(FAVORITES_KEY));
+  let prodAnalytics= loadObj(ANALYTICS_KEY);
+
+  function updateGreeting(){
+    const g=$('#greet');
+    const name=localStorage.getItem(PROFILE_NAME_KEY)||'';
+    g.textContent = name ? `Hi, ${name} 👋` : 'Welcome 👋';
   }
-},{passive:true});
 
-/* ========= Orders list + sheet (stacks above settings) ========= */
-function renderOrders(){
-  const list=loadArr(ORDERS_KEY), box=$('#ordersList'); if(!box) return;
-  if(!list.length){ box.textContent='No orders yet'; return; }
-  box.innerHTML=list.map((o,i)=>{
-    const items=o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
-    const when=new Date(o.when).toLocaleString();
-    return `<div class="order-item" data-idx="${i}" style="padding:8px;border-bottom:1px solid #2a2a30;cursor:pointer">
-      <div style="font-weight:700">${when}</div>
-      <div>${o.name} @ ${o.location}</div>
-      <div>${items}</div>
-      <div style="font-weight:700">Total ${fmt(o.total)}</div>
-    </div>`;
-  }).join('');
-}
-let currentOrderIndex=null;
-function openOrderSheet(idx){
-  const orders=loadArr(ORDERS_KEY); const o=orders[idx]; if(!o) return;
-  currentOrderIndex=idx;
-  $('#orderMeta').textContent=`${new Date(o.when).toLocaleString()} • ${o.name} @ ${o.location}`;
-  $('#orderLines').innerHTML=o.lines.map(l=>`<div class="row-between" style="padding:6px 0">
-    <div>${l.name} × ${l.qty}</div><div style="font-weight:700">${fmt(l.line)}</div>
-  </div>`).join('');
-  $('#orderTotal').textContent=fmt(o.total);
-  document.body.appendChild($('#orderSheet')); // ensure top z-index stack
-  $('#orderSheet').classList.add('show');
-}
-document.addEventListener('click',(e)=>{
-  const row=e.target.closest('.order-item'); if(!row) return;
-  openOrderSheet(parseInt(row.getAttribute('data-idx'),10));
-},{passive:true});
-$('#orderClose')?.addEventListener('click',()=>$('#orderSheet').classList.remove('show'));
-$('#orderCancel')?.addEventListener('click',()=>$('#orderSheet').classList.remove('show'));
-$('#orderDelivered')?.addEventListener('click',()=>{
-  const idx=currentOrderIndex; if(idx==null) return;
-  const orders=loadArr(ORDERS_KEY);
-  const delivered=orders.splice(idx,1)[0];
-  saveArr(ORDERS_KEY,orders);
-  const hist=loadArr(DELIVERED_KEY); hist.unshift(delivered); saveArr(DELIVERED_KEY,hist);
-  renderOrders(); renderHistory();
-  $('#orderSheet').classList.remove('show'); currentOrderIndex=null;
-});
-
-/* ========= Inventory editor ========= */
-function getProducts(){
-  return $$('.card').map(c=>({
-    name:c.dataset.name, price:+c.dataset.price, img:c.dataset.img, tags:(c.dataset.tags||'').toLowerCase()
-  }));
-}
-function renderInventory(){
-  const wrap=$('#inventoryList'); if(!wrap) return;
-  const products=getProducts(); if(!products.length){ wrap.textContent='No products'; return; }
-  wrap.innerHTML=products.map(p=>{
-    const qty=stockQty[p.name]??''; const low=stockLow[p.name]??'';
-    return `<div class="field" data-prod="${p.name}">
-      <div style="flex:1;font-weight:600">${p.name}</div>
-      <label style="font-size:12px;color:#c7c7cc">Stock</label>
-      <input type="number" min="0" value="${qty}" data-k="qty">
-      <label style="font-size:12px;color:#c7c7cc">Low</label>
-      <input type="number" min="0" value="${low}" data-k="low">
-    </div>`;
-  }).join('');
-}
-document.addEventListener('input',(e)=>{
-  const row=e.target.closest('.field[data-prod]'); if(!row) return;
-  const name=row.getAttribute('data-prod');
-  if(e.target.dataset.k==='qty'){
-    if(e.target.value===''){ delete stockQty[name]; } else { stockQty[name]=+e.target.value; }
-    saveObj(STOCK_KEY,stockQty);
+  function showToast(msg, ms=1800){
+    const host=$('#toastHost'); const el=document.createElement('div');
+    el.className='toast'; el.textContent=msg; host.appendChild(el);
+    requestAnimationFrame(()=>el.classList.add('show'));
+    setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),250); }, ms);
   }
-  if(e.target.dataset.k==='low'){
-    if(e.target.value===''){ delete stockLow[name]; } else { stockLow[name]=+e.target.value; }
-    saveObj(LOW_KEY,stockLow);
+
+  /* ========= Cart ========= */
+  function refreshBadge(){
+    let n=0; for(const v of cart.values()) n+=v.qty;
+    const b=$('#cartBadge'); if(!b) return;
+    if(n>0){ b.textContent=String(n); b.style.display='inline-flex'; }
+    else { b.style.display='none'; }
   }
-});
 
-/* ========= Analytics (KPIs + sparkline only) ========= */
-function renderAnalytics(){
-  const orders=loadArr(ORDERS_KEY), delivered=loadArr(DELIVERED_KEY), all=orders.concat(delivered);
-  let rev=0, items=0; all.forEach(o=>{ rev+=o.total; o.lines.forEach(l=>items+=l.qty); });
-  const cnt=all.length, aov=cnt?(rev/cnt):0;
-  $('#kpiRevenue').textContent=fmt(rev);
-  $('#kpiOrders').textContent=cnt;
-  $('#kpiAOV').textContent=fmt(aov);
-  $('#kpiItems').textContent=items;
-
-  // Simple 7-day sparkline
-  const days=Array(7).fill(0), now=new Date();
-  all.forEach(o=>{
-    const d=new Date(o.when);
-    const diff=Math.floor((now-d)/(24*3600*1000));
-    if(diff>=0 && diff<7) days[6-diff]+=o.total;
-  });
-  drawSpark(days);
-}
-function drawSpark(b){
-  const svg=$('#revSpark'); if(!svg) return;
-  const max=Math.max(1,...b), step=100/(b.length-1||1);
-  const pts=b.map((v,i)=>`${i*step},${40-(v/max)*36-2}`).join(' ');
-  svg.innerHTML=`<polyline points="${pts}" fill="none" stroke="url(#g)" stroke-width="2"/>
-    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#6ea8fe"/><stop offset="100%" stop-color="#3cd27f"/>
-    </linearGradient></defs>`;
-}
-
-/* ========= Heat Map (own tab) ========= */
-function renderHeat(){
-  const grid=$('#heatGridHM'); if(!grid) return;
-  // compute max
-  let max=0; (sales||[]).forEach(row=>row.forEach(v=>{ if(v>max) max=v; }));
-  grid.innerHTML='';
-  for(let d=0; d<7; d++){
-    for(let h=0; h<24; h++){
-      const v=(sales[d]||[])[h]||0;
-      const alpha = max ? (0.1 + 0.6*(v/max)) : 0.1;
-      const cell=document.createElement('div');
-      cell.className='heat-cell';
-      cell.style.background=`rgba(110,168,254,${alpha})`;
-      grid.appendChild(cell);
+  function renderCart(){
+    let total=0, html='';
+    for(const [name,info] of cart){
+      const line=info.price*info.qty; total+=line;
+      html += `<div class="row-between" style="margin-top:6px">
+        <div style="display:flex;gap:10px;align-items:center">
+          <button data-act="-" data-name="${name}" class="ghost" type="button" style="padding:4px 8px">−</button>
+          <div style="min-width:24px;text-align:center">${info.qty}</div>
+          <button data-act="+" data-name="${name}" class="ghost" type="button" style="padding:4px 8px">+</button>
+          <div style="font-weight:700;margin-left:8px">${name}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <div style="font-weight:700">${fmt(line)}</div>
+          <button data-remove="${name}" class="ghost" type="button" style="padding:2px 6px;font-size:12px">x</button>
+        </div>
+      </div>`;
     }
-    const br=document.createElement('div'); br.style.height='4px'; grid.appendChild(br);
+    $('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
+    $('#cartTotal').textContent = fmt(total);
+    saveCart(cart); refreshBadge(); updateCartBar();
   }
-}
 
-/* ========= History ========= */
-function renderHistory(){
-  const list=loadArr(DELIVERED_KEY), box=$('#historyList'); if(!box) return;
-  if(!list.length){ box.textContent='No delivered orders'; return; }
-  box.innerHTML=list.map(o=>{
-    const items=o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
-    const when=new Date(o.when).toLocaleString();
-    return `<div style="padding:8px;border-bottom:1px solid #2a2a30">
-      <div style="font-weight:700">Delivered ${when}</div>
-      <div>${o.name} @ ${o.location}</div>
-      <div>${items}</div>
-      <div style="font-weight:700">Total ${fmt(o.total)}</div>
-    </div>`;
-  }).join('');
-}
-$('#historyClear')?.addEventListener('click',()=>{ saveArr(DELIVERED_KEY,[]); renderHistory(); });
-
-/* ========= Header buttons & overlays ========= */
-$('#cartBtn').addEventListener('click', ()=>$('#cartOverlay').classList.add('show'));
-$('#cartBack').addEventListener('click', ()=>$('#cartOverlay').classList.remove('show'));
-$('#settingsBtn').addEventListener('click', ()=>{ $('#settingsOverlay').classList.add('show'); switchTab('general'); });
-$('#settingsClose').addEventListener('click', ()=>$('#settingsOverlay').classList.remove('show'));
-$('#checkoutClose').addEventListener('click', ()=>$('#checkoutOverlay').classList.remove('show'));
-$('#cartCheckout').addEventListener('click', ()=>{
-  let count=0; for(const v of cart.values()) count+=v.qty;
-  if(count===0){ showToast('Your cart is empty'); return; }
-  $('#cartOverlay').classList.remove('show');
-  $('#checkoutOverlay').classList.add('show');
-});
-
-/* ========= Re-order last ========= */
-function reorderLast(){
-  const active=loadArr(ORDERS_KEY), hist=loadArr(DELIVERED_KEY);
-  const src=active[0]||hist[0];
-  if(!src){ showToast('No previous orders'); return; }
-  cart=new Map();
-  for(const line of src.lines){ cart.set(line.name, {price: line.line/line.qty, qty: line.qty}); }
-  renderCart(); $('#cartOverlay').classList.add('show');
-}
-$('#reorderLast').addEventListener('click', reorderLast);
-
-/* ========= Close overlays (Esc/backdrop) ========= */
-document.addEventListener('keydown',(e)=>{
-  if(e.key!=='Escape') return;
-  const open=[...document.querySelectorAll('.overlay.show')];
-  open.at(-1)?.classList.remove('show');
-});
-['productSheet','cartOverlay','checkoutOverlay','settingsOverlay','orderSheet'].forEach(id=>{
-  const ov=document.getElementById(id); if(!ov) return;
-  ov.addEventListener('click',(e)=>{ if(e.target===ov) ov.classList.remove('show'); });
-});
-
-/* ========= Button keyboard a11y ========= */
-$$('.btn,.add,.ghost,.primary,.tab,.subtab').forEach(el=>{
-  el.tabIndex=0;
-  el.addEventListener('keydown', e=>{
-    if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); }
+  document.addEventListener('click',(e)=>{
+    const b=e.target.closest('button[data-act][data-name]'); if(!b) return;
+    const name=b.getAttribute('data-name'); const act=b.getAttribute('data-act');
+    const entry=cart.get(name); if(!entry) return;
+    entry.qty = Math.max( (act==='+') ? entry.qty+1 : entry.qty-1 , 0);
+    if(entry.qty===0) cart.delete(name);
+    renderCart();
   });
-});
+  document.addEventListener('click',(e)=>{
+    if(e.target.closest('[data-remove]')){
+      const name=e.target.getAttribute('data-remove');
+      if(cart.has(name)){ cart.delete(name); renderCart(); }
+    }
+  });
 
-/* ========= First paint / init ========= */
-(function init(){
-  ensureAdminLoginVisible();
-  switchAdminSub('orders'); // default subtab
-  applyFilters();
-  syncFavStars();
-  renderOrders();
-  renderInventory();
-  renderHeat();
-  renderHistory();
-  renderAnalytics();
-  updateCartBar();
-})();
-</script>
+  /* ========= Promos / Carousel ========= */
+  if(!localStorage.getItem(PROMOS_KEY)){
+    saveArr(PROMOS_KEY, [
+      {img:'assets/carousel-1.jpg', title:'Fuel your study grind', cta:'Shop snacks', action:'scrollGrid'},
+      {img:'assets/carousel-2.jpg', title:'Protein picks', cta:'Filter: protein', action:'filter', value:'protein'},
+      {img:'assets/carousel-3.jpg', title:'Need help?', cta:'Open settings', action:'openSettings'}
+    ]);
+  }
+
+  function buildPromos(){
+    const data=loadArr(PROMOS_KEY), snapper=$('#snapper'); if(!snapper) return;
+    snapper.querySelectorAll('.snap-card').forEach(n=>n.remove());
+    const after=snapper.lastElementChild;
+    data.forEach(p=>{
+      const c=document.createElement('div');
+      c.className='snap-card';
+      c.innerHTML=`<img class="banner" src="${p.img}" alt="${p.title||'promo'}">
+        <div class="snap-meta"><div class="snap-title">${p.title||''}</div>
+        ${p.cta?`<button class="ghost snap-cta" type="button">${p.cta}</button>`:''}</div>`;
+      snapper.insertBefore(c, after);
+      if(p.action){
+        c.addEventListener('click',e=>{
+          if(e.target.closest('.snap-cta')) return; promoAction(p);
+        },{passive:true});
+        c.querySelector('.snap-cta')?.addEventListener('click',e=>{
+          e.stopPropagation(); promoAction(p);
+        },{passive:true});
+      }
+    });
+    // dots
+    const cards=$$('.snap-card'), dotsWrap=$('#snapDots');
+    dotsWrap.innerHTML = cards.map(()=>'<div class="snap-dot"></div>').join('');
+    const dots=$$('.snap-dot');
+    function setDot(i){ dots.forEach((d,k)=>d.classList.toggle('active',k===i)); }
+    setDot(0);
+    let idx=0; setInterval(()=>{ if(!cards.length) return; idx=(idx+1)%cards.length; setDot(idx); cards[idx].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'}); }, 5000);
+  }
+
+  function promoAction(p){
+    if(p.action==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
+    if(p.action==='filter'){ activateChip(p.value||''); }
+    if(p.action==='scrollGrid'){ document.getElementById('grid')?.scrollIntoView({behavior:'smooth',block:'start'}); }
+  }
+
+  /* ========= Sticky cart bar ========= */
+  function updateCartBar(){
+    const bar=$('#cartBar'); if(!bar) return;
+    let total=0,count=0; for(const[,info] of cart){ total+=info.price*info.qty; count+=info.qty; }
+    if(count>0){ $('#cartBarTotal').textContent=fmt(total); bar.classList.add('show'); }
+    else bar.classList.remove('show');
+  }
+
+  /* ========= Init partial ========= */
+  buildPromos();
+  renderCart();
+  refreshBadge();
+  updateGreeting();
+    /* ========= Search + Chips + Favorites ========= */
+  (function ensureNoResultsBanner(){
+    if(document.getElementById('noResultsBanner')) return;
+    const n=document.createElement('div');
+    n.id='noResultsBanner';
+    n.textContent='No results found';
+    n.style.cssText='display:none;color:#c7c7cc;margin:8px 4px;';
+    const grid=document.getElementById('grid');
+    grid?.parentNode?.insertBefore(n,grid);
+  })();
+
+  let activeFilter='';
+
+  function applyFilters(){
+    const q=($('#search').value||'').trim().toLowerCase();
+    let shown=0;
+    $$('.card').forEach(c=>{
+      const name=(c.dataset.name||'').toLowerCase();
+      const tags=(c.dataset.tags||'').toLowerCase();
+      const matchSearch=!q||name.includes(q);
+      let matchChip=true;
+      if(activeFilter){
+        if(activeFilter==='favorites') matchChip=favorites.has(c.dataset.name);
+        else matchChip=tags.includes(activeFilter);
+      }
+      const show=matchSearch && matchChip;
+      c.style.display=show?'':'none';
+      if(show) shown++;
+    });
+    $('#noResultsBanner').style.display=shown?'none':'block';
+  }
+
+  $('#search').addEventListener('input', applyFilters);
+  $('#chips').addEventListener('click',(e)=>{
+    const chip=e.target.closest('.chip'); if(!chip) return;
+    activeFilter=chip.dataset.filter||'';
+    $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch===chip));
+    applyFilters();
+  },{passive:true});
+
+  function syncFavStars(){
+    $$('.card').forEach(card=>{
+      const favBtn=card.querySelector('.fav');
+      if(!favBtn) return;
+      favBtn.classList.toggle('active', favorites.has(card.dataset.name));
+    });
+  }
+
+  document.addEventListener('click',(e)=>{
+    const fav=e.target.closest('.fav'); if(!fav) return;
+    e.stopPropagation();
+    const card=fav.closest('.card'); if(!card) return;
+    const name=card.dataset.name;
+    if(favorites.has(name)) favorites.delete(name); else favorites.add(name);
+    saveArr(FAVORITES_KEY, Array.from(favorites));
+    syncFavStars(); applyFilters();
+  },{passive:true});
+
+  /* ========= Product Sheet ========= */
+  let currentProduct=null;
+  function openProductSheet(card){
+    currentProduct={name:card.dataset.name,price:+card.dataset.price,img:card.dataset.img};
+    $('#sheetTitle').textContent=currentProduct.name;
+    $('#sheetImg').src=currentProduct.img;
+    $('#sheetPrice').textContent=fmt(currentProduct.price);
+    $('#qtyVal').textContent='1';
+    $('#sheetAdd').textContent='Add • '+fmt(currentProduct.price);
+    $('#productSheet').classList.add('show');
+  }
+  function closeProductSheet(){ $('#productSheet').classList.remove('show'); }
+
+  $$('.card').forEach(card=>{
+    card.addEventListener('click',e=>{
+      if(e.target.closest('.fav')||e.target.closest('.add')) return;
+      openProductSheet(card);
+    });
+  });
+  $$('.card .add').forEach(btn=>{
+    const card=btn.closest('.card');
+    btn.addEventListener('click',e=>{
+      e.stopPropagation(); openProductSheet(card);
+    });
+  });
+
+  $('#qtyPlus').addEventListener('click',()=>{
+    let n=+$('#qtyVal').textContent||1; n=Math.min(99,n+1);
+    $('#qtyVal').textContent=n;
+    $('#sheetAdd').textContent='Add • '+fmt(n*(currentProduct?.price||0));
+  });
+  $('#qtyMinus').addEventListener('click',()=>{
+    let n=+$('#qtyVal').textContent||1; n=Math.max(1,n-1);
+    $('#qtyVal').textContent=n;
+    $('#sheetAdd').textContent='Add • '+fmt(n*(currentProduct?.price||0));
+  });
+  $('#sheetClose').addEventListener('click',closeProductSheet);
+
+  $('#sheetAdd').addEventListener('click',()=>{
+    const n=+$('#qtyVal').textContent||1;
+    if(!currentProduct) return;
+    const entry=cart.get(currentProduct.name)||{price:currentProduct.price,qty:0};
+    entry.qty+=n; cart.set(currentProduct.name,entry);
+    closeProductSheet(); renderCart(); showToast(`Added ${n} × ${currentProduct.name}`);
+    $('#cartOverlay').classList.add('show');
+  });
+
+  /* ========= Checkout + IFTTT ========= */
+  function addOrderFromCart(name,loc,notes){
+    const lines=[]; let total=0;
+    for(const [n,info] of cart){ const line=info.price*info.qty; total+=line; lines.push({name:n,qty:info.qty,line}); }
+    const order={when:new Date().toISOString(),name,location:loc,notes,total,lines};
+    const list=loadArr(ORDERS_KEY); list.unshift(order); saveArr(ORDERS_KEY,list);
+    return order;
+  }
+
+  $('#checkoutSubmit').addEventListener('click',()=>{
+    const name=$('#checkoutName').value.trim();
+    const loc=$('#checkoutLocation').value.trim();
+    if(!name||!loc){ $('#checkoutError').style.display='block'; return; }
+    const order=addOrderFromCart(name,loc,$('#checkoutNotes')?.value||'');
+
+    cart.clear(); renderCart(); updateGreeting(); showToast('Order placed 🎉');
+    $('#checkoutOverlay').classList.remove('show');
+
+    try{
+      // Simple trigger + details (GET beacon)
+      new Image().src = IFTTT_URL;
+      const qs=new URLSearchParams({
+        value1:`${order.name} @ ${order.location} • Total ${fmt(order.total)}`,
+        value2:order.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('\n'),
+        value3:order.notes||''
+      }).toString();
+      new Image().src=`${IFTTT_URL}?${qs}`;
+    }catch(e){ console.error('IFTTT failed',e); }
+  });
+    /* ========= Admin auth ========= */
+  const ADMIN_PASSWORD='8TSB077';
+  function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY)==='1'; }
+  function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v?'1':'0'); }
+
+  function ensureAdminLoginVisible(){
+    const logged=isUnlocked();
+    $('#adminLogin').style.display=logged?'none':'block';
+    $('#adminContent').style.display=logged?'block':'none';
+    $('#adminStateVal').textContent = logged?'unlocked':'locked';
+    if(logged){
+      renderOrders(); renderInventory(); renderHeat(); renderHistory(); renderAnalytics();
+    }
+  }
+
+  /* ========= Settings main tabs ========= */
+  function switchTab(which){
+    const g=$('#tabGeneral'), a=$('#tabAdmin'), pg=$('#panelGeneral'), pa=$('#panelAdmin');
+    if(which==='admin'){
+      g.classList.remove('active'); g.setAttribute('aria-selected','false');
+      a.classList.add('active');    a.setAttribute('aria-selected','true');
+      pg.style.display='none';      pa.style.display='block';
+      ensureAdminLoginVisible();
+    }else{
+      a.classList.remove('active'); a.setAttribute('aria-selected','false');
+      g.classList.add('active');    g.setAttribute('aria-selected','true');
+      pa.style.display='none';      pg.style.display='block';
+    }
+  }
+  document.addEventListener('click',(e)=>{
+    if(e.target.closest('#tabGeneral')) switchTab('general');
+    if(e.target.closest('#tabAdmin'))   switchTab('admin');
+  },{passive:true});
+
+  /* ========= Admin subtabs ========= */
+  function switchAdminSub(which){
+    $$('#adminContent .subtab').forEach(btn=>{
+      const on = btn.dataset.subtab===which;
+      btn.classList.toggle('active', on);
+      $('#subtab-'+btn.dataset.subtab).style.display = on ? 'block' : 'none';
+    });
+  }
+  document.addEventListener('click',(e)=>{
+    const st=e.target.closest('.subtab'); if(!st) return;
+    switchAdminSub(st.dataset.subtab);
+  },{passive:true});
+
+  /* ========= Admin login / lock ========= */
+  document.addEventListener('click',(e)=>{
+    if(e.target.closest('#adminSubmit')){
+      const ok = ($('#adminPassword').value||'') === ADMIN_PASSWORD;
+      if(ok){ setUnlocked(true); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
+      else  { $('#adminError').style.display='block'; }
+    }
+    if(e.target.closest('#adminLock')){
+      setUnlocked(false); ensureAdminLoginVisible();
+    }
+  },{passive:true});
+
+  /* ========= Orders list + clickable detail sheet (front-most) ========= */
+  function renderOrders(){
+    const list=loadArr(ORDERS_KEY), box=$('#ordersList'); if(!box) return;
+    if(!list.length){ box.textContent='No orders yet'; return; }
+    box.innerHTML=list.map((o,i)=>{
+      const items=o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
+      const when=new Date(o.when).toLocaleString();
+      return `<div class="order-item" data-idx="${i}" style="padding:8px;border-bottom:1px solid #2a2a30;cursor:pointer">
+        <div style="font-weight:700">${when}</div>
+        <div>${o.name} @ ${o.location}</div>
+        <div>${items}</div>
+        <div style="font-weight:700">Total ${fmt(o.total)}</div>
+      </div>`;
+    }).join('');
+  }
+
+  let currentOrderIndex=null;
+  function openOrderSheet(idx){
+    const orders=loadArr(ORDERS_KEY); const o=orders[idx]; if(!o) return;
+    currentOrderIndex=idx;
+
+    $('#orderMeta').textContent=`${new Date(o.when).toLocaleString()} • ${o.name} @ ${o.location}`;
+    $('#orderLines').innerHTML=o.lines.map(l=>
+      `<div class="row-between" style="padding:6px 0">
+        <div>${l.name} × ${l.qty}</div><div style="font-weight:700">${fmt(l.line)}</div>
+      </div>`).join('');
+    $('#orderTotal').textContent=fmt(o.total);
+
+    // Make sure it stacks ABOVE settings
+    const os=$('#orderSheet'); document.body.appendChild(os);
+    os.classList.add('show');
+  }
+
+  document.addEventListener('click',(e)=>{
+    const row=e.target.closest('.order-item'); if(!row) return;
+    openOrderSheet(parseInt(row.getAttribute('data-idx'),10));
+  },{passive:true});
+
+  $('#orderClose')?.addEventListener('click', ()=>$('#orderSheet').classList.remove('show'));
+  $('#orderCancel')?.addEventListener('click', ()=>$('#orderSheet').classList.remove('show'));
+  $('#orderDelivered')?.addEventListener('click', ()=>{
+    const idx=currentOrderIndex; if(idx==null) return;
+    const active=loadArr(ORDERS_KEY);
+    if(idx>=0 && idx<active.length){
+      const delivered=active.splice(idx,1)[0];
+      saveArr(ORDERS_KEY, active);
+      const hist=loadArr(DELIVERED_KEY); hist.unshift(delivered); saveArr(DELIVERED_KEY, hist);
+      renderOrders(); renderHistory();
+    }
+    $('#orderSheet').classList.remove('show'); currentOrderIndex=null;
+  });
+
+  /* ========= Inventory editor ========= */
+  function getProducts(){
+    return $$('.card').map(c=>({
+      name:c.dataset.name, price:+c.dataset.price, img:c.dataset.img, tags:(c.dataset.tags||'').toLowerCase()
+    }));
+  }
+  function renderInventory(){
+    const wrap=$('#inventoryList'); if(!wrap) return;
+    const products=getProducts(); if(!products.length){ wrap.textContent='No products'; return; }
+    wrap.innerHTML=products.map(p=>{
+      const qty=stockQty[p.name]??''; const low=stockLow[p.name]??'';
+      return `<div class="field" data-prod="${p.name}">
+        <div style="flex:1;font-weight:600">${p.name}</div>
+        <label style="font-size:12px;color:#c7c7cc">Stock</label>
+        <input type="number" min="0" value="${qty}" data-k="qty">
+        <label style="font-size:12px;color:#c7c7cc">Low</label>
+        <input type="number" min="0" value="${low}" data-k="low">
+      </div>`;
+    }).join('');
+  }
+  document.addEventListener('input',(e)=>{
+    const row=e.target.closest('.field[data-prod]'); if(!row) return;
+    const name=row.getAttribute('data-prod');
+    if(e.target.dataset.k==='qty'){
+      if(e.target.value===''){ delete stockQty[name]; } else { stockQty[name]=+e.target.value; }
+      saveObj(STOCK_KEY, stockQty);
+    }
+    if(e.target.dataset.k==='low'){
+      if(e.target.value===''){ delete stockLow[name]; } else { stockLow[name]=+e.target.value; }
+      saveObj(LOW_KEY, stockLow);
+    }
+  });
+
+  /* ========= Analytics (KPIs + sparkline + simple top list) ========= */
+  function renderAnalytics(){
+    const orders=loadArr(ORDERS_KEY), delivered=loadArr(DELIVERED_KEY), all=orders.concat(delivered);
+    let rev=0,items=0; all.forEach(o=>{ rev+=o.total; o.lines.forEach(l=>items+=l.qty); });
+    const cnt=all.length, aov=cnt?(rev/cnt):0;
+    $('#kpiRevenue').textContent=fmt(rev);
+    $('#kpiOrders').textContent=cnt;
+    $('#kpiAOV').textContent=fmt(aov);
+    $('#kpiItems').textContent=items;
+
+    const days=Array(7).fill(0), now=new Date();
+    all.forEach(o=>{
+      const d=new Date(o.when); const diff=Math.floor((now-d)/(24*3600*1000));
+      if(diff>=0 && diff<7) days[6-diff]+=o.total;
+    });
+    drawSpark(days);
+
+    const rows={};
+    all.forEach(o=>o.lines.forEach(l=>{
+      if(!rows[l.name]) rows[l.name]={qty:0,rev:0};
+      rows[l.name].qty+=l.qty; rows[l.name].rev+=l.line;
+    }));
+    const sorted=Object.entries(rows).sort((a,b)=>b[1].rev-a[1].rev).slice(0,8);
+    $('#topProducts').innerHTML=sorted.length
+      ? sorted.map(([n,v])=>`<div class="rowd"><div>${n}</div><div>${v.qty}</div><div>${fmt(v.rev)}</div><div>-</div></div>`).join('')
+      : '<div class="rowd"><div>No sales</div></div>';
+    $('#funnels').innerHTML = sorted.map(([n,v])=>
+      `<div style="padding:8px;border-bottom:1px solid rgba(255,255,255,.08)">
+        <div style="font-weight:700">${n}</div>
+        <div>Sold: ${v.qty} • Revenue: ${fmt(v.rev)}</div>
+      </div>`).join('') || '<div>No funnel data</div>';
+  }
+  function drawSpark(b){
+    const svg=$('#revSpark'); if(!svg) return;
+    const max=Math.max(1,...b), step=100/(b.length-1||1);
+    const pts=b.map((v,i)=>`${i*step},${40-(v/max)*36-2}`).join(' ');
+    svg.innerHTML=`<polyline points="${pts}" fill="none" stroke="url(#g)" stroke-width="2"/>
+      <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#6ea8fe"/><stop offset="100%" stop-color="#3cd27f"/>
+      </linearGradient></defs>`;
+  }
+
+  /* ========= Heat Map (own tab) ========= */
+  function renderHeat(){
+    const grid=$('#heatGridHM'); if(!grid) return;
+    let max=0; sales.forEach(r=>r.forEach(v=>{ if(v>max) max=v; }));
+    grid.innerHTML='';
+    for(let d=0; d<7; d++){
+      for(let h=0; h<24; h++){
+        const v=(sales[d]||[])[h]||0;
+        const alpha = max ? (0.10 + 0.62*(v/max)) : 0.10;
+        const cell=document.createElement('div');
+        cell.className='heat-cell';
+        cell.title=`Day ${d}, ${h}:00 -- ${v}`;
+        cell.style.background=`rgba(110,168,254,${alpha})`;
+        grid.appendChild(cell);
+      }
+      const br=document.createElement('div'); br.style.height='4px'; grid.appendChild(br);
+    }
+  }
+
+  /* ========= History ========= */
+  function renderHistory(){
+    const list=loadArr(DELIVERED_KEY), box=$('#historyList'); if(!box) return;
+    if(!list.length){ box.textContent='No delivered orders'; return; }
+    box.innerHTML=list.map(o=>{
+      const items=o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
+      const when=new Date(o.when).toLocaleString();
+      return `<div style="padding:8px;border-bottom:1px solid #2a2a30">
+        <div style="font-weight:700">Delivered ${when}</div>
+        <div>${o.name} @ ${o.location}</div>
+        <div>${items}</div>
+        <div style="font-weight:700">Total ${fmt(o.total)}</div>
+      </div>`;
+    }).join('');
+  }
+  $('#historyClear')?.addEventListener('click', ()=>{ saveArr(DELIVERED_KEY,[]); renderHistory(); });
+
+  /* ========= Header buttons & overlays ========= */
+  $('#cartBtn').addEventListener('click', ()=>$('#cartOverlay').classList.add('show'));
+  $('#cartBack').addEventListener('click', ()=>$('#cartOverlay').classList.remove('show'));
+  $('#settingsBtn').addEventListener('click', ()=>{ $('#settingsOverlay').classList.add('show'); switchTab('general'); });
+  $('#settingsClose').addEventListener('click', ()=>$('#settingsOverlay').classList.remove('show'));
+  $('#checkoutClose').addEventListener('click', ()=>$('#checkoutOverlay').classList.remove('show'));
+  $('#cartCheckout').addEventListener('click', ()=>{
+    let count=0; for(const v of cart.values()) count+=v.qty;
+    if(count===0){ showToast('Your cart is empty'); return; }
+    $('#cartOverlay').classList.remove('show');
+    $('#checkoutOverlay').classList.add('show');
+  });
+
+  /* ========= Sticky cart bar controls already bound in chunk 3 ========= */
+
+  /* ========= Close overlays (Esc/backdrop) ========= */
+  document.addEventListener('keydown',(e)=>{
+    if(e.key!=='Escape') return;
+    const open=[...document.querySelectorAll('.overlay.show')];
+    open.at(-1)?.classList.remove('show');
+  });
+  ['productSheet','cartOverlay','checkoutOverlay','settingsOverlay','orderSheet'].forEach(id=>{
+    const ov=document.getElementById(id); if(!ov) return;
+    ov.addEventListener('click',(e)=>{ if(e.target===ov) ov.classList.remove('show'); });
+  });
+
+  /* ========= Keyboard a11y for buttons ========= */
+  $$('.btn,.add,.ghost,.primary,.tab,.subtab').forEach(el=>{
+    el.tabIndex=0;
+    el.addEventListener('keydown', e=>{
+      if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); }
+    });
+  });
+
+  /* ========= First paint / init ========= */
+  (function init(){
+    ensureAdminLoginVisible();
+    switchAdminSub('orders');           // default subtab
+    applyFilters();
+    syncFavStars();
+    renderOrders();
+    renderInventory();
+    renderHeat();                       // its own tab
+    renderHistory();
+    renderAnalytics();
+    updateCartBar();
+  })();
+  </script>
 </body>
 </html>
