@@ -317,127 +317,6 @@
       </div>
     </div>
 
-    <!-- Cart bottom-sheet -->
-    <div id="cartOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Cart">
-      <div class="sheet" role="document">
-        <div class="row-between">
-          <h3>Cart</h3>
-          <button class="ghost" id="cartBack" type="button">Back</button>
-        </div>
-        <div id="cartContent" class="sheet-body">Cart is empty</div>
-        <div class="row-between" style="margin-top:10px;">
-          <strong>Total</strong><strong id="cartTotal">$0.00</strong>
-        </div>
-        <div class="actions">
-          <button class="ghost" id="reorderLast" type="button">Re-order last</button>
-          <button class="primary" id="cartCheckout" type="button">Checkout</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Checkout bottom-sheet -->
-    <div id="checkoutOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Checkout">
-      <div class="sheet" role="document">
-        <div class="row-between">
-          <h3>Checkout</h3>
-          <button class="ghost" id="checkoutClose" type="button">Close</button>
-        </div>
-
-        <div class="sheet-body">
-          <!-- Profile -->
-          <div style="margin-top:6px;">Your name:</div>
-          <input id="checkoutName" class="field" style="width:100%;padding:10px;border-radius:10px">
-          <div style="margin-top:10px;">Where are you on campus?</div>
-          <input id="checkoutLocation" class="field" style="width:100%;padding:10px;border-radius:10px">
-
-          <!-- Promo -->
-          <div style="margin-top:12px;">Promo code</div>
-          <input id="checkoutPromo" class="field" style="width:100%;padding:10px;border-radius:10px">
-          <div id="promoStatus" style="margin-top:6px;color:#aaa;font-size:13px"></div>
-
-          <!-- Tip -->
-          <div style="margin-top:12px;">Tip (optional)</div>
-          <div id="tipGroup">
-            <button class="ghost tip-btn" data-tip="none" type="button">No tip</button>
-            <button class="ghost tip-btn" data-tip="amount:1" type="button">$1</button>
-            <button class="ghost tip-btn" data-tip="amount:2" type="button">$2</button>
-            <button class="ghost tip-btn" data-tip="percent:10" type="button">10%</button>
-          </div>
-
-          <!-- Breakdown -->
-          <div class="breakdown" style="margin-top:12px">
-            <div class="break-row"><div class="muted">Subtotal</div><div id="ckSub">$0.00</div></div>
-            <div class="break-row"><div class="muted">Discount</div><div id="ckDisc">-$0.00</div></div>
-            <div class="break-row"><div class="muted">Tip</div><div id="ckTip">$0.00</div></div>
-            <div class="break-row" style="font-weight:800"><div>Total</div><div id="ckTotal">$0.00</div></div>
-          </div>
-
-          <div id="checkoutError" style="display:none;color:#ff6b6b;margin-top:10px;">Please fill both fields.</div>
-        </div>
-
-        <div class="actions" style="margin-top:12px;">
-          <button class="primary" id="checkoutSubmit" type="button">Place Order</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Settings bottom-sheet -->
-    <div id="settingsOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Settings">
-      <div class="sheet" role="document">
-        <div class="row-between">
-          <h3>Settings</h3>
-          <button class="ghost" id="settingsClose" type="button">Close</button>
-        </div>
-
-        <div class="tabs" role="tablist" aria-label="Settings Tabs">
-          <button id
-              <!-- Product mini sheet -->
-    <div id="productSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Add item">
-      <div class="sheet" role="document">
-        <div class="row-between">
-          <h3 id="sheetTitle">Item</h3>
-          <button class="ghost" id="sheetClose" type="button">Close</button>
-        </div>
-        <div style="display:flex; gap:12px; align-items:center; margin-top:8px;">
-          <div style="width:88px;height:88px;border-radius:12px;overflow:hidden;border:1px solid #2a2a30;">
-            <img id="sheetImg" alt="" style="width:100%;height:100%;object-fit:cover">
-          </div>
-          <div style="flex:1">
-            <div id="sheetPrice" class="price" style="font-size:18px;"></div>
-            <div id="sheetStock" style="margin-top:6px;color:#c7c7cc;font-size:13px;">Stock: --</div>
-            <div id="sheetLowWarn" style="display:none;margin-top:6px;color:#ff6b6b;font-weight:600;font-size:13px;">Low stock</div>
-          </div>
-        </div>
-        <div class="row-between" style="margin-top:10px;">
-          <div class="qty">
-            <button id="qtyMinus" type="button">−</button>
-            <div id="qtyVal" aria-live="polite">1</div>
-            <button id="qtyPlus" type="button">+</button>
-          </div>
-          <button class="primary" id="sheetAdd" type="button">Add</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Order details sheet -->
-    <div id="orderSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Order details">
-      <div class="sheet" role="document">
-        <div class="row-between">
-          <h3>Order</h3>
-          <button class="ghost" id="orderClose" type="button">Close</button>
-        </div>
-        <div id="orderMeta" style="margin-top:6px;color:#c7c7cc;font-size:13px">–</div>
-        <div id="orderLines" class="admin-list" style="margin-top:8px">–</div>
-        <div class="row-between" style="margin-top:10px;">
-          <strong>Total</strong><strong id="orderTotal">$0.00</strong>
-        </div>
-        <div class="actions" style="margin-top:12px;">
-          <button class="ghost" id="orderCancel" type="button">Cancel</button>
-          <button class="primary" id="orderDelivered" type="button">Mark Delivered</button>
-        </div>
-      </div>
-    </div>
-
     <!-- Cart -->
     <div id="cartOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Cart">
       <div class="sheet" role="document">
@@ -618,7 +497,7 @@
       setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),250); }, ms);
     }
 
-    /* ========= Carousel / Promos ========= */
+    /* ========= Carousel / Promos (safe auto-advance) ========= */
     function buildPromos(){
       const snapper=$('#snapper'); if(!snapper) return;
       let data=[];
@@ -641,7 +520,7 @@
           ${p.cta?`<button class="ghost snap-cta" type="button">${p.cta}</button>`:''}</div>`;
         snapper.insertBefore(c, after);
         c.addEventListener('click', e=>{
-          if(e.target.closest('.snap-cta')) return; // allow button to work separately
+          if(e.target.closest('.snap-cta')) return;
           if(p.action==='scrollGrid') $('#grid')?.scrollIntoView({behavior:'smooth'});
           if(p.action==='filter') activateChip(p.value||'');
           if(p.action==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
@@ -653,13 +532,48 @@
           if(p.action==='scrollGrid') $('#grid')?.scrollIntoView({behavior:'smooth'});
         });
       });
-      // simple dots
-      const cards=$$('.snap-card'), dotsWrap=$('#snapDots');
+
+      // dots + safe auto-advance (no vertical page jump)
+      const cards = $$('.snap-card');
+      const dotsWrap = $('#snapDots');
       dotsWrap.innerHTML = cards.map(()=>'<div class="snap-dot"></div>').join('');
-      const dots=$$('.snap-dot');
+      const dots = $$('.snap-dot');
       function setDot(i){ dots.forEach((d,k)=>d.classList.toggle('active',k===i)); }
       setDot(0);
-      let idx=0; setInterval(()=>{ if(!cards.length) return; idx=(idx+1)%cards.length; setDot(idx); cards[idx].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'}); }, 5000);
+
+      let idx = 0;
+      let userInteracting = false;
+      let lastInteract = 0;
+      const INTERACT_COOLDOWN = 3500; // ms pause after user action
+      let inView = true;
+
+      function scrollToCard(i){
+        if (!cards[i]) return;
+        const targetLeft = cards[i].offsetLeft - snapper.firstElementChild.offsetLeft;
+        snapper.scrollTo({ left: targetLeft, behavior: 'smooth' });
+        setDot(i);
+      }
+
+      ['pointerdown','wheel','touchstart','mousedown','scroll'].forEach(ev=>{
+        snapper.addEventListener(ev, ()=>{
+          userInteracting = true;
+          lastInteract = Date.now();
+        }, {passive:true});
+      });
+
+      const obs = new IntersectionObserver((entries)=>{
+        inView = entries.some(e=>e.isIntersecting);
+      }, {root:null, threshold:0.2});
+      obs.observe(snapper);
+
+      setInterval(()=>{
+        const now = Date.now();
+        if(!cards.length) return;
+        if(!inView) return;
+        if(userInteracting && (now - lastInteract) < INTERACT_COOLDOWN) return;
+        idx = (idx + 1) % cards.length;
+        scrollToCard(idx);
+      }, 5000);
     }
 
     /* ========= Product Sheet ========= */
@@ -770,19 +684,33 @@
       $('#checkoutOverlay').classList.add('show');
     });
 
-    /* ========= Filters ========= */
+    /* ========= Search + Filters ========= */
+    function searchAndFilter(){
+      const q = ($('#search').value||'').toLowerCase();
+      let shown=0;
+      $$('.card').forEach(c=>{
+        const hitsName=c.dataset.name.toLowerCase().includes(q);
+        const visible = c.style.display !== 'none-filter' && hitsName;
+        c.style.display = visible ? '' : 'none';
+        if(visible) shown++;
+      });
+      // optional: could show a "no results" banner
+    }
     function activateChip(val){
       $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch.dataset.filter===val));
       $$('.card').forEach(c=>{
         const tags=(c.dataset.tags||'').toLowerCase();
         const show=!val||val===''||(val==='favorites'?favorites.has(c.dataset.name):tags.includes(val));
-        c.style.display=show?'':'none';
+        if(show) c.style.removeProperty('display');
+        else c.style.display='none-filter'; // special internal state
       });
+      searchAndFilter();
     }
     $('#chips')?.addEventListener('click', e=>{
       const chip=e.target.closest('.chip'); if(!chip) return;
       activateChip(chip.dataset.filter||'');
     });
+    $('#search')?.addEventListener('input', searchAndFilter);
 
     /* ========= Favorites ========= */
     function syncFavStars(){
@@ -796,6 +724,9 @@
       const card=fav.closest('.card'); const name=card.dataset.name;
       if(favorites.has(name)) favorites.delete(name); else favorites.add(name);
       saveFavs(); syncFavStars();
+      // If the favorites chip is active, hide removed ones immediately
+      const favChipActive = $('#chips .chip.active')?.dataset.filter === 'favorites';
+      if(favChipActive && !favorites.has(name)){ card.style.display='none-filter'; searchAndFilter(); }
     }, {passive:true});
 
     /* ========= Checkout ========= */
@@ -833,15 +764,14 @@
       cart.clear(); saveCart(); renderCart(); refreshBadge(); updateGreeting(); showToast('Order placed 🎉');
       $('#checkoutOverlay').classList.remove('show');
 
-      // IFTTT GET trigger (works in browser w/o CORS issues)
+      // IFTTT GET trigger (mirrors your working browser test)
       const summary = `${order.name} @ ${order.location} • ${fmt(order.total)}`;
       const lineItems = order.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('\n');
       const url = `${IFTTT_URL}?value1=${encodeURIComponent(summary)}&value2=${encodeURIComponent(lineItems)}&value3=`;
       try{ fetch(url, {method:'GET', mode:'no-cors'}); }catch{}
       renderOrders(); // refresh admin list if open
     });
-
-    /* ========= Orders ========= */
+        /* ========= Orders ========= */
     function renderOrders(){
       const list=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
       const box=$('#ordersList'); if(!box) return;
@@ -869,14 +799,14 @@
     $('#orderClose')?.addEventListener('click', ()=>$('#orderSheet').classList.remove('show'));
     $('#orderCancel')?.addEventListener('click', ()=>$('#orderSheet').classList.remove('show'));
     $('#orderDelivered')?.addEventListener('click', ()=>{
-      const open = $('#orderMeta').textContent||'';
+      // For demo: move first order to delivered history store
       const list=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
-      const idx=[...$('#ordersList')?.querySelectorAll('.order-item')||[]].findIndex(n=>n.classList.contains('selected'));
+      const idx=(parseInt($('#orderMeta')?.dataset?.idx||'-1',10));
       $('#orderSheet').classList.remove('show');
       renderOrders();
     });
 
-    /* ========= Analytics (basic) ========= */
+    /* ========= Analytics ========= */
     function renderAnalytics(){
       const all=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
       let rev=0, items=0; all.forEach(o=>{ rev+=o.total; o.lines.forEach(l=>items+=l.qty); });
@@ -943,7 +873,7 @@
     document.addEventListener('keydown', e=>{
       if(e.key==='Escape'){ document.querySelectorAll('.overlay.show').forEach(ov=>ov.classList.remove('show')); }
     });
-        /* ========= Admin Tabs ========= */
+        /* ========= Admin Tabs & Login ========= */
     function switchTab(which){
       const g=$('#tabGeneral'), a=$('#tabAdmin'),
             pg=$('#panelGeneral'), pa=$('#panelAdmin');
@@ -971,6 +901,16 @@
         const ok=$('#adminPassword').value===ADMIN_PASSWORD;
         if(ok){ localStorage.setItem(UNLOCK_KEY,'1'); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
         else { $('#adminError').style.display='block'; }
+      }
+      // subtab switching
+      const sub=e.target.closest('.subtab');
+      if(sub){
+        $$('.subtab').forEach(s=>s.classList.remove('active'));
+        sub.classList.add('active');
+        const id=sub.dataset.subtab;
+        ['orders','inventory','analytics','heat','history'].forEach(k=>{
+          $('#subtab-'+k).style.display = (k===id)?'block':'none';
+        });
       }
     }, {passive:true});
 
@@ -1001,10 +941,19 @@
     renderAnalytics();
     renderHeat();
     renderHistory();
+    activateChip(''); // default chip
 
+    // Hotfix: ensure order sheet above settings & core buttons are bound even if earlier errors occur
+    (function(){
+      const $=s=>document.querySelector(s);
+      $('#settingsOverlay')?.style.setProperty('z-index','10000');
+      $('#orderSheet')?.style.setProperty('z-index','10050');
+      $('#settingsBtn')?.addEventListener('click',()=>$('#settingsOverlay')?.classList.add('show'));
+      $('#settingsClose')?.addEventListener('click',()=>$('#settingsOverlay')?.classList.remove('show'));
+      $('#cartBtn')?.addEventListener('click',()=>$('#cartOverlay')?.classList.add('show'));
+      $('#cartBack')?.addEventListener('click',()=>$('#cartOverlay')?.classList.remove('show'));
+    })();
     </script>
   </div> <!-- /.app -->
 </body>
 </html>
-    
-          
