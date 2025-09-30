@@ -219,8 +219,6 @@
         <button class="add" aria-label="Add Trail Mix">+</button>
       </div>
 
-      <!-- Added products -->
-
       <!-- 4 -->
       <div class="card" role="listitem" data-name="Roasted Almonds" data-price="3.29" data-img="assets/product-funyuns.jpg" data-tags="vegan,gluten-free,protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
@@ -230,13 +228,19 @@
         <button class="add" aria-label="Add Roasted Almonds">+</button>
       </div>
 
-      <!-- 5 -->
-      <div class="card" role="listitem" data-name="Greek Yogurt Cup" data-price="2.49" data-img="assets/product-chesters.jpg" data-tags="protein,gluten-free">
+      <!-- 5 (UPDATED to Doritos @ $2.00) -->
+      <div class="card" role="listitem"
+           data-name="Doritos Flamin’ Hot Nacho"
+           data-price="2.00"
+           data-img="assets/product-doritos.jpg"
+           data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb"><img src="assets/product-chesters.jpg" alt="Greek Yogurt Cup" loading="lazy"></div>
-        <div class="title">Greek Yogurt Cup</div>
-        <div class="price">$2.49</div>
-        <button class="add" aria-label="Add Greek Yogurt Cup">+</button>
+        <div class="thumb">
+          <img src="assets/product-doritos.jpg" alt="Doritos Flamin’ Hot Nacho" loading="lazy">
+        </div>
+        <div class="title">Doritos Flamin’ Hot Nacho</div>
+        <div class="price">$2.00</div>
+        <button class="add" aria-label="Add Doritos Flamin’ Hot Nacho">+</button>
       </div>
 
       <!-- 6 -->
@@ -314,7 +318,7 @@
     </div>
   </div>
 
-  <!-- Order details sheet (kept above settings via CSS z-index) -->
+  <!-- Order details sheet -->
   <div id="orderSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Order details">
     <div class="sheet" role="document">
       <div class="row-between">
@@ -360,13 +364,11 @@
       </div>
 
       <div class="sheet-body">
-        <!-- Profile -->
         <div style="margin-top:6px;">Your name:</div>
         <input id="checkoutName" class="field" style="width:100%;padding:10px;border-radius:10px">
         <div style="margin-top:10px;">Where are you on campus?</div>
         <input id="checkoutLocation" class="field" style="width:100%;padding:10px;border-radius:10px">
 
-        <!-- Promo -->
         <div style="margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px">
           <div class="field" style="flex:1;min-width:0;padding:6px">
             <input id="checkoutPromo" placeholder="Promo code" style="flex:1;min-width:0;padding:10px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec">
@@ -375,7 +377,6 @@
           <div id="promoStatus" class="badge-pill" style="display:none"></div>
         </div>
 
-        <!-- Tip -->
         <div style="margin-top:12px;">Tip (optional)</div>
         <div class="tip-group" id="tipGroup">
           <button class="ghost tip-btn" data-tip="none" type="button">No tip</button>
@@ -383,12 +384,11 @@
           <button class="ghost tip-btn" data-tip="amount:2" type="button">$2</button>
           <button class="ghost tip-btn" data-tip="percent:10" type="button">10%</button>
           <div class="field" style="margin-left:auto">
-            <input id="tipCustomAmount" type="number" min="0" step="0.5" placeholder="Custom $" style="width:110px;padding:8px;border-radius:10px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec">
+            <input id="tipCustomAmount" type="number" min="0" step="0.5" placeholder="Custom $" style="width:110px;padding:8px;border:1px solid #2a2a30;background:#101014;color:#e9e9ec;border-radius:10px">
             <button class="ghost" id="tipApplyCustom" type="button" style="margin-left:8px">Set</button>
           </div>
         </div>
 
-        <!-- Breakdown -->
         <div class="breakdown" style="margin-top:12px">
           <div class="break-row"><div class="muted">Subtotal</div><div id="ckSub">$0.00</div></div>
           <div class="break-row"><div class="muted">Discount</div><div id="ckDisc">-$0.00</div></div>
@@ -439,7 +439,7 @@
             </div>
           </div>
 
-          <!-- Content (locked until unlock) -->
+          <!-- Content -->
           <div id="adminContent" style="display:none">
             <div class="admin-subtabs">
               <button class="subtab active" data-subtab="orders" type="button">Orders</button>
@@ -521,7 +521,7 @@
 
   <!-- Toast host -->
   <div id="toastHost"></div>
-    <script>
+  <script>
   /* ========= App boot & safe guards ========= */
   const APP_SCHEMA_VERSION = 3, SCHEMA_KEY = 'fitsnacks.schema';
   try{
@@ -541,21 +541,15 @@
   const CART_KEY        = 'fitsnacks.cart.v1';
   const ORDERS_KEY      = 'fitsnacks.orders';
   const UNLOCK_KEY      = 'fitsnacks.admin.unlocked';
-  const STOCK_KEY       = 'fitsnacks.stock.qty';
-  const LOW_KEY         = 'fitsnacks.stock.low';
-  const SALES_KEY       = 'fitsnacks.sales.buckets';
-  const DELIVERED_KEY   = 'fitsnacks.orders.delivered';
   const FAVORITES_KEY   = 'fitsnacks.favorites';
-  const ANALYTICS_KEY   = 'fitsnacks.analytics.products';
-  const PROFILE_NAME_KEY= 'fitsnacks.profile.name';
-  const PROFILE_LOC_KEY = 'fitsnacks.profile.location';
   const PROMOS_KEY      = 'fitsnacks.promos';
 
-  /* ========= IFTTT webhook config ========= */
+  /* ========= IFTTT ========= */
   const IFTTT_EVENT = 'Fitsnack_order';
   const IFTTT_KEY   = 'fI-MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA';
   const IFTTT_URL   = `https://maker.ifttt.com/trigger/${IFTTT_EVENT}/with/key/${IFTTT_KEY}`;
 
+  const ADMIN_PASSWORD='8TSB077';
   const fmt = n => '$'+n.toFixed(2);
 
   /* ========= Load/save helpers ========= */
@@ -563,23 +557,59 @@
   function saveCart(m){ try{ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(m.entries())));}catch{} }
   function loadArr(k){ try{ return JSON.parse(localStorage.getItem(k)||'[]'); }catch{ return []; } }
   function saveArr(k,a){ localStorage.setItem(k, JSON.stringify(a||[])); }
-  function loadObj(k){ try{ return JSON.parse(localStorage.getItem(k)||'{}'); }catch{ return {}; } }
-  function saveObj(k,o){ localStorage.setItem(k, JSON.stringify(o||{})); }
 
-  /* ========= App state ========= */
-  let cart         = loadCart();
-  let stockQty     = loadObj(STOCK_KEY);
-  let stockLow     = loadObj(LOW_KEY);
-  let sales        = loadArr(SALES_KEY); if(!sales.length){ sales=Array.from({length:7},()=>Array(24).fill(0)); saveArr(SALES_KEY,sales); }
-  let favorites    = new Set(loadArr(FAVORITES_KEY));
-  let prodAnalytics= loadObj(ANALYTICS_KEY);
+  /* ========= State ========= */
+  let cart      = loadCart();
+  let favorites = new Set(loadArr(FAVORITES_KEY));
 
-  function updateGreeting(){
-    const g=$('#greet');
-    const name=localStorage.getItem(PROFILE_NAME_KEY)||'';
-    g.textContent = name ? `Hi, ${name} 👋` : 'Welcome 👋';
+  function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY)==='1'; }
+  function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v?'1':'0'); }
+  setUnlocked(false);
+
+  /* ========= Promos ========= */
+  if(!localStorage.getItem(PROMOS_KEY)){
+    saveArr(PROMOS_KEY, [
+      {img:'assets/carousel-1.jpg', title:'Fuel your study grind', cta:'Shop snacks', action:'scrollGrid'},
+      {img:'assets/carousel-2.jpg', title:'Protein picks', cta:'Filter: protein', action:'filter', value:'protein'},
+      {img:'assets/carousel-3.jpg', title:'Need help?', cta:'Open settings', action:'openSettings'}
+    ]);
   }
 
+  function buildPromos(){
+    const data=loadArr(PROMOS_KEY), snapper=$('#snapper'); if(!snapper) return;
+    snapper.querySelectorAll('.snap-card').forEach(n=>n.remove());
+    const after=snapper.lastElementChild;
+    data.forEach(p=>{
+      const c=document.createElement('div');
+      c.className='snap-card';
+      c.innerHTML=`<img class="banner" src="${p.img}" alt="${p.title||'promo'}">
+                   <div class="snap-meta"><div class="snap-title">${p.title||''}</div>
+                   ${p.cta?`<button class="ghost snap-cta" type="button">${p.cta}</button>`:''}</div>`;
+      snapper.insertBefore(c, after);
+      if(p.action){
+        c.addEventListener('click',e=>{
+          if(e.target.closest('.snap-cta')) return;
+          promoAction(p);
+        },{passive:true});
+        c.querySelector('.snap-cta')?.addEventListener('click',e=>{
+          e.stopPropagation(); promoAction(p);
+        },{passive:true});
+      }
+    });
+    const cards=$$('.snap-card'), dotsWrap=$('#snapDots');
+    dotsWrap.innerHTML = cards.map(()=>'<div class="snap-dot"></div>').join('');
+    const dots=$$('.snap-dot');
+    function setDot(i){ dots.forEach((d,k)=>d.classList.toggle('active',k===i)); }
+    setDot(0);
+    let idx=0; setInterval(()=>{ if(!cards.length) return; idx=(idx+1)%cards.length; setDot(idx); cards[idx].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'}); }, 5000);
+  }
+  function promoAction(p){
+    if(p.action==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
+    if(p.action==='filter'){ activateChip(p.value||''); }
+    if(p.action==='scrollGrid'){ document.getElementById('grid')?.scrollIntoView({behavior:'smooth',block:'start'}); }
+  }
+
+  /* ========= Toast ========= */
   function showToast(msg, ms=1800){
     const host=$('#toastHost'); const el=document.createElement('div');
     el.className='toast'; el.textContent=msg; host.appendChild(el);
@@ -606,18 +636,17 @@
           <button data-act="+" data-name="${name}" class="ghost" type="button" style="padding:4px 8px">+</button>
           <div style="font-weight:700;margin-left:8px">${name}</div>
         </div>
-        <div style="display:flex;gap:6px;align-items:center">
-          <div style="font-weight:700">${fmt(line)}</div>
-          <button data-remove="${name}" class="ghost" type="button" style="padding:2px 6px;font-size:12px">x</button>
-        </div>
+        <div style="font-weight:700">${fmt(line)}</div>
       </div>`;
     }
     $('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
     $('#cartTotal').textContent = fmt(total);
-    saveCart(cart); refreshBadge(); updateCartBar();
+    saveCart(cart);
+    refreshBadge();
   }
 
-  document.addEventListener('click',(e)=>{
+  // +/- in cart
+  document.addEventListener('click', (e)=>{
     const b=e.target.closest('button[data-act][data-name]'); if(!b) return;
     const name=b.getAttribute('data-name'); const act=b.getAttribute('data-act');
     const entry=cart.get(name); if(!entry) return;
@@ -625,70 +654,6 @@
     if(entry.qty===0) cart.delete(name);
     renderCart();
   });
-  document.addEventListener('click',(e)=>{
-    if(e.target.closest('[data-remove]')){
-      const name=e.target.getAttribute('data-remove');
-      if(cart.has(name)){ cart.delete(name); renderCart(); }
-    }
-  });
-
-  /* ========= Promos / Carousel ========= */
-  if(!localStorage.getItem(PROMOS_KEY)){
-    saveArr(PROMOS_KEY, [
-      {img:'assets/carousel-1.jpg', title:'Fuel your study grind', cta:'Shop snacks', action:'scrollGrid'},
-      {img:'assets/carousel-2.jpg', title:'Protein picks', cta:'Filter: protein', action:'filter', value:'protein'},
-      {img:'assets/carousel-3.jpg', title:'Need help?', cta:'Open settings', action:'openSettings'}
-    ]);
-  }
-
-  function buildPromos(){
-    const data=loadArr(PROMOS_KEY), snapper=$('#snapper'); if(!snapper) return;
-    snapper.querySelectorAll('.snap-card').forEach(n=>n.remove());
-    const after=snapper.lastElementChild;
-    data.forEach(p=>{
-      const c=document.createElement('div');
-      c.className='snap-card';
-      c.innerHTML=`<img class="banner" src="${p.img}" alt="${p.title||'promo'}">
-        <div class="snap-meta"><div class="snap-title">${p.title||''}</div>
-        ${p.cta?`<button class="ghost snap-cta" type="button">${p.cta}</button>`:''}</div>`;
-      snapper.insertBefore(c, after);
-      if(p.action){
-        c.addEventListener('click',e=>{
-          if(e.target.closest('.snap-cta')) return; promoAction(p);
-        },{passive:true});
-        c.querySelector('.snap-cta')?.addEventListener('click',e=>{
-          e.stopPropagation(); promoAction(p);
-        },{passive:true});
-      }
-    });
-    // dots
-    const cards=$$('.snap-card'), dotsWrap=$('#snapDots');
-    dotsWrap.innerHTML = cards.map(()=>'<div class="snap-dot"></div>').join('');
-    const dots=$$('.snap-dot');
-    function setDot(i){ dots.forEach((d,k)=>d.classList.toggle('active',k===i)); }
-    setDot(0);
-    let idx=0; setInterval(()=>{ if(!cards.length) return; idx=(idx+1)%cards.length; setDot(idx); cards[idx].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'}); }, 5000);
-  }
-
-  function promoAction(p){
-    if(p.action==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
-    if(p.action==='filter'){ activateChip(p.value||''); }
-    if(p.action==='scrollGrid'){ document.getElementById('grid')?.scrollIntoView({behavior:'smooth',block:'start'}); }
-  }
-
-  /* ========= Sticky cart bar ========= */
-  function updateCartBar(){
-    const bar=$('#cartBar'); if(!bar) return;
-    let total=0,count=0; for(const[,info] of cart){ total+=info.price*info.qty; count+=info.qty; }
-    if(count>0){ $('#cartBarTotal').textContent=fmt(total); bar.classList.add('show'); }
-    else bar.classList.remove('show');
-  }
-
-  /* ========= Init partial ========= */
-  buildPromos();
-  renderCart();
-  refreshBadge();
-  updateGreeting();
     /* ========= Search + Chips + Favorites ========= */
   (function ensureNoResultsBanner(){
     if(document.getElementById('noResultsBanner')) return;
@@ -809,11 +774,11 @@
     if(!name||!loc){ $('#checkoutError').style.display='block'; return; }
     const order=addOrderFromCart(name,loc,$('#checkoutNotes')?.value||'');
 
-    cart.clear(); renderCart(); updateGreeting(); showToast('Order placed 🎉');
+    cart.clear(); renderCart(); showToast('Order placed 🎉');
     $('#checkoutOverlay').classList.remove('show');
 
     try{
-      // Simple trigger + details (GET beacon)
+      // Same style as tested: GET with query params
       new Image().src = IFTTT_URL;
       const qs=new URLSearchParams({
         value1:`${order.name} @ ${order.location} • Total ${fmt(order.total)}`,
@@ -834,7 +799,7 @@
     $('#adminContent').style.display=logged?'block':'none';
     $('#adminStateVal').textContent = logged?'unlocked':'locked';
     if(logged){
-      renderOrders(); renderInventory(); renderHeat(); renderHistory(); renderAnalytics();
+      renderOrders(); renderInventory(); renderAnalytics(); renderHeat(); renderHistory();
     }
   }
 
@@ -910,7 +875,7 @@
       </div>`).join('');
     $('#orderTotal').textContent=fmt(o.total);
 
-    // Make sure it stacks ABOVE settings
+    // Ensure it appears ABOVE Settings
     const os=$('#orderSheet'); document.body.appendChild(os);
     os.classList.add('show');
   }
@@ -928,7 +893,9 @@
     if(idx>=0 && idx<active.length){
       const delivered=active.splice(idx,1)[0];
       saveArr(ORDERS_KEY, active);
-      const hist=loadArr(DELIVERED_KEY); hist.unshift(delivered); saveArr(DELIVERED_KEY, hist);
+      const hist=loadArr('fitsnacks.orders.delivered'); // keep history if you later want it
+      hist.unshift(delivered);
+      saveArr('fitsnacks.orders.delivered', hist);
       renderOrders(); renderHistory();
     }
     $('#orderSheet').classList.remove('show'); currentOrderIndex=null;
@@ -944,32 +911,19 @@
     const wrap=$('#inventoryList'); if(!wrap) return;
     const products=getProducts(); if(!products.length){ wrap.textContent='No products'; return; }
     wrap.innerHTML=products.map(p=>{
-      const qty=stockQty[p.name]??''; const low=stockLow[p.name]??'';
       return `<div class="field" data-prod="${p.name}">
         <div style="flex:1;font-weight:600">${p.name}</div>
         <label style="font-size:12px;color:#c7c7cc">Stock</label>
-        <input type="number" min="0" value="${qty}" data-k="qty">
+        <input type="number" min="0" value="" data-k="qty" placeholder="--">
         <label style="font-size:12px;color:#c7c7cc">Low</label>
-        <input type="number" min="0" value="${low}" data-k="low">
+        <input type="number" min="0" value="" data-k="low" placeholder="--">
       </div>`;
     }).join('');
   }
-  document.addEventListener('input',(e)=>{
-    const row=e.target.closest('.field[data-prod]'); if(!row) return;
-    const name=row.getAttribute('data-prod');
-    if(e.target.dataset.k==='qty'){
-      if(e.target.value===''){ delete stockQty[name]; } else { stockQty[name]=+e.target.value; }
-      saveObj(STOCK_KEY, stockQty);
-    }
-    if(e.target.dataset.k==='low'){
-      if(e.target.value===''){ delete stockLow[name]; } else { stockLow[name]=+e.target.value; }
-      saveObj(LOW_KEY, stockLow);
-    }
-  });
 
   /* ========= Analytics (KPIs + sparkline + simple top list) ========= */
   function renderAnalytics(){
-    const orders=loadArr(ORDERS_KEY), delivered=loadArr(DELIVERED_KEY), all=orders.concat(delivered);
+    const all=loadArr(ORDERS_KEY);
     let rev=0,items=0; all.forEach(o=>{ rev+=o.total; o.lines.forEach(l=>items+=l.qty); });
     const cnt=all.length, aov=cnt?(rev/cnt):0;
     $('#kpiRevenue').textContent=fmt(rev);
@@ -1012,11 +966,16 @@
   /* ========= Heat Map (own tab) ========= */
   function renderHeat(){
     const grid=$('#heatGridHM'); if(!grid) return;
-    let max=0; sales.forEach(r=>r.forEach(v=>{ if(v>max) max=v; }));
+    // Fake counters based on orders time for now (7x24 buckets)
+    const buckets=Array.from({length:7},()=>Array(24).fill(0));
+    loadArr(ORDERS_KEY).forEach(o=>{
+      const d=new Date(o.when); buckets[d.getDay()][d.getHours()]++;
+    });
+    let max=0; buckets.forEach(r=>r.forEach(v=>{ if(v>max) max=v; }));
     grid.innerHTML='';
     for(let d=0; d<7; d++){
       for(let h=0; h<24; h++){
-        const v=(sales[d]||[])[h]||0;
+        const v=buckets[d][h];
         const alpha = max ? (0.10 + 0.62*(v/max)) : 0.10;
         const cell=document.createElement('div');
         cell.className='heat-cell';
@@ -1028,9 +987,9 @@
     }
   }
 
-  /* ========= History ========= */
+  /* ========= History (delivered list) ========= */
   function renderHistory(){
-    const list=loadArr(DELIVERED_KEY), box=$('#historyList'); if(!box) return;
+    const list=loadArr('fitsnacks.orders.delivered'), box=$('#historyList'); if(!box) return;
     if(!list.length){ box.textContent='No delivered orders'; return; }
     box.innerHTML=list.map(o=>{
       const items=o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
@@ -1043,7 +1002,7 @@
       </div>`;
     }).join('');
   }
-  $('#historyClear')?.addEventListener('click', ()=>{ saveArr(DELIVERED_KEY,[]); renderHistory(); });
+  $('#historyClear')?.addEventListener('click', ()=>{ saveArr('fitsnacks.orders.delivered',[]); renderHistory(); });
 
   /* ========= Header buttons & overlays ========= */
   $('#cartBtn').addEventListener('click', ()=>$('#cartOverlay').classList.add('show'));
@@ -1058,7 +1017,41 @@
     $('#checkoutOverlay').classList.add('show');
   });
 
-  /* ========= Sticky cart bar controls already bound in chunk 3 ========= */
+  // Re-order last button behavior
+  $('#reorderLast').addEventListener('click', ()=>{
+    const active = loadArr(ORDERS_KEY);
+    const hist   = loadArr('fitsnacks.orders.delivered');
+    const src = active[0] || hist[0];
+    if(!src){ showToast('No previous orders'); return; }
+    cart = new Map();
+    for(const line of src.lines){
+      cart.set(line.name, {price: line.line/line.qty, qty: line.qty});
+    }
+    saveCart(cart);
+    renderCart();
+    $('#cartOverlay').classList.add('show');
+  });
+
+  /* ========= Sticky cart bar (optional) ========= */
+  function updateCartBar(){
+    const bar=$('#cartBar'); if(!bar) return;
+    let total=0,count=0; for(const[,info] of cart){ total+=info.price*info.qty; count+=info.qty; }
+    if(count>0){ $('#cartBarTotal').textContent=fmt(total); bar.classList.add('show'); }
+    else bar.classList.remove('show');
+  }
+  $('#cartBarView').addEventListener('click', ()=>$('#cartOverlay').classList.add('show'));
+  $('#cartBarCheckout').addEventListener('click', ()=>{
+    let count=0; for(const v of cart.values()) count+=v.qty;
+    if(count===0){ showToast('Your cart is empty'); return; }
+    $('#checkoutOverlay').classList.add('show');
+  });
+
+  // Keep cart bar in sync
+  const _renderCart_orig = renderCart;
+  renderCart = function(){
+    _renderCart_orig();
+    updateCartBar();
+  };
 
   /* ========= Close overlays (Esc/backdrop) ========= */
   document.addEventListener('keydown',(e)=>{
@@ -1071,7 +1064,7 @@
     ov.addEventListener('click',(e)=>{ if(e.target===ov) ov.classList.remove('show'); });
   });
 
-  /* ========= Keyboard a11y for buttons ========= */
+  /* ========= a11y: make clickables keyboard-activatable ========= */
   $$('.btn,.add,.ghost,.primary,.tab,.subtab').forEach(el=>{
     el.tabIndex=0;
     el.addEventListener('keydown', e=>{
@@ -1079,19 +1072,23 @@
     });
   });
 
-  /* ========= First paint / init ========= */
+  /* ========= Greeting on load ========= */
+  function updateGreeting(){
+    const g=$('#greet');
+    const name=localStorage.getItem('fitsnacks.profile.name')||'';
+    g.textContent = name ? `Hi, ${name} 👋` : 'Welcome 👋';
+  }
+
+  /* ========= Init ========= */
   (function init(){
+    buildPromos();
+    renderCart();           // also triggers updateCartBar via wrapper
+    updateGreeting();
     ensureAdminLoginVisible();
-    switchAdminSub('orders');           // default subtab
-    applyFilters();
-    syncFavStars();
-    renderOrders();
-    renderInventory();
-    renderHeat();                       // its own tab
-    renderHistory();
-    renderAnalytics();
-    updateCartBar();
+    switchAdminSub('orders');   // default subtab
+    // set default chip to "all"
+    const firstChip = $('#chips .chip[data-filter=""]'); firstChip?.classList.add('active');
   })();
-  </script>
+</script>
 </body>
 </html>
