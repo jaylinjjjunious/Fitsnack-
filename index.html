@@ -18,17 +18,17 @@
       --card:rgba(20,20,24,0.6);
       --text:#e9e9ec;
       --muted:#aaa;
-      --accent:#6ea8fe;
-      --badge:#ff3b30;
-      --good:#3cd27f;
+      --accent:#6ea8fe;      /* blue-green accent */
+      --good:#3cd27f;        /* success green */
       --warn:#ffb020;
+      --badge:#ff3b30;
       --radius:18px;
       --blur:18px;
       --grid-gap:6px;
       --snap-gap:12px;
     }
     html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
-    .app{max-width:393px;min-height:100svh;margin:0 auto;padding:12px 12px 32px;box-sizing:border-box}
+    .app{max-width:393px;min-height:100svh;margin:0 auto;padding:12px 12px 64px;box-sizing:border-box}
 
     /* Glass + glow */
     .card,.sheet,.btn,.search,.chip,.tab,.ghost,.primary,.field{
@@ -39,9 +39,14 @@
       box-shadow:0 4px 24px rgba(0,255,0,0.08);
     }
 
-    /* Header (search never overlaps buttons) */
-    .row{position:relative;display:flex;align-items:center;gap:12px}
-    .search-wrap{flex:1 1 auto;min-width:0;position:relative}
+    /* Header (no overlap) */
+    .row{
+      display:grid;
+      grid-template-columns: 1fr auto; /* search | buttons */
+      align-items:center;
+      gap:12px;
+    }
+    .search-wrap{min-width:0; position:relative;}
     .search{width:100%;border-radius:999px;padding:12px 44px;color:var(--text);outline:none;border:1px solid #2a2a2e}
     .search::placeholder{color:#6c6c70}
     .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
@@ -84,11 +89,6 @@
     .fav{position:absolute;right:12px;top:12px;width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);cursor:pointer}
     .fav.active{background:rgba(255,215,0,.15);box-shadow:0 0 0 1px rgba(255,215,0,.35) inset}
 
-    /* Stock badges */
-    .badge-wrap{position:absolute;left:12px;top:12px;display:flex;flex-direction:column;gap:6px}
-    .stock-badge{padding:2px 8px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);font-size:12px}
-    .low-badge{background:rgba(255,0,0,.12);border-color:rgba(255,0,0,.35)}
-
     /* Overlays */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
     .overlay.show{display:flex}
@@ -107,7 +107,7 @@
     .ghost{border:1px solid #2a2a30;color:#e7e7eb;border-radius:12px;padding:10px 12px;background:#1b1b20}
     .actions{display:flex;gap:10px;margin-top:12px}
 
-    /* Admin */
+    /* Admin + analytics + inventory + history */
     .tabs{display:flex;gap:8px;margin:6px 0 12px}
     .tab{padding:8px 10px;border-radius:10px;cursor:pointer;border:1px solid #2a2a30;background:#18181d}
     .tab.active{background:#24242a}
@@ -123,21 +123,38 @@
     .kpi{padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.1)}
     .kpi .label{color:#c7c7cc;font-size:12px}
     .kpi .value{font-weight:800;font-size:18px;margin-top:4px}
+    .bar{height:8px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden}
+    .bar>i{display:block;height:100%;background:linear-gradient(90deg,#6ea8fe,#3cd27f)}
     .table{margin-top:8px;border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden}
     .rowh,.rowd{display:grid;grid-template-columns:1fr 70px 70px 70px;gap:8px;padding:8px}
     .rowh{background:rgba(255,255,255,.05);font-weight:700}
     .rowd{border-top:1px solid rgba(255,255,255,.06)}
 
-    /* Heat Map (own tab) */
-    #heatGridHM{display:grid;grid-template-columns:repeat(24,12px);gap:4px;margin-top:8px}
-    .heat-cell{width:12px;height:12px;border-radius:3px;background:rgba(110,168,254,.12);border:1px solid rgba(255,255,255,.06)}
+    /* Stock badges on cards */
+    .badge-wrap{position:absolute;left:10px;bottom:10px;display:flex;gap:6px;flex-wrap:wrap}
+    .stock-badge{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);padding:2px 6px;border-radius:999px;font-size:11px}
+    .low-badge{background:rgba(255,0,0,.15);border-color:rgba(255,0,0,.35)}
 
-    /* Toasts */
+    /* Heat Map grid cells (separate tab) */
+    #heatGridHM .heat-cell{width:12px;height:12px;display:inline-block;margin:1px;border-radius:3px}
+
+    /* Sticky cart bar */
+    #cartBar{
+      position:fixed;left:12px;right:12px;bottom:12px;
+      display:none;align-items:center;justify-content:space-between;
+      gap:10px;padding:10px 12px;border-radius:14px;z-index:1000;
+      backdrop-filter:blur(var(--blur));-webkit-backdrop-filter:blur(var(--blur));
+      background:rgba(20,20,24,0.7);border:1px solid rgba(255,255,255,.08);
+      box-shadow:0 6px 24px rgba(0,0,0,.25);
+    }
+    #cartBar.show{display:flex}
+
+    /* Toasts (already above) */
     #toastHost{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;z-index:11000}
     .toast{pointer-events:auto;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(24,24,32,.9);font-weight:600;opacity:0;transform:translateY(8px);transition:opacity .22s ease,transform .22s ease}
     .toast.show{opacity:1;transform:translateY(0)}
 
-    /* Stacking fix: orderSheet above settings */
+    /* Z-index fix: order sheet above settings always */
     #settingsOverlay{ z-index: 10000; }
     #orderSheet{ z-index: 10050; }
   </style>
@@ -182,6 +199,7 @@
 
     <!-- Products Grid -->
     <div id="grid" class="grid" role="list">
+      <!-- Example product cards; add more as needed -->
       <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50" data-img="assets/product-funyuns.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Potato Chips" loading="lazy"></div>
@@ -236,7 +254,7 @@
     </div>
   </div>
 
-  <!-- Order details sheet -->
+  <!-- Order details sheet (stacks above settings via CSS) -->
   <div id="orderSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Order details">
     <div class="sheet" role="document">
       <div class="row-between">
@@ -282,6 +300,7 @@
       </div>
 
       <div class="sheet-body">
+        <!-- Profile -->
         <div style="margin-top:6px;">Your name:</div>
         <input id="checkoutName" class="field" style="width:100%;padding:10px;border-radius:10px">
         <div style="margin-top:10px;">Where are you on campus?</div>
@@ -431,601 +450,507 @@
     </div>
   </div>
 
+  <!-- Sticky cart bar -->
+  <div id="cartBar" class="ghost">
+    <div id="cartBarTotal" style="font-weight:800">$0.00</div>
+    <div style="display:flex;gap:8px;margin-left:auto">
+      <button class="ghost" id="cartBarView" type="button" style="padding:6px 10px">View</button>
+      <button class="primary" id="cartBarCheckout" type="button" style="padding:6px 12px">Checkout</button>
+    </div>
+  </div>
+
   <!-- Toast host -->
   <div id="toastHost"></div>
-    <script>
-  /* ========= App boot ========= */
-  const APP_SCHEMA_VERSION = 3, SCHEMA_KEY = 'fitsnacks.schema';
-  try{
-    const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY)||'0')||0;
-    if(cur < APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
-  }catch{
-    localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
+  <script>
+/* ========= App boot ========= */
+const APP_SCHEMA_VERSION = 3, SCHEMA_KEY = 'fitsnacks.schema';
+try {
+  const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY) || '0') || 0;
+  if (cur < APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
+} catch {
+  localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
+}
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+}
+
+const $  = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+/* ========= Keys ========= */
+const CART_KEY='fitsnacks.cart.v1', ORDERS_KEY='fitsnacks.orders', UNLOCK_KEY='fitsnacks.admin.unlocked';
+const STOCK_KEY='fitsnacks.stock.qty', LOW_KEY='fitsnacks.stock.low', STOCK_SET_KEY='fitsnacks.stock.set';
+const SALES_KEY='fitsnacks.sales.buckets', DELIVERED_KEY='fitsnacks.orders.delivered';
+const FAVORITES_KEY='fitsnacks.favorites', PROMOS_KEY='fitsnacks.promos', ANALYTICS_KEY='fitsnacks.analytics.products';
+const PROFILE_NAME_KEY='fitsnacks.profile.name', PROFILE_LOC_KEY='fitsnacks.profile.location';
+
+/* ========= IFTTT ========= */
+const IFTTT_EVENT='Fitsnack_order';
+const IFTTT_KEY='fI-MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA'; // use your working key
+const IFTTT_URL=`https://maker.ifttt.com/trigger/${IFTTT_EVENT}/with/key/${IFTTT_KEY}`;
+
+/* ========= Helpers ========= */
+const fmt = n => '$'+n.toFixed(2);
+function loadCart(){ try{ return new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]')); }catch{ return new Map(); } }
+function saveCart(m){ try{ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(m.entries())));}catch{} }
+function loadObj(k){ try{ return JSON.parse(localStorage.getItem(k)||'{}'); }catch{ return {}; } }
+function saveObj(k,o){ localStorage.setItem(k, JSON.stringify(o||{})); }
+function loadArr(k){ try{ return JSON.parse(localStorage.getItem(k)||'[]'); }catch{ return []; } }
+function saveArr(k,a){ localStorage.setItem(k, JSON.stringify(a||[])); }
+
+/* ========= State ========= */
+let cart = loadCart();
+let stockQty = loadObj(STOCK_KEY);
+let stockLow = loadObj(LOW_KEY);
+let sales = loadArr(SALES_KEY).length ? loadArr(SALES_KEY) : Array.from({length:7},()=>Array(24).fill(0));
+let favorites = new Set(loadArr(FAVORITES_KEY));
+let prodAnalytics = loadObj(ANALYTICS_KEY);
+
+/* ========= Toast ========= */
+function showToast(msg, ms=1800){
+  const host=$('#toastHost'); if(!host) return;
+  const el=document.createElement('div');
+  el.className='toast'; el.textContent=msg;
+  host.appendChild(el);
+  requestAnimationFrame(()=>el.classList.add('show'));
+  setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),250); }, ms);
+}
+
+/* ========= Greeting ========= */
+function updateGreeting(){
+  const g=$('#greet');
+  const name=localStorage.getItem(PROFILE_NAME_KEY)||'';
+  g.textContent = name? `Hi, ${name} 👋` : 'Welcome 👋';
+}
+
+/* ========= Cart ========= */
+function refreshBadge(){
+  let n=0; for(const v of cart.values()) n+=v.qty;
+  const b=$('#cartBadge'); if(!b) return;
+  if(n>0){ b.textContent=String(n); b.style.display='inline-flex'; }
+  else { b.style.display='none'; }
+}
+function renderCart(){
+  let total=0, html='';
+  for(const [name,info] of cart){
+    const line=info.price*info.qty; total+=line;
+    html += `<div class="row-between" style="margin-top:6px">
+      <div style="display:flex;gap:10px;align-items:center">
+        <button data-act="-" data-name="${name}" class="ghost" type="button">−</button>
+        <div style="min-width:24px;text-align:center">${info.qty}</div>
+        <button data-act="+" data-name="${name}" class="ghost" type="button">+</button>
+        <div style="font-weight:700;margin-left:8px">${name}</div>
+      </div>
+      <div style="font-weight:700">${fmt(line)}</div>
+    </div>`;
   }
-  if('serviceWorker' in navigator){
-    window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js'));
+  $('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
+  $('#cartTotal').textContent = fmt(total);
+  saveCart(cart); refreshBadge(); updateCartBar();
+}
+document.addEventListener('click',(e)=>{
+  const b=e.target.closest('button[data-act][data-name]'); if(!b) return;
+  const name=b.getAttribute('data-name'); const act=b.getAttribute('data-act');
+  const entry=cart.get(name); if(!entry) return;
+  entry.qty = Math.max((act==='+')? entry.qty+1 : entry.qty-1, 0);
+  if(entry.qty===0) cart.delete(name);
+  renderCart();
+},{passive:true});
+
+/* ========= Sticky cart bar ========= */
+function updateCartBar(){
+  const bar = $('#cartBar'); if(!bar) return;
+  let total=0, count=0;
+  for(const [,info] of cart){ total+=info.price*info.qty; count+=info.qty; }
+  if(count>0){
+    $('#cartBarTotal').textContent = fmt(total);
+    bar.classList.add('show');
+  }else{
+    bar.classList.remove('show');
   }
+}
+$('#cartBarView').addEventListener('click',()=>$('#cartOverlay').classList.add('show'));
+$('#cartBarCheckout').addEventListener('click',()=>{
+  let count=0; for(const v of cart.values()) count+=v.qty;
+  if(count===0){ showToast('Your cart is empty'); return; }
+  $('#checkoutOverlay').classList.add('show');
+});
 
-  const $  = s => document.querySelector(s);
-  const $$ = s => Array.from(document.querySelectorAll(s));
-
-  /* ========= Keys ========= */
-  const CART_KEY='fitsnacks.cart.v1', ORDERS_KEY='fitsnacks.orders', UNLOCK_KEY='fitsnacks.admin.unlocked';
-  const STOCK_KEY='fitsnacks.stock.qty', LOW_KEY='fitsnacks.stock.low', STOCK_SET_KEY='fitsnacks.stock.set';
-  const SALES_KEY='fitsnacks.sales.buckets', DELIVERED_KEY='fitsnacks.orders.delivered';
-  const FAVORITES_KEY='fitsnacks.favorites', PROMOS_KEY='fitsnacks.promos', ANALYTICS_KEY='fitsnacks.analytics.products';
-  const PROFILE_NAME_KEY='fitsnacks.profile.name', PROFILE_LOC_KEY='fitsnacks.profile.location';
-
-  /* ========= IFTTT (GET beacon) ========= */
-  const IFTTT_EVENT='Fitsnack_order';
-  const IFTTT_KEY='fI-MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA';
-  const IFTTT_URL=`https://maker.ifttt.com/trigger/${IFTTT_EVENT}/with/key/${IFTTT_KEY}`;
-
-  const ADMIN_PASSWORD='8TSB077';
-  const fmt = n => '$'+n.toFixed(2);
-
-  /* ========= Storage helpers ========= */
-  function loadCart(){ try{ return new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]')); }catch{ return new Map(); } }
-  function saveCart(m){ try{ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(m.entries())));}catch{} }
-  function loadObj(k){ try{ return JSON.parse(localStorage.getItem(k)||'{}'); }catch{ return {}; } }
-  function saveObj(k,o){ localStorage.setItem(k, JSON.stringify(o||{})); }
-  function loadArr(k){ try{ return JSON.parse(localStorage.getItem(k)||'[]'); }catch{ return []; } }
-  function saveArr(k,a){ localStorage.setItem(k, JSON.stringify(a||[])); }
-  function loadOrders(){ try{ return JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]'); }catch{ return []; } }
-  function saveOrders(v){ localStorage.setItem(ORDERS_KEY, JSON.stringify(v||[])); }
-  function loadDelivered(){ try{ return JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]'); }catch{ return []; } }
-  function saveDelivered(v){ localStorage.setItem(DELIVERED_KEY, JSON.stringify(v||[])); }
-  function loadSales(){
-    try{
-      const raw=JSON.parse(localStorage.getItem(SALES_KEY)||'null');
-      if(raw && raw.length===7 && raw[0].length===24) return raw;
-    }catch{}
-    return Array.from({length:7},()=>Array(24).fill(0));
-  }
-  function saveSales(m){ localStorage.setItem(SALES_KEY, JSON.stringify(m)); }
-  function loadProfile(){ return {name:localStorage.getItem(PROFILE_NAME_KEY)||'', loc:localStorage.getItem(PROFILE_LOC_KEY)||''}; }
-  function saveProfile(n,l){ try{ localStorage.setItem(PROFILE_NAME_KEY,n||''); localStorage.setItem(PROFILE_LOC_KEY,l||''); }catch{} }
-
-  /* ========= State ========= */
-  let cart         = loadCart();
-  let stockQty     = loadObj(STOCK_KEY);
-  let stockLow     = loadObj(LOW_KEY);
-  let stockSet     = loadObj(STOCK_SET_KEY); if(!Object.keys(stockSet).length){ stockSet={}; saveObj(STOCK_SET_KEY,stockSet); }
-  let sales        = loadSales();
-  let favorites    = new Set(loadArr(FAVORITES_KEY));
-  let prodAnalytics= loadObj(ANALYTICS_KEY);
-
-  function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY)==='1'; }
-  function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v?'1':'0'); }
-  setUnlocked(false);
-
-  /* ========= Seed promos once ========= */
-  if(!localStorage.getItem(PROMOS_KEY)){
-    saveArr(PROMOS_KEY, [
-      {img:'assets/carousel-1.jpg', title:'Fuel your study grind', cta:'Shop snacks', action:'scrollGrid'},
-      {img:'assets/carousel-2.jpg', title:'Protein picks', cta:'Filter: protein', action:'filter', value:'protein'},
-      {img:'assets/carousel-3.jpg', title:'Need help?', cta:'Open settings', action:'openSettings'}
+/* ========= Promos ========= */
+function buildPromos(){
+  const data=loadArr(PROMOS_KEY); if(!data.length){
+    saveArr(PROMOS_KEY,[
+      {img:'assets/carousel-1.jpg',title:'Fuel your study grind'},
+      {img:'assets/carousel-2.jpg',title:'Protein picks'},
+      {img:'assets/carousel-3.jpg',title:'Need help?'}
     ]);
   }
+}
+buildPromos();
+renderCart(); refreshBadge(); updateGreeting();
+/* ========= Search + Chips + Favorites ========= */
+(function ensureNoResultsBanner(){
+  if(document.getElementById('noResultsBanner')) return;
+  const n=document.createElement('div');
+  n.id='noResultsBanner';
+  n.textContent='No results found';
+  n.style.cssText='display:none;color:#c7c7cc;margin:8px 4px;';
+  const grid=document.getElementById('grid');
+  grid?.parentNode?.insertBefore(n,grid);
+})();
 
-  /* ========= Utils ========= */
-  function haptic(ms=15){ try{ if(navigator.vibrate) navigator.vibrate(ms); }catch{} }
-  function showToast(msg, ms=1800){
-    const host=$('#toastHost'); const el=document.createElement('div');
-    el.className='toast'; el.textContent=msg; host.appendChild(el);
-    requestAnimationFrame(()=>el.classList.add('show'));
-    setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),250); }, ms);
-  }
-  function updateGreeting(){
-    const g=$('#greet'); const p=loadProfile();
-    if(g) g.textContent = p.name ? `Hi, ${p.name} 👋` : 'Welcome 👋';
-  }
+let activeFilter = '';
 
-  /* ========= Carousel ========= */
-  function buildPromos(){
-    const data=loadArr(PROMOS_KEY), snapper=$('#snapper'); if(!snapper) return;
-    snapper.querySelectorAll('.snap-card').forEach(n=>n.remove());
-    const after=snapper.lastElementChild;
-    data.forEach(p=>{
-      const c=document.createElement('div');
-      c.className='snap-card';
-      c.innerHTML=`<img class="banner" src="${p.img}" alt="${p.title||'promo'}">
-                   <div class="snap-meta"><div class="snap-title">${p.title||''}</div>
-                   ${p.cta?`<button class="ghost snap-cta" type="button">${p.cta}</button>`:''}</div>`;
-      snapper.insertBefore(c, after);
-      if(p.action){
-        c.addEventListener('click',e=>{
-          if(e.target.closest('.snap-cta')) return;
-          promoAction(p);
-        },{passive:true});
-        c.querySelector('.snap-cta')?.addEventListener('click',e=>{
-          e.stopPropagation(); promoAction(p);
-        },{passive:true});
-      }
-    });
-    const cards=$$('.snap-card'), dotsWrap=$('#snapDots');
-    dotsWrap.innerHTML = cards.map(()=>'<div class="snap-dot"></div>').join('');
-    const dots=$$('.snap-dot');
-    function setDot(i){ dots.forEach((d,k)=>d.classList.toggle('active',k===i)); }
-    setDot(0);
-    let idx=0; setInterval(()=>{ if(!cards.length) return; idx=(idx+1)%cards.length; setDot(idx); cards[idx].scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'}); }, 5000);
-  }
-  function promoAction(p){
-    if(p.action==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
-    if(p.action==='filter'){ activateChip(p.value||''); }
-    if(p.action==='scrollGrid'){ document.getElementById('grid')?.scrollIntoView({behavior:'smooth',block:'start'}); }
-  }
-
-  /* ========= Search + Chips + Favorites ========= */
-  (function ensureNoResultsBanner(){
-    if(document.getElementById('noResultsBanner')) return;
-    const n=document.createElement('div');
-    n.id='noResultsBanner';
-    n.textContent='No results found';
-    n.style.cssText='display:none;color:#c7c7cc;margin:8px 4px;';
-    const grid=document.getElementById('grid');
-    grid?.parentNode?.insertBefore(n,grid);
-  })();
-
-  function searchAndFilter(){
-    const q=($('#search').value||'').toLowerCase();
-    let shown=0;
-    $$('.card').forEach(c=>{
-      const hit=c.dataset.name.toLowerCase().includes(q) && c.style.display!=='none-filter';
-      c.style.display=hit?'':'none';
-      if(hit) shown++;
-    });
-    const b=$('#noResultsBanner'); if(b) b.style.display = shown?'none':'block';
-  }
-  $('#search').addEventListener('input', searchAndFilter);
-
-  let currentFilter='';
-  function activateChip(val){
-    currentFilter=val||'';
-    $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch.dataset.filter===currentFilter));
-    $$('.card').forEach(c=>{
-      const tags=(c.dataset.tags||'').toLowerCase();
-      const name=c.dataset.name;
-      const inFav=favorites.has(name);
-      let pass=true;
-      if(currentFilter){
-        if(currentFilter==='favorites') pass=inFav;
-        else pass=tags.includes(currentFilter);
-      }
-      if(pass) c.style.removeProperty('display');
-      else c.style.display='none-filter';
-    });
-    searchAndFilter();
-  }
-  $('#chips').addEventListener('click', e=>{
-    const chip=e.target.closest('.chip'); if(!chip) return;
-    activateChip(chip.dataset.filter||'');
-  }, {passive:true});
-  function syncFavStars(){
-    $$('.card').forEach(card=>{
-      const favBtn=card.querySelector('.fav');
-      if(favBtn) favBtn.classList.toggle('active', favorites.has(card.dataset.name));
-    });
-  }
-  document.addEventListener('click', e=>{
-    const fav=e.target.closest('.fav'); if(!fav) return;
-    e.stopPropagation();
-    const card=fav.closest('.card'); const name=card.dataset.name;
-    if(favorites.has(name)) favorites.delete(name); else favorites.add(name);
-    saveArr(FAVORITES_KEY, Array.from(favorites));
-    syncFavStars();
-    if(currentFilter==='favorites' && !favorites.has(name)){
-      card.style.display='none-filter'; searchAndFilter();
+function applyFilters(){
+  const q = ($('#search').value||'').trim().toLowerCase();
+  let shown = 0;
+  $$('.card').forEach(c=>{
+    const name=(c.dataset.name||'').toLowerCase();
+    const tags=(c.dataset.tags||'').toLowerCase();
+    const matchSearch = !q || name.includes(q);
+    let matchChip = true;
+    if(activeFilter){
+      if(activeFilter==='favorites'){ matchChip = favorites.has(c.dataset.name); }
+      else { matchChip = tags.includes(activeFilter); }
     }
-  }, {passive:true});
-  activateChip('');
-
-  /* ========= Product Sheet ========= */
-  let currentProduct=null;
-  function openProductSheet(card){
-    currentProduct = {
-      name: card.dataset.name,
-      price: parseFloat(card.dataset.price),
-      img: card.dataset.img
-    };
-    $('#sheetTitle').textContent = currentProduct.name;
-    $('#sheetImg').src = currentProduct.img||'';
-    $('#sheetImg').alt = currentProduct.name||'';
-    $('#sheetPrice').textContent = fmt(currentProduct.price);
-    $('#qtyVal').textContent = '1';
-    $('#sheetAdd').textContent = 'Add • ' + fmt(currentProduct.price);
-    $('#productSheet').classList.add('show');
-  }
-  function closeProductSheet(){ $('#productSheet').classList.remove('show'); }
+    const show = matchSearch && matchChip;
+    c.style.display=show?'':'none';
+    if(show) shown++;
+  });
+  $('#noResultsBanner').style.display = shown?'none':'block';
+}
+$('#search').addEventListener('input', applyFilters);
+$('#chips').addEventListener('click',(e)=>{
+  const chip=e.target.closest('.chip'); if(!chip) return;
+  activeFilter=chip.dataset.filter||'';
+  $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch===chip));
+  applyFilters();
+},{passive:true});
+function syncFavStars(){
   $$('.card').forEach(card=>{
-    card.addEventListener('click', e=>{
-      if(e.target.closest('.fav')||e.target.closest('.add')) return;
-      openProductSheet(card);
-    });
+    const favBtn=card.querySelector('.fav');
+    if(!favBtn) return;
+    favBtn.classList.toggle('active', favorites.has(card.dataset.name));
   });
-  $$('.card .add').forEach(btn=>{
-    const card=btn.closest('.card');
-    btn.addEventListener('click', e=>{
-      e.stopPropagation();
-      openProductSheet(card);
-    });
-  });
-  $('#sheetClose').addEventListener('click', closeProductSheet);
-  $('#qtyPlus').addEventListener('click', ()=>{
-    const n = Math.min(99, (parseInt($('#qtyVal').textContent)||1) + 1);
-    $('#qtyVal').textContent=n;
-    $('#sheetAdd').textContent = 'Add • ' + fmt(n*(currentProduct?.price||0));
-  });
-  $('#qtyMinus').addEventListener('click', ()=>{
-    const n = Math.max(1, (parseInt($('#qtyVal').textContent)||1) - 1);
-    $('#qtyVal').textContent=n;
-    $('#sheetAdd').textContent = 'Add • ' + fmt(n*(currentProduct?.price||0));
-  });
+}
+document.addEventListener('click',(e)=>{
+  const fav=e.target.closest('.fav'); if(!fav) return;
+  e.stopPropagation();
+  const card=fav.closest('.card'); if(!card) return;
+  const name=card.dataset.name;
+  if(favorites.has(name)) favorites.delete(name); else favorites.add(name);
+  saveArr(FAVORITES_KEY, Array.from(favorites));
+  syncFavStars(); applyFilters();
+},{passive:true});
 
-  /* ========= Cart ========= */
-  function refreshBadge(){
-    let n=0; for(const v of cart.values()) n+=v.qty;
-    const b=$('#cartBadge'); if(!b) return;
-    if(n>0){ b.textContent=String(n); b.style.display='inline-flex'; }
-    else { b.style.display='none'; }
+/* ========= Product Sheet ========= */
+let currentProduct=null;
+function openProductSheet(card){
+  currentProduct={name:card.dataset.name,price:+card.dataset.price,img:card.dataset.img};
+  $('#sheetTitle').textContent=currentProduct.name;
+  $('#sheetImg').src=currentProduct.img;
+  $('#sheetPrice').textContent=fmt(currentProduct.price);
+  $('#qtyVal').textContent='1';
+  $('#sheetAdd').textContent='Add • '+fmt(currentProduct.price);
+  $('#productSheet').classList.add('show');
+}
+function closeProductSheet(){ $('#productSheet').classList.remove('show'); }
+$$('.card').forEach(card=>{
+  card.addEventListener('click',e=>{
+    if(e.target.closest('.fav')||e.target.closest('.add')) return;
+    openProductSheet(card);
+  });
+});
+$$('.card .add').forEach(btn=>{
+  const card=btn.closest('.card');
+  btn.addEventListener('click',e=>{
+    e.stopPropagation(); openProductSheet(card);
+  });
+});
+$('#qtyPlus').addEventListener('click',()=>{
+  let n=+$('#qtyVal').textContent||1; n=Math.min(99,n+1);
+  $('#qtyVal').textContent=n;
+  $('#sheetAdd').textContent='Add • '+fmt(n*(currentProduct?.price||0));
+});
+$('#qtyMinus').addEventListener('click',()=>{
+  let n=+$('#qtyVal').textContent||1; n=Math.max(1,n-1);
+  $('#qtyVal').textContent=n;
+  $('#sheetAdd').textContent='Add • '+fmt(n*(currentProduct?.price||0));
+});
+$('#sheetClose').addEventListener('click',closeProductSheet);
+$('#sheetAdd').addEventListener('click',()=>{
+  const n=+$('#qtyVal').textContent||1;
+  if(!currentProduct) return;
+  const entry=cart.get(currentProduct.name)||{price:currentProduct.price,qty:0};
+  entry.qty+=n; cart.set(currentProduct.name,entry);
+  closeProductSheet(); renderCart(); showToast(`Added ${n} × ${currentProduct.name}`);
+  $('#cartOverlay').classList.add('show');
+});
+
+/* ========= Checkout + IFTTT ========= */
+function addOrderFromCart(name,loc,notes){
+  const lines=[]; let total=0;
+  for(const [n,info] of cart){ const line=info.price*info.qty; total+=line; lines.push({name:n,qty:info.qty,line}); }
+  const order={when:new Date().toISOString(),name,location:loc,notes,total,lines};
+  const list=loadArr(ORDERS_KEY); list.unshift(order); saveArr(ORDERS_KEY,list);
+  return order;
+}
+$('#checkoutSubmit').addEventListener('click',()=>{
+  const name=$('#checkoutName').value.trim();
+  const loc=$('#checkoutLocation').value.trim();
+  if(!name||!loc){ $('#checkoutError').style.display='block'; return; }
+  const order=addOrderFromCart(name,loc,$('#checkoutNotes')?.value||'');
+  cart.clear(); renderCart(); updateGreeting(); showToast('Order placed 🎉');
+  $('#checkoutOverlay').classList.remove('show');
+  try{
+    // Fire same call you tested in browser
+    new Image().src = IFTTT_URL;
+    // Also send details
+    const qs=new URLSearchParams({
+      value1:`${order.name} @ ${order.location} • Total ${fmt(order.total)}`,
+      value2:order.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('\n'),
+      value3:order.notes||''
+    }).toString();
+    new Image().src=`${IFTTT_URL}?${qs}`;
+  }catch(e){ console.error('IFTTT failed',e); }
+});
+/* ========= Admin Tabs ========= */
+function switchAdminSub(which){
+  $$('#adminContent .subtab').forEach(btn=>{
+    const on=btn.dataset.subtab===which;
+    btn.classList.toggle('active',on);
+    $('#subtab-'+btn.dataset.subtab).style.display=on?'block':'none';
+  });
+}
+document.addEventListener('click',(e)=>{
+  const st=e.target.closest('.subtab'); if(!st) return;
+  switchAdminSub(st.dataset.subtab);
+},{passive:true});
+
+/* ========= Orders list ========= */
+function renderOrders(){
+  const list=loadArr(ORDERS_KEY), box=$('#ordersList'); if(!box) return;
+  if(!list.length){ box.textContent='No orders yet'; return; }
+  box.innerHTML=list.map((o,i)=>{
+    const items=o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
+    const when=new Date(o.when).toLocaleString();
+    return `<div class="order-item" data-idx="${i}" style="padding:8px;border-bottom:1px solid #2a2a30;cursor:pointer">
+      <div style="font-weight:700">${when}</div>
+      <div>${o.name} @ ${o.location}</div>
+      <div>${items}</div>
+      <div style="font-weight:700">Total ${fmt(o.total)}</div>
+    </div>`;
+  }).join('');
+}
+document.addEventListener('click',(e)=>{
+  const row=e.target.closest('.order-item'); if(!row) return;
+  openOrderSheet(parseInt(row.getAttribute('data-idx'),10));
+},{passive:true});
+
+/* ========= Order sheet (always on top) ========= */
+let currentOrderIndex=null;
+function openOrderSheet(idx){
+  const orders=loadArr(ORDERS_KEY); const o=orders[idx]; if(!o) return;
+  currentOrderIndex=idx;
+  $('#orderMeta').textContent=`${new Date(o.when).toLocaleString()} • ${o.name} @ ${o.location}`;
+  $('#orderLines').innerHTML=o.lines.map(l=>`<div>${l.name} × ${l.qty} -- ${fmt(l.line)}</div>`).join('');
+  $('#orderTotal').textContent=fmt(o.total);
+  const os=$('#orderSheet');
+  document.body.appendChild(os); // force top stacking
+  os.classList.add('show');
+}
+function closeOrderSheet(){ $('#orderSheet').classList.remove('show'); currentOrderIndex=null; }
+$('#orderClose')?.addEventListener('click',closeOrderSheet);
+$('#orderCancel')?.addEventListener('click',closeOrderSheet);
+$('#orderDelivered')?.addEventListener('click',()=>{
+  const idx=currentOrderIndex; if(idx==null) return;
+  const orders=loadArr(ORDERS_KEY);
+  const delivered=orders.splice(idx,1)[0]; saveArr(ORDERS_KEY,orders);
+  const hist=loadArr(DELIVERED_KEY); hist.unshift(delivered); saveArr(DELIVERED_KEY,hist);
+  renderOrders(); renderHistory();
+  closeOrderSheet();
+});
+
+/* ========= Inventory ========= */
+function getProducts(){
+  return $$('.card').map(c=>({
+    name: c.dataset.name, price:+c.dataset.price, img:c.dataset.img, tags:(c.dataset.tags||'').toLowerCase()
+  }));
+}
+function renderInventory(){
+  const wrap=$('#inventoryList'); if(!wrap) return;
+  const products=getProducts(); if(!products.length){ wrap.textContent='No products'; return; }
+  wrap.innerHTML=products.map(p=>{
+    const qty=stockQty[p.name]||''; const low=stockLow[p.name]||'';
+    return `<div class="field" data-prod="${p.name}">
+      <div style="flex:1;font-weight:600">${p.name}</div>
+      <label style="font-size:12px;color:#c7c7cc">Stock</label>
+      <input type="number" min="0" value="${qty}" data-k="qty">
+      <label style="font-size:12px;color:#c7c7cc">Low</label>
+      <input type="number" min="0" value="${low}" data-k="low">
+    </div>`;
+  }).join('');
+}
+document.addEventListener('input',(e)=>{
+  const row=e.target.closest('.field[data-prod]'); if(!row) return;
+  const name=row.getAttribute('data-prod');
+  if(e.target.dataset.k==='qty'){
+    if(e.target.value===''){ delete stockQty[name]; } else { stockQty[name]=+e.target.value; }
+    saveObj(STOCK_KEY,stockQty);
   }
-  function renderCart(){
-    let total=0, html='';
-    for(const [name,info] of cart){
-      const line=info.price*info.qty; total+=line;
-      html += `<div class="row-between" style="margin-top:6px">
-        <div style="display:flex;gap:10px;align-items:center">
-          <button data-act="-" data-name="${name}" class="ghost" type="button" style="padding:4px 8px">−</button>
-          <div style="min-width:24px;text-align:center">${info.qty}</div>
-          <button data-act="+" data-name="${name}" class="ghost" type="button" style="padding:4px 8px">+</button>
-          <div style="font-weight:700;margin-left:8px">${name}</div>
-        </div>
-        <div style="font-weight:700">${fmt(line)}</div>
-      </div>`;
+  if(e.target.dataset.k==='low'){
+    if(e.target.value===''){ delete stockLow[name]; } else { stockLow[name]=+e.target.value; }
+    saveObj(LOW_KEY,stockLow);
+  }
+});
+
+/* ========= Analytics ========= */
+function renderAnalytics(){
+  const orders=loadArr(ORDERS_KEY), delivered=loadArr(DELIVERED_KEY), all=orders.concat(delivered);
+  let rev=0, items=0; all.forEach(o=>{ rev+=o.total; o.lines.forEach(l=>items+=l.qty); });
+  const cnt=all.length,aov=cnt?(rev/cnt):0;
+  $('#kpiRevenue').textContent=fmt(rev);
+  $('#kpiOrders').textContent=cnt;
+  $('#kpiAOV').textContent=fmt(aov);
+  $('#kpiItems').textContent=items;
+}
+
+/* ========= Heat Map ========= */
+function renderHeat(){
+  const grid=$('#heatGridHM'); if(!grid) return;
+  let max=0; sales.forEach(d=>d.forEach(v=>{if(v>max)max=v;}));
+  grid.innerHTML='';
+  for(let d=0; d<7; d++){
+    for(let h=0; h<24; h++){
+      const v=sales[d][h], alpha=max?(0.1+0.6*v/max):0.1;
+      const cell=document.createElement('div');
+      cell.className='heat-cell';
+      cell.style.background=`rgba(110,168,254,${alpha})`;
+      grid.appendChild(cell);
     }
-    $('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
-    $('#cartTotal').textContent = fmt(total);
-    saveCart(cart); refreshBadge();
+    grid.appendChild(document.createElement('br'));
   }
-  document.addEventListener('click', (e)=>{
-    const b=e.target.closest('button[data-act][data-name]'); if(!b) return;
-    const name=b.getAttribute('data-name'); const act=b.getAttribute('data-act');
-    const entry=cart.get(name); if(!entry) return;
-    entry.qty = Math.max( (act==='+') ? entry.qty+1 : entry.qty-1 , 0);
-    if(entry.qty===0) cart.delete(name);
-    renderCart();
-  });
+}
 
-  $('#sheetAdd').addEventListener('click', ()=>{
-    const n = Math.max(1, parseInt($('#qtyVal').textContent)||1);
-    if(!currentProduct) return;
-    const entry = cart.get(currentProduct.name) || {price: currentProduct.price, qty:0};
-    entry.qty += n; cart.set(currentProduct.name, entry);
-    closeProductSheet(); renderCart(); haptic(12);
-    $('#cartOverlay').classList.add('show');
-    showToast(`Added ${n} × ${currentProduct.name}`);
-  });
+/* ========= History ========= */
+function renderHistory(){
+  const list=loadArr(DELIVERED_KEY), box=$('#historyList'); if(!box) return;
+  if(!list.length){ box.textContent='No delivered orders'; return; }
+  box.innerHTML=list.map(o=>{
+    const items=o.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('<br>');
+    const when=new Date(o.when).toLocaleString();
+    return `<div style="padding:8px;border-bottom:1px solid #2a2a30">
+      <div style="font-weight:700">Delivered ${when}</div>
+      <div>${o.name} @ ${o.location}</div>
+      <div>${items}</div>
+      <div style="font-weight:700">Total ${fmt(o.total)}</div>
+    </div>`;
+  }).join('');
+}
+$('#historyClear')?.addEventListener('click',()=>{ saveArr(DELIVERED_KEY,[]); renderHistory(); });
+/* ========= Admin auth + settings tabs ========= */
+const ADMIN_PASSWORD = '8TSB077'; // keep your existing password
 
-  /* ========= Overlays open/close ========= */
-  $('#cartBtn').addEventListener('click', ()=>$('#cartOverlay').classList.add('show'));
-  $('#cartBack').addEventListener('click', ()=>$('#cartOverlay').classList.remove('show'));
-  $('#settingsBtn').addEventListener('click', ()=>openSettings(false));
-  $('#settingsClose').addEventListener('click', ()=>$('#settingsOverlay').classList.remove('show'));
-  function openSettings(defToAdmin=false){
-    $('#settingsOverlay').classList.add('show');
-    switchTab(defToAdmin?'admin':'general');
+function isUnlocked(){ return localStorage.getItem(UNLOCK_KEY)==='1'; }
+function setUnlocked(v){ localStorage.setItem(UNLOCK_KEY, v?'1':'0'); }
+
+function switchTab(which){
+  const g=$('#tabGeneral'), a=$('#tabAdmin'), pg=$('#panelGeneral'), pa=$('#panelAdmin');
+  if(which==='admin'){
+    g.classList.remove('active'); g.setAttribute('aria-selected','false');
+    a.classList.add('active');    a.setAttribute('aria-selected','true');
+    pg.style.display='none'; pa.style.display='block';
     ensureAdminLoginVisible();
+  }else{
+    a.classList.remove('active'); a.setAttribute('aria-selected','false');
+    g.classList.add('active');    g.setAttribute('aria-selected','true');
+    pa.style.display='none'; pg.style.display='block';
   }
-  document.addEventListener('keydown', e=>{
-    if(e.key!=='Escape') return;
-    ['productSheet','cartOverlay','checkoutOverlay','settingsOverlay','orderSheet']
-      .forEach(id=>document.getElementById(id)?.classList.remove('show'));
+}
+function ensureAdminLoginVisible(){
+  const logged=isUnlocked();
+  $('#adminLogin').style.display=logged?'none':'block';
+  $('#adminContent').style.display=logged?'block':'none';
+  $('#adminStateVal').textContent = logged ? 'unlocked' : 'locked';
+  if(logged){
+    renderOrders(); renderInventory(); renderHeat(); renderHistory(); renderAnalytics();
+  }
+}
+
+/* Header buttons */
+$('#cartBtn').addEventListener('click', ()=>$('#cartOverlay').classList.add('show'));
+$('#cartBack').addEventListener('click', ()=>$('#cartOverlay').classList.remove('show'));
+$('#settingsBtn').addEventListener('click', ()=>{ $('#settingsOverlay').classList.add('show'); switchTab('general'); });
+$('#settingsClose').addEventListener('click', ()=>$('#settingsOverlay').classList.remove('show'));
+$('#checkoutClose').addEventListener('click', ()=>$('#checkoutOverlay').classList.remove('show'));
+$('#cartCheckout').addEventListener('click', ()=>{
+  let count=0; for(const v of cart.values()) count+=v.qty;
+  if(count===0){ showToast('Your cart is empty'); return; }
+  $('#cartOverlay').classList.remove('show');
+  $('#checkoutOverlay').classList.add('show');
+});
+
+/* Settings tab switching */
+document.addEventListener('click',(e)=>{
+  if(e.target.closest('#tabGeneral')) switchTab('general');
+  if(e.target.closest('#tabAdmin'))   switchTab('admin');
+},{passive:true});
+
+/* Admin login / lock */
+document.addEventListener('click',(e)=>{
+  if(e.target.closest('#adminSubmit')){
+    const ok=$('#adminPassword').value===ADMIN_PASSWORD;
+    if(ok){ setUnlocked(true); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
+    else { $('#adminError').style.display='block'; }
+  }
+  if(e.target.closest('#adminLock')){
+    setUnlocked(false); ensureAdminLoginVisible();
+  }
+},{passive:true});
+
+/* Re-order last */
+function reorderLast(){
+  const active=loadArr(ORDERS_KEY);
+  const hist=loadArr(DELIVERED_KEY);
+  const src = active[0] || hist[0];
+  if(!src){ showToast('No previous orders'); return; }
+  cart = new Map();
+  for(const line of src.lines){ cart.set(line.name,{price:line.line/line.qty, qty:line.qty}); }
+  renderCart(); $('#cartOverlay').classList.add('show');
+}
+$('#reorderLast').addEventListener('click', reorderLast);
+
+/* Close overlays by ESC or clicking backdrop */
+document.addEventListener('keydown',(e)=>{
+  if(e.key!=='Escape') return;
+  const open=[...document.querySelectorAll('.overlay.show')];
+  open.at(-1)?.classList.remove('show');
+});
+['productSheet','cartOverlay','checkoutOverlay','settingsOverlay','orderSheet'].forEach(id=>{
+  const ov=document.getElementById(id); if(!ov) return;
+  ov.addEventListener('click',(e)=>{ if(e.target===ov) ov.classList.remove('show'); });
+});
+
+/* Keyboard a11y on buttons */
+$$('.btn,.add,.ghost,.primary,.tab,.subtab').forEach(el=>{
+  el.tabIndex=0;
+  el.addEventListener('keydown', e=>{
+    if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el.click(); }
   });
-  document.querySelectorAll('.overlay').forEach(ov=>{
-    ov.addEventListener('click', (e)=>{ if(e.target===ov) ov.classList.remove('show'); });
-  });
-    /* ========= Checkout ========= */
-  const PROMO_TABLE = {
-    'SAVE10': {type:'percent', value:0.10, label:'10% off sitewide'},
-    'BAR1':   {type:'amount',  value:1.00, label:'$1 off protein items', rule:'tag:protein'}
-  };
-  let activePromo=null;
-  let activeTip={kind:'none', amount:0};
-  function computeTotals(){
-    let subtotal=0; for(const[,info] of cart) subtotal+=info.price*info.qty;
-    const disc=activePromo?.discount||0;
-    const tip=activeTip.amount||0;
-    return {subtotal,disc,tip,total:Math.max(0, subtotal-disc)+tip};
-  }
-  function updateCheckoutBreakdown(){
-    const {subtotal,disc,tip,total}=computeTotals();
-    $('#ckSub').textContent=fmt(subtotal);
-    $('#ckDisc').textContent=`-${fmt(disc)}`;
-    $('#ckTip').textContent=fmt(tip);
-    $('#ckTotal').textContent=fmt(total);
-  }
-  $('#cartCheckout').addEventListener('click', ()=>{
-    const p=loadProfile();
-    $('#checkoutName').value=p.name||''; $('#checkoutLocation').value=p.loc||'';
-    $('#checkoutError').style.display='none';
-    $('#checkoutPromo').value=''; activePromo=null;
-    activeTip={kind:'none',amount:0}; $('#tipCustomAmount').value='';
-    updateCheckoutBreakdown();
-    $('#cartOverlay').classList.remove('show');
-    $('#checkoutOverlay').classList.add('show');
-  });
-  $('#checkoutClose').addEventListener('click', ()=>$('#checkoutOverlay').classList.remove('show'));
-  $('#checkoutApplyPromo').addEventListener('click', ()=>{
-    const code=$('#checkoutPromo').value.trim().toUpperCase();
-    const def=PROMO_TABLE[code]; const badge=$('#promoStatus');
-    if(!def){ activePromo=null; badge.textContent='Invalid code'; badge.style.display='inline-flex'; return updateCheckoutBreakdown(); }
-    let subtotal=0; for(const[,info] of cart) subtotal+=info.price*info.qty;
-    let discount=def.type==='percent'? subtotal*def.value : Math.min(def.value, subtotal);
-    activePromo={code,discount}; badge.textContent=`${code} • -${fmt(discount)}`; badge.style.display='inline-flex';
-    updateCheckoutBreakdown();
-  });
-  $('#tipGroup').addEventListener('click', e=>{
-    const btn=e.target.closest('.tip-btn'); if(!btn) return;
-    $$('#tipGroup .tip-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const spec=btn.getAttribute('data-tip'); if(!spec){activeTip={kind:'none',amount:0}; return;}
-    const [k,v]=spec.split(':'); const {subtotal,disc}=computeTotals();
-    if(k==='percent'){ const base=Math.max(0, subtotal-disc); activeTip={kind:'percent',amount:base*(+v/100)}; }
-    if(k==='amount'){ activeTip={kind:'amount',amount:+v}; }
-    updateCheckoutBreakdown();
-  });
-  $('#tipApplyCustom').addEventListener('click', ()=>{
-    const v=+($('#tipCustomAmount').value||0); activeTip={kind:'amount',amount:v}; updateCheckoutBreakdown();
-  });
+});
 
-  /* ========= Orders & IFTTT ========= */
-  function addOrderFromCart(name,loc,notes,discount,tip){
-    const lines=[]; let total=0;
-    for(const [n,info] of cart){ const line=info.price*info.qty; total+=line; lines.push({name:n,price:info.price,qty:info.qty,line}); }
-    total=Math.max(0,total-(discount||0))+(tip||0);
-    const order={when:new Date().toISOString(),name,location:loc,notes:notes||'',lines,total};
-    const list=loadOrders(); list.unshift(order); saveOrders(list);
-    // sales heat bucket
-    const d=new Date(), dow=d.getDay(), hr=d.getHours();
-    sales[dow][hr]=(sales[dow][hr]||0)+1; saveSales(sales);
-    return order;
-  }
-  $('#checkoutSubmit').addEventListener('click', ()=>{
-    const name=$('#checkoutName').value.trim();
-    const loc=$('#checkoutLocation').value.trim();
-    if(!name||!loc){ $('#checkoutError').style.display='block'; return; }
-    saveProfile(name,loc);
-    const {disc,tip}=computeTotals();
-    const order=addOrderFromCart(name,loc,$('#checkoutNotes')?.value||'',disc,tip);
-    cart.clear(); renderCart();
-    $('#checkoutOverlay').classList.remove('show');
-    updateGreeting(); showToast('Order placed 🎉');
-
-    // IFTTT via GET beacon (same approach as your manual test)
-    const summary=`${order.name} @ ${order.location} • Total ${fmt(order.total)}`;
-    const items=order.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join(', ');
-    const notes=order.notes||'';
-    const u=`${IFTTT_URL}?value1=${encodeURIComponent(summary)}&value2=${encodeURIComponent(items)}&value3=${encodeURIComponent(notes)}`;
-    const img=new Image(); img.src=u;
-  });
-
-  /* ========= Admin + subtabs ========= */
-  function switchTab(which){
-    const g=$('#tabGeneral'), a=$('#tabAdmin'), pg=$('#panelGeneral'), pa=$('#panelAdmin');
-    if(which==='admin'){ g.classList.remove('active'); a.classList.add('active'); pg.style.display='none'; pa.style.display='block'; ensureAdminLoginVisible();}
-    else { a.classList.remove('active'); g.classList.add('active'); pa.style.display='none'; pg.style.display='block'; }
-  }
-  function ensureAdminLoginVisible(){
-    const logged=isUnlocked();
-    $('#adminLogin').style.display=logged?'none':'block';
-    $('#adminContent').style.display=logged?'block':'none';
-    if(logged){ renderOrders(); renderHistory(); renderInventory(); renderAnalytics(); renderHeat(); }
-  }
-  document.addEventListener('click', e=>{
-    if(e.target.closest('#tabGeneral')) switchTab('general');
-    if(e.target.closest('#tabAdmin'))   switchTab('admin');
-    if(e.target.closest('#adminSubmit')){
-      const ok=$('#adminPassword').value===ADMIN_PASSWORD;
-      if(ok){ setUnlocked(true); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
-      else { $('#adminError').style.display='block'; }
-    }
-    if(e.target.closest('#adminLock')){ setUnlocked(false); ensureAdminLoginVisible(); }
-    if(e.target.closest('.subtab')){
-      const btn=e.target.closest('.subtab');
-      const sub=btn.getAttribute('data-subtab');
-      $$('.subtab').forEach(s=>s.classList.toggle('active',s===btn));
-      ['orders','inventory','analytics','heat','history'].forEach(id=>{
-        const el=document.getElementById('subtab-'+id);
-        if(el) el.style.display=(id===sub)?'block':'none';
-      });
-    }
-    if(e.target.closest('#historyClear')){ saveDelivered([]); renderHistory(); }
-  }, {passive:true});
-
-  /* ========= Orders list (click/keyboard) ========= */
-  function renderOrders(){
-    const list=loadOrders(), box=$('#ordersList'); if(!box) return;
-    if(!list.length){ box.textContent='No orders yet'; return; }
-    box.innerHTML=list.map((o,i)=>{
-      const when=new Date(o.when).toLocaleString();
-      return `<div class="order-item" data-idx="${i}" role="button" tabindex="0"
-                style="padding:8px;border-bottom:1px solid #2a2a30;cursor:pointer;outline:none">
-                <div style="font-weight:700">${when}</div>
-                <div>${o.name} @ ${o.location}</div>
-                <div style="font-weight:700">Total ${fmt(o.total)}</div>
-              </div>`;
-    }).join('');
-  }
-  document.addEventListener('click', (e)=>{
-    const row=e.target.closest('.order-item'); if(!row) return;
-    const idx=parseInt(row.getAttribute('data-idx'),10);
-    openOrderSheet(idx);
-  }, {passive:true});
-  document.addEventListener('keydown', (e)=>{
-    if(e.key!=='Enter' && e.key!==' ') return;
-    const row=e.target.closest('.order-item'); if(!row) return;
-    e.preventDefault();
-    const idx=parseInt(row.getAttribute('data-idx'),10);
-    openOrderSheet(idx);
-  });
-
-  /* ========= History ========= */
-  function renderHistory(){
-    const list=loadDelivered(), box=$('#historyList'); if(!box) return;
-    if(!list.length){ box.textContent='No delivered orders'; return; }
-    box.innerHTML=list.map(o=>{
-      const when=new Date(o.when).toLocaleString();
-      return `<div style="padding:8px;border-bottom:1px solid #2a2a30">
-        <div style="font-weight:700">Delivered ${when}</div>
-        <div>${o.name} @ ${o.location}</div>
-        <div style="font-weight:700">Total ${fmt(o.total)}</div>
-      </div>`;
-    }).join('');
-  }
-
-  /* ========= Inventory ========= */
-  function getProducts(){ return $$('.card').map(c=>({name:c.dataset.name, price:+c.dataset.price, img:c.dataset.img, tags:(c.dataset.tags||'').toLowerCase()})); }
-  function renderInventory(){
-    const wrap=$('#inventoryList'); if(!wrap) return;
-    const products=getProducts();
-    if(!products.length){ wrap.textContent='No products'; return; }
-    wrap.innerHTML=products.map(p=>{
-      const qty  = (p.name in stockQty) ? Number(stockQty[p.name]||0) : '';
-      const low  = (p.name in stockLow) ? Number(stockLow[p.name]||0) : '';
-      return `<div class="field" data-prod="${p.name}">
-        <div style="flex:1;font-weight:600">${p.name}</div>
-        <label style="font-size:12px;color:#c7c7cc">Stock</label>
-        <input type="number" min="0" value="${qty}" data-k="qty" placeholder="--">
-        <label style="font-size:12px;color:#c7c7cc">Low</label>
-        <input type="number" min="0" value="${low}" data-k="low" placeholder="--">
-      </div>`;
-    }).join('');
-  }
-  document.addEventListener('input', (e)=>{
-    const row=e.target.closest('.field[data-prod]'); if(!row) return;
-    const name=row.getAttribute('data-prod');
-    if(e.target.matches('input[data-k="qty"]')){
-      const v=(e.target.value||'').trim();
-      if(v===''){ delete stockQty[name]; } else { stockQty[name]=Number(v); }
-      saveObj(STOCK_KEY, stockQty);
-    }
-    if(e.target.matches('input[data-k="low"]')){
-      const v2=(e.target.value||'').trim();
-      if(v2===''){ delete stockLow[name]; } else { stockLow[name]=Number(v2); }
-      saveObj(LOW_KEY, stockLow);
-    }
-  });
-
-  /* ========= Analytics ========= */
-  function renderAnalytics(){
-    const orders=loadOrders(), delivered=loadDelivered(), all=orders.concat(delivered);
-    let rev=0,items=0; all.forEach(o=>{ rev+=o.total; o.lines.forEach(l=>items+=l.qty); });
-    const cnt=all.length,aov=cnt?(rev/cnt):0;
-    $('#kpiRevenue').textContent=fmt(rev);
-    $('#kpiOrders').textContent=cnt;
-    $('#kpiAOV').textContent=fmt(aov);
-    $('#kpiItems').textContent=items;
-
-    // sparkline
-    const days=Array(7).fill(0), now=new Date();
-    all.forEach(o=>{
-      const d=new Date(o.when);
-      const diff=Math.floor((now-d)/(24*3600*1000));
-      if(diff>=0 && diff<7) days[6-diff]+=o.total;
-    });
-    drawSpark(days);
-
-    // Top products & simple funnels
-    const rows={};
-    all.forEach(o=>o.lines.forEach(l=>{
-      if(!rows[l.name]) rows[l.name]={qty:0,rev:0};
-      rows[l.name].qty+=l.qty; rows[l.name].rev+=l.line;
-    }));
-    const sorted=Object.entries(rows).sort((a,b)=>b[1].rev-a[1].rev).slice(0,8);
-    $('#topProducts').innerHTML=sorted.length? sorted.map(([n,v])=>
-      `<div class="rowd"><div>${n}</div><div>${v.qty}</div><div>${fmt(v.rev)}</div><div>-</div></div>`
-    ).join('') : '<div class="rowd"><div>No sales</div></div>';
-
-    const funnels=sorted.map(([n,v])=>`<div style="padding:8px;border-bottom:1px solid rgba(255,255,255,.08)">
-      <div style="font-weight:700">${n}</div>
-      <div>Sold: ${v.qty} • Revenue: ${fmt(v.rev)}</div>
-    </div>`).join('');
-    $('#funnels').innerHTML=funnels || '<div>No funnel data</div>';
-  }
-  function drawSpark(b){
-    const svg=$('#revSpark'); if(!svg) return;
-    const max=Math.max(1,...b), step=100/(b.length-1||1);
-    const pts=b.map((v,i)=>`${i*step},${40-(v/max)*36-2}`).join(' ');
-    svg.innerHTML=`
-      <polyline points="${pts}" fill="none" stroke="url(#g)" stroke-width="2"/>
-      <defs>
-        <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stop-color="#6ea8fe"/>
-          <stop offset="100%" stop-color="#3cd27f"/>
-        </linearGradient>
-      </defs>`;
-  }
-
-  /* ========= Heat Map (own tab; uses #heatGridHM) ========= */
-  function renderHeat(){
-    const grid=document.getElementById('heatGridHM'); if(!grid) return;
-    grid.innerHTML='';
-    let max=0;
-    for(let d=0; d<7; d++) for(let h=0; h<24; h++) if(sales[d][h]>max) max=sales[d][h];
-    for(let d=0; d<7; d++){
-      for(let h=0; h<24; h++){
-        const v=sales[d][h];
-        const alpha = max ? (0.08 + 0.62*(v/max)) : 0.10;
-        const cell=document.createElement('div');
-        cell.className='heat-cell';
-        cell.title=`Day ${d}, ${h}:00 -- ${v}`;
-        cell.style.background=`rgba(110,168,254,${alpha})`;
-        grid.appendChild(cell);
-      }
-    }
-  }
-
-  /* ========= Order detail sheet (always on top) ========= */
-  let currentOrderIndex=null;
-  function openOrderSheet(idx){
-    const orders=loadOrders(); const o=orders[idx]; if(!o) return;
-    currentOrderIndex=idx;
-    $('#orderMeta').textContent=`${new Date(o.when).toLocaleString()} • ${o.name} @ ${o.location}`;
-    $('#orderLines').innerHTML=o.lines.map(l=>`<div class="row-between" style="padding:6px 0"><div>${l.name} × ${l.qty}</div><div style="font-weight:700">${fmt(l.line)}</div></div>`).join('');
-    $('#orderTotal').textContent=fmt(o.total);
-
-    // Ensure overlay stacks above Settings
-    const os=document.getElementById('orderSheet');
-    if(os) document.body.appendChild(os); // re-append makes it last child
-    os.classList.add('show');
-  }
-  function closeOrderSheet(){ const os=document.getElementById('orderSheet'); os?.classList.remove('show'); currentOrderIndex=null; }
-  document.getElementById('orderClose')?.addEventListener('click', closeOrderSheet);
-  document.getElementById('orderCancel')?.addEventListener('click', closeOrderSheet);
-  document.getElementById('orderDelivered')?.addEventListener('click', ()=>{
-    const idx=currentOrderIndex; if(idx==null) return;
-    const active=loadOrders(); if(idx>=0&&idx<active.length){
-      const delivered=active.splice(idx,1)[0];
-      delivered.deliveredWhen=new Date().toISOString();
-      const hist=loadDelivered(); hist.unshift(delivered);
-      saveDelivered(hist); saveOrders(active);
-      renderOrders(); renderHistory();
-    }
-    closeOrderSheet();
-  });
-
-  /* ========= Init ========= */
-  buildPromos();
-  renderCart();
-  refreshBadge();
-  updateGreeting();
+/* ========= First paint / init ========= */
+(function init(){
+  applyFilters();
   syncFavStars();
   renderOrders();
-  renderHistory();
   renderInventory();
+  renderHeat();
+  renderHistory();
   renderAnalytics();
-  renderHeat();       /* draws to #heatGridHM */
+  updateCartBar();
   ensureAdminLoginVisible();
-  </script>
+})();
+</script>
 </body>
 </html>
