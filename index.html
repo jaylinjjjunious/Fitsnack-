@@ -217,18 +217,26 @@
       </div>
 
       <!-- 6 Greek Yogurt -->
-      <div class="card" role="listitem"
-           data-name="Greek Yogurt"
-           data-price="2.00"
-           data-img="assets/greek-yogurt.jpeg"
-           data-tags="protein">
-        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb">
-          <img src="assets/greek-yogurt.jpeg"
-               alt="Greek Yogurt"
-               loading="lazy"
-               onerror="this.onerror=null;this.src='assets/product-yogurt.jpg'">
-        </div>
+<div class="card" role="listitem"
+     data-name="Greek Yogurt"
+     data-price="2.00"
+     data-img="assets/greek-yogurt.jpeg"
+     data-tags="protein">
+  <button class="fav" aria-label="Favorite"><span>⭐</span></button>
+
+  <div class="thumb">
+    <img
+      src="assets/greek-yogurt.jpeg?v=3"
+      alt="Greek Yogurt"
+      loading="lazy"
+      onerror="if(!this.__triedJPG){this.__triedJPG=1;this.src='assets/greek-yogurt.jpg?v=3';}else{this.src='assets/product-yogurt.jpg';}"
+    >
+  </div>
+
+  <div class="title">Greek Yogurt</div>
+  <div class="price">$2.00</div>
+  <button class="add" aria-label="Add Greek Yogurt">+</button>
+</div>
         <div class="title">Greek Yogurt</div>
         <div class="price">$2.00</div>
         <button class="add" aria-label="Add Greek Yogurt">+</button>
