@@ -7,7 +7,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#0b0b0d">
 
-  <!-- Preload carousel images -->
+  <!-- Prefetch carousel images -->
   <link rel="preload" as="image" href="assets/carousel-1.jpg">
   <link rel="preload" as="image" href="assets/carousel-2.jpg">
   <link rel="preload" as="image" href="assets/carousel-3.jpg">
@@ -17,7 +17,6 @@
       --bg:#0b0b0d; --card:rgba(20,20,24,0.6); --text:#e9e9ec; --muted:#a9a9b1;
       --accent:#6ea8fe; --good:#3cd27f; --warn:#ffb020; --badge:#ff3b30;
       --radius:18px; --blur:18px; --snap-gap:12px;
-      --search-w:66%; /* shorten search bar so buttons don't overlap */
     }
     html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
     .app{max-width:393px;min-height:100svh;margin:0 auto;padding:12px 12px 64px;box-sizing:border-box}
@@ -29,25 +28,46 @@
       box-shadow:0 4px 24px rgba(0,255,0,.08);
     }
 
-    /* Header */
-    .row{display:flex;align-items:center;gap:12px}
-    .search-wrap{position:relative;flex:0 0 var(--search-w);max-width:var(--search-w);min-width:220px}
-    .icon-rights{display:flex;gap:10px;flex:0 0 auto}
-    .search{width:100%;border-radius:999px;padding:12px 44px;color:var(--text);outline:0;border:1px solid #2a2a2e}
+    /* Header (shorter search so buttons don’t overlap) */
+    .row{display:flex;align-items:center;gap:10px}
+    .search-wrap{
+      position:relative;
+      flex:1 1 auto;
+      min-width:0;                /* allow flex to shrink */
+      max-width:calc(100% - 112px); /* keeps space for 2 buttons (44px each) + gaps */
+    }
+    .icon-rights{display:flex;gap:10px;flex-shrink:0}
+    .search{
+      width:100%;border-radius:999px;padding:12px 44px;color:var(--text);
+      outline:0;border:1px solid #2a2a2e
+    }
     .search::placeholder{color:#6c6c70}
     .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
     .btn{border-radius:14px;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
     #cartBtn{position:relative}
     .badge{position:absolute;top:-6px;right:-8px;background:var(--badge);color:#fff;border-radius:999px;padding:1px 6px;font-size:12px;font-weight:700;display:none}
 
+    /* Extra guard on very small widths */
+    @media (max-width:360px){
+      .search-wrap{ max-width:calc(100% - 120px); }
+    }
+
     .greet{margin:8px 2px 2px;color:#c7c7cc;font-size:14px}
 
     /* Carousel */
     .carousel{margin:10px 0 6px}
-    .snapper{height:100px;display:flex;align-items:stretch;gap:var(--snap-gap);overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:0 var(--snap-gap)}
+    .snapper{
+      height:100px;display:flex;align-items:stretch;gap:var(--snap-gap);
+      overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
+      padding:0 var(--snap-gap)
+    }
     .snapper::-webkit-scrollbar{display:none}
     .snap-spacer{flex:0 0 7.5%}
-    .snap-card{position:relative;flex:0 0 85%;scroll-snap-align:center;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center}
+    .snap-card{
+      position:relative;flex:0 0 85%;scroll-snap-align:center;border-radius:14px;overflow:hidden;
+      border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);
+      display:flex;align-items:center;justify-content:center
+    }
     .banner{width:100%;height:100%;object-fit:cover}
     .snap-meta{position:absolute;left:10px;bottom:8px;right:10px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}
     .snap-title{font-weight:800;text-shadow:0 1px 6px rgba(0,0,0,.6)}
@@ -58,24 +78,41 @@
 
     /* Chips */
     .chips{display:flex;gap:10px;margin:6px 0 12px;flex-wrap:wrap}
-    .chip{padding:6px 10px;border-radius:999px;font-size:13px;cursor:pointer}
+    .chip{padding:6px 10px;border-radius:999px;font-size:13px;cursor:pointer;user-select:none}
     .chip.active{outline:2px solid rgba(110,168,254,.5)}
 
-    /* Grid -> uniform square tiles */
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    /* Grid: square cards (2-up) */
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2, 1fr);
+      gap:12px;
+    }
     .card{
-      position:relative;border-radius:var(--radius);padding:12px;display:flex;flex-direction:column;
-      height:230px;min-height:230px; /* uniform tile height */
+      border-radius:var(--radius);
+      padding:10px;
+      position:relative;
+      display:flex;flex-direction:column;
+      min-height:0;
+      aspect-ratio:1/1;           /* square cards */
     }
     .thumb{
-      width:100%;aspect-ratio:1/1;height:auto;border-radius:12px;overflow:hidden;margin-bottom:8px;
-      display:flex;align-items:center;justify-content:center;background:#0e0e12
+      flex:1 1 auto;
+      border-radius:12px;overflow:hidden;margin-bottom:8px;
+      display:flex;align-items:center;justify-content:center;background:#0e0e12;
+      min-height:0;
     }
     .thumb img{width:100%;height:100%;object-fit:contain}
-    .title{font-weight:700;margin:4px 0 2px;line-height:1.2;min-height:2.4em;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-    .price{color:#c7c7cc;font-weight:600;margin-top:auto}
-    .add{position:absolute;right:12px;bottom:12px;background:var(--accent);border:0;color:#001230;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer}
-    .fav{position:absolute;right:12px;top:12px;width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);cursor:pointer}
+    .title{font-weight:700;margin:2px 0 0;font-size:14px;line-height:1.2}
+    .price{color:#c7c7cc;font-weight:600;margin-top:2px;font-size:13px}
+    .add{
+      position:absolute;right:10px;bottom:10px;background:var(--accent);border:0;color:#001230;
+      border-radius:12px;width:38px;height:38px;font-size:20px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer
+    }
+    .fav{
+      position:absolute;right:10px;top:10px;width:32px;height:32px;border-radius:10px;
+      display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.25);cursor:pointer
+    }
     .fav.active{background:rgba(255,215,0,.15);box-shadow:0 0 0 1px rgba(255,215,0,.35) inset}
 
     /* Overlays */
@@ -115,7 +152,7 @@
     .rowh{background:rgba(255,255,255,.05);font-weight:700}
     .rowd{border-top:1px solid rgba(255,255,255,.06)}
 
-    /* Heat map */
+    /* Heat map cells */
     #heatGridHM .heat-cell{width:12px;height:12px;display:inline-block;margin:1px;border-radius:3px}
 
     /* Sticky cart bar */
@@ -127,6 +164,11 @@
       box-shadow:0 6px 24px rgba(0,0,0,.25);
     }
     #cartBar.show{display:flex}
+
+    /* Toasts */
+    #toastHost{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;z-index:11000}
+    .toast{pointer-events:auto;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(24,24,32,.9);font-weight:600;opacity:0;transform:translateY(8px);transition:opacity .22s ease,transform .22s ease}
+    .toast.show{opacity:1;transform:translateY(0)}
 
     /* Z fix: order sheet above settings */
     #settingsOverlay{ z-index: 10000; }
@@ -171,15 +213,12 @@
       <div class="chip" data-filter="favorites">favorites</div>
     </div>
 
-    <!-- Products Grid (uniform square tiles) -->
+    <!-- Products Grid -->
     <div id="grid" class="grid" role="list">
       <!-- 1 -->
       <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50" data-img="assets/product-funyuns.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb">
-          <img src="assets/product-funyuns.jpg" alt="Potato Chips" loading="lazy"
-               onerror="this.onerror=null;this.src='assets/fallback-snack.jpg'">
-        </div>
+        <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Potato Chips" loading="lazy"></div>
         <div class="title">Potato Chips</div>
         <div class="price">$2.50</div>
         <button class="add" aria-label="Add Potato Chips">+</button>
@@ -188,10 +227,7 @@
       <!-- 2 -->
       <div class="card" role="listitem" data-name="Protein Bar" data-price="2.99" data-img="assets/product-chesters.jpg" data-tags="protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb">
-          <img src="assets/product-chesters.jpg" alt="Protein Bar" loading="lazy"
-               onerror="this.onerror=null;this.src='assets/fallback-snack.jpg'">
-        </div>
+        <div class="thumb"><img src="assets/product-chesters.jpg" alt="Protein Bar" loading="lazy"></div>
         <div class="title">Protein Bar</div>
         <div class="price">$2.99</div>
         <button class="add" aria-label="Add Protein Bar">+</button>
@@ -200,10 +236,7 @@
       <!-- 3 -->
       <div class="card" role="listitem" data-name="Trail Mix" data-price="3.49" data-img="assets/product-cheetos.jpg" data-tags="vegan,gluten-free">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb">
-          <img src="assets/product-cheetos.jpg" alt="Trail Mix" loading="lazy"
-               onerror="this.onerror=null;this.src='assets/fallback-snack.jpg'">
-        </div>
+        <div class="thumb"><img src="assets/product-cheetos.jpg" alt="Trail Mix" loading="lazy"></div>
         <div class="title">Trail Mix</div>
         <div class="price">$3.49</div>
         <button class="add" aria-label="Add Trail Mix">+</button>
@@ -212,39 +245,27 @@
       <!-- 4 -->
       <div class="card" role="listitem" data-name="Granola Bar" data-price="1.99" data-img="assets/product-granola.jpg" data-tags="vegan,protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb">
-          <img src="assets/product-granola.jpg" alt="Granola Bar" loading="lazy"
-               onerror="this.onerror=null;this.src='assets/fallback-snack.jpg'">
-        </div>
+        <div class="thumb"><img src="assets/product-granola.jpg" alt="Granola Bar" loading="lazy"></div>
         <div class="title">Granola Bar</div>
         <div class="price">$1.99</div>
         <button class="add" aria-label="Add Granola Bar">+</button>
       </div>
 
-      <!-- 5 Doritos Flamin' Hot Nacho -->
+      <!-- 5 Doritos -->
       <div class="card" role="listitem" data-name="Doritos Flamin’ Hot Nacho" data-price="2.00" data-img="assets/product-doritos.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb">
-          <img src="assets/product-doritos.jpg" alt="Doritos Flamin’ Hot Nacho" loading="lazy"
-               onerror="this.onerror=null;this.src='assets/fallback-snack.jpg'">
-        </div>
+        <div class="thumb"><img src="assets/product-doritos.jpg" alt="Doritos Flamin’ Hot Nacho" loading="lazy"></div>
         <div class="title">Doritos Flamin’ Hot Nacho</div>
         <div class="price">$2.00</div>
         <button class="add" aria-label="Add Doritos Flamin’ Hot Nacho">+</button>
       </div>
 
-      <!-- 6 Greek Yogurt (with robust fallbacks and your new photo price $2.00) -->
-      <div class="card" role="listitem"
-           data-name="Greek Yogurt" data-price="2.00"
-           data-img="assets/greek-yogurt.jpeg" data-tags="protein">
+      <!-- 6 Greek Yogurt -->
+      <div class="card" role="listitem" data-name="Greek Yogurt" data-price="2.00" data-img="assets/greek-yogurt.jpeg" data-tags="protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb">
-          <img
-            src="assets/greek-yogurt.jpeg?v=4"
-            alt="Greek Yogurt"
-            loading="lazy"
-            onerror="if(!this.__triedJPG){this.__triedJPG=1;this.src='assets/greek-yogurt.jpg?v=4';}else{this.src='assets/product-yogurt.jpg';}"
-          >
+          <img src="assets/greek-yogurt.jpeg" alt="Greek Yogurt" loading="lazy"
+               onerror="if(!this.__triedJPG){this.__triedJPG=1;this.src='assets/greek-yogurt.jpg';}else{this.src='assets/product-yogurt.jpg';}">
         </div>
         <div class="title">Greek Yogurt</div>
         <div class="price">$2.00</div>
@@ -254,10 +275,7 @@
       <!-- 7 -->
       <div class="card" role="listitem" data-name="Mixed Nuts" data-price="3.20" data-img="assets/product-nuts.jpg" data-tags="vegan,protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb">
-          <img src="assets/product-nuts.jpg" alt="Mixed Nuts" loading="lazy"
-               onerror="this.onerror=null;this.src='assets/fallback-snack.jpg'">
-        </div>
+        <div class="thumb"><img src="assets/product-nuts.jpg" alt="Mixed Nuts" loading="lazy"></div>
         <div class="title">Mixed Nuts</div>
         <div class="price">$3.20</div>
         <button class="add" aria-label="Add Mixed Nuts">+</button>
@@ -266,10 +284,7 @@
       <!-- 8 -->
       <div class="card" role="listitem" data-name="Fruit Cup" data-price="2.19" data-img="assets/product-fruit.jpg" data-tags="vegan,gluten-free">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb">
-          <img src="assets/product-fruit.jpg" alt="Fruit Cup" loading="lazy"
-               onerror="this.onerror=null;this.src='assets/fallback-snack.jpg'">
-        </div>
+        <div class="thumb"><img src="assets/product-fruit.jpg" alt="Fruit Cup" loading="lazy"></div>
         <div class="title">Fruit Cup</div>
         <div class="price">$2.19</div>
         <button class="add" aria-label="Add Fruit Cup">+</button>
@@ -278,10 +293,7 @@
       <!-- 9 -->
       <div class="card" role="listitem" data-name="Energy Drink" data-price="2.99" data-img="assets/product-energy.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb">
-          <img src="assets/product-energy.jpg" alt="Energy Drink" loading="lazy"
-               onerror="this.onerror=null;this.src='assets/fallback-snack.jpg'">
-        </div>
+        <div class="thumb"><img src="assets/product-energy.jpg" alt="Energy Drink" loading="lazy"></div>
         <div class="title">Energy Drink</div>
         <div class="price">$2.99</div>
         <button class="add" aria-label="Add Energy Drink">+</button>
@@ -290,10 +302,7 @@
       <!-- 10 -->
       <div class="card" role="listitem" data-name="Chocolate Bar" data-price="1.75" data-img="assets/product-chocolate.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb">
-          <img src="assets/product-chocolate.jpg" alt="Chocolate Bar" loading="lazy"
-               onerror="this.onerror=null;this.src='assets/fallback-snack.jpg'">
-        </div>
+        <div class="thumb"><img src="assets/product-chocolate.jpg" alt="Chocolate Bar" loading="lazy"></div>
         <div class="title">Chocolate Bar</div>
         <div class="price">$1.75</div>
         <button class="add" aria-label="Add Chocolate Bar">+</button>
@@ -498,9 +507,12 @@
     const DELIVERED_KEY='fitsnacks.orders.delivered';
     const PROFILE_NAME_KEY='fitsnacks.profile.name';
     const PROFILE_LOC_KEY='fitsnacks.profile.location';
+
+    // IFTTT (GET form since that’s what works for you)
     const IFTTT_EVENT='Fitsnack_order';
     const IFTTT_KEY='fI-MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA';
     const IFTTT_URL=`https://maker.ifttt.com/trigger/${IFTTT_EVENT}/with/key/${IFTTT_KEY}`;
+
     const ADMIN_PASSWORD='8TSB077';
     const fmt=n=>'$'+n.toFixed(2);
 
@@ -526,7 +538,7 @@
       setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),250); }, ms);
     }
 
-    /* ========= Carousel / Promos (no page jump while scrolling) ========= */
+    /* ========= Carousel / Promos (safe auto-advance -- no page jump) ========= */
     function buildPromos(){
       const snapper=$('#snapper'); if(!snapper) return;
       let data=[];
@@ -548,49 +560,56 @@
           <div class="snap-meta"><div class="snap-title">${p.title}</div>
           ${p.cta?`<button class="ghost snap-cta" type="button">${p.cta}</button>`:''}</div>`;
         snapper.insertBefore(c, after);
-        c.addEventListener('click', e=>{
-          if(e.target.closest('.snap-cta')) return;
-          if(p.action==='scrollGrid') $('#grid')?.scrollIntoView({behavior:'smooth'});
-          if(p.action==='filter') activateChip(p.value||'');
-          if(p.action==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
-        }, {passive:true});
-        c.querySelector('.snap-cta')?.addEventListener('click', e=>{
-          e.stopPropagation();
-          if(p.action==='filter') activateChip(p.value||'');
-          if(p.action==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
-          if(p.action==='scrollGrid') $('#grid')?.scrollIntoView({behavior:'smooth'});
-        });
+
+        const go = (act)=>{
+          if(act==='scrollGrid') $('#grid')?.scrollIntoView({behavior:'smooth'});
+          if(act==='filter') activateChip(p.value||'');
+          if(act==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
+        };
+        c.addEventListener('click', e=>{ if(!e.target.closest('.snap-cta')) go(p.action); }, {passive:true});
+        c.querySelector('.snap-cta')?.addEventListener('click', e=>{ e.stopPropagation(); go(p.action); }, {passive:true});
       });
 
       // dots + safe auto-advance
-      const cards=$$('.snap-card');
-      const dotsWrap=$('#snapDots');
-      dotsWrap.innerHTML=cards.map(()=>'<div class="snap-dot"></div>').join('');
-      const dots=$$('.snap-dot');
-      function setDot(i){ dots.forEach((d,k)=>d.classList.toggle('active',k===i)); }
+      const cards = $$('.snap-card');
+      const dotsWrap = $('#snapDots');
+      dotsWrap.innerHTML = cards.map(()=>'<div class="snap-dot"></div>').join('');
+      const dots = $$('.snap-dot');
+      const setDot = i => dots.forEach((d,k)=>d.classList.toggle('active',k===i));
       setDot(0);
 
-      let idx=0, userInteracting=false, lastInteract=0, inView=true;
-      const COOLDOWN=3500;
+      let idx = 0;
+      let userInteracting = false;
+      let lastInteract = 0;
+      let inView = true;
+      const INTERACT_COOLDOWN = 3500;
 
-      function scrollToCard(i){
-        if(!cards[i]) return;
-        const left = cards[i].offsetLeft - snapper.firstElementChild.offsetLeft;
-        snapper.scrollTo({left, behavior:'smooth'});
+      const scrollToCard = i => {
+        if (!cards[i]) return;
+        const targetLeft = cards[i].offsetLeft - snapper.firstElementChild.offsetLeft;
+        snapper.scrollTo({ left: targetLeft, behavior: 'smooth' });
         setDot(i);
-      }
+      };
+
       ['pointerdown','wheel','touchstart','mousedown','scroll'].forEach(ev=>{
-        snapper.addEventListener(ev,()=>{ userInteracting=true; lastInteract=Date.now(); },{passive:true});
+        snapper.addEventListener(ev, ()=>{
+          userInteracting = true;
+          lastInteract = Date.now();
+        }, {passive:true});
       });
-      const obs=new IntersectionObserver((entries)=>{ inView=entries.some(e=>e.isIntersecting); },{root:null,threshold:0.2});
+
+      const obs = new IntersectionObserver((entries)=>{
+        inView = entries.some(e=>e.isIntersecting);
+      }, {root:null, threshold:0.2});
       obs.observe(snapper);
 
       setInterval(()=>{
-        const now=Date.now();
+        const now = Date.now();
         if(!cards.length || !inView) return;
-        if(userInteracting && (now-lastInteract)<COOLDOWN) return;
-        idx=(idx+1)%cards.length; scrollToCard(idx);
-      },5000);
+        if(userInteracting && (now - lastInteract) < INTERACT_COOLDOWN) return;
+        idx = (idx + 1) % cards.length;
+        scrollToCard(idx);
+      }, 5000);
     }
 
     /* ========= Product Sheet ========= */
@@ -608,11 +627,11 @@
     function closeProductSheet(){ $('#productSheet').classList.remove('show'); }
     $('#sheetClose')?.addEventListener('click', closeProductSheet);
     $('#qtyPlus')?.addEventListener('click', ()=>{
-      let n=(+$('#qtyVal').textContent)||1; n=Math.min(99,n+1);
+      let n=(+$('#qtyVal').textContent)||1; n=Math.min(99, n+1);
       $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(n*(currentProduct?.price||0));
     });
     $('#qtyMinus')?.addEventListener('click', ()=>{
-      let n=(+$('#qtyVal').textContent)||1; n=Math.max(1,n-1);
+      let n=(+$('#qtyVal').textContent)||1; n=Math.max(1, n-1);
       $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(n*(currentProduct?.price||0));
     });
     $('#sheetAdd')?.addEventListener('click', ()=>{
@@ -624,17 +643,17 @@
       showToast(`Added ${n} × ${currentProduct.name}`);
     });
 
-    // open by clicking a card (except on fav/+)
+    // Open sheet when clicking a card (not fav/+)
     document.addEventListener('click', e=>{
       const card=e.target.closest('.card'); if(!card) return;
       if(e.target.closest('.fav') || e.target.closest('.add')) return;
       openProductSheet(card);
-    },{passive:true});
-    // short tap on "+" also opens sheet
+    }, {passive:true});
+    // Short-tap on "+" opens sheet too
     document.addEventListener('click', e=>{
       const btn=e.target.closest('.card .add'); if(!btn) return;
       e.stopPropagation(); openProductSheet(btn.closest('.card'));
-    },{passive:true});
+    }, {passive:true});
 
     /* ========= Cart ========= */
     function refreshBadge(){
@@ -664,13 +683,13 @@
       $('#cartTotal').textContent = fmt(total);
       updateCartBar();
     }
-    // +/- and remove
-    document.addEventListener('click',(e)=>{
+    // cart +/- and remove
+    document.addEventListener('click', (e)=>{
       const b=e.target.closest('button[data-act][data-name]');
       if(b){
         const name=b.getAttribute('data-name'); const act=b.getAttribute('data-act');
         const entry=cart.get(name); if(!entry) return;
-        entry.qty=Math.max((act==='+')?entry.qty+1:entry.qty-1,0);
+        entry.qty=Math.max( (act==='+')?entry.qty+1:entry.qty-1 ,0);
         if(entry.qty===0) cart.delete(name);
         saveCart(); renderCart(); refreshBadge(); return;
       }
@@ -679,7 +698,7 @@
         const name=rm.getAttribute('data-remove'); cart.delete(name);
         saveCart(); renderCart(); refreshBadge(); return;
       }
-    },{passive:true});
+    }, {passive:true});
 
     function openCart(){ $('#cartOverlay')?.classList.add('show'); }
     function closeCart(){ $('#cartOverlay')?.classList.remove('show'); }
@@ -701,7 +720,7 @@
       $('#checkoutOverlay').classList.add('show');
     });
 
-    /* ========= Search + Filters ========= */
+    /* ========= Search + Filters (chip fix so they actually filter) ========= */
     function searchAndFilter(){
       const q = ($('#search').value||'').toLowerCase();
       let shown=0;
@@ -718,7 +737,7 @@
         const tags=(c.dataset.tags||'').toLowerCase();
         const show=!val||val===''||(val==='favorites'?favorites.has(c.dataset.name):tags.includes(val));
         if(show) c.style.removeProperty('display');
-        else c.style.display='none-filter';
+        else c.style.display='none-filter'; // special internal state
       });
       searchAndFilter();
     }
@@ -777,7 +796,7 @@
       cart.clear(); saveCart(); renderCart(); refreshBadge(); updateGreeting(); showToast('Order placed 🎉');
       $('#checkoutOverlay').classList.remove('show');
 
-      // IFTTT GET trigger (your working form)
+      // IFTTT GET trigger
       const summary = `${order.name} @ ${order.location} • ${fmt(order.total)}`;
       const lineItems = order.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('\n');
       const url = `${IFTTT_URL}?value1=${encodeURIComponent(summary)}&value2=${encodeURIComponent(lineItems)}&value3=`;
