@@ -16,7 +16,9 @@
     :root{
       --bg:#0b0b0d; --card:rgba(20,20,24,0.6); --text:#e9e9ec; --muted:#a9a9b1;
       --accent:#6ea8fe; --good:#3cd27f; --warn:#ffb020; --badge:#ff3b30;
-      --radius:18px; --blur:18px; --snap-gap:12px;
+      --radius:16px; --blur:18px; --snap-gap:12px;
+      /* Reserve width for the two header buttons (controls search width) */
+      --header-right: 190px; /* <= adjust this number to shorten/lengthen search */
     }
     html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
     .app{max-width:393px;min-height:100svh;margin:0 auto;padding:12px 12px 64px;box-sizing:border-box}
@@ -28,10 +30,13 @@
       box-shadow:0 4px 24px rgba(0,255,0,.08);
     }
 
-    /* Header -- reserve 160px for the buttons area so the input never overlaps */
+    /* Header -- search won’t overlap buttons */
     .row{display:flex;align-items:center;gap:12px}
-    .search-wrap{position:relative;flex:1 1 auto;min-width:0}
-    .icon-rights{display:flex;gap:10px;flex:0 0 160px}
+    .icon-rights{
+      display:flex;gap:10px;flex:0 0 var(--header-right); /* fixed area for 2 buttons */
+      justify-content:flex-end;
+    }
+    .search-wrap{position:relative;flex:1;min-width:0;max-width:calc(100% - var(--header-right))}
     .search{width:100%;border-radius:999px;padding:12px 44px;color:var(--text);outline:0;border:1px solid #2a2a2e}
     .search::placeholder{color:#6c6c70}
     .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
@@ -60,16 +65,24 @@
     .chip{padding:6px 10px;border-radius:999px;font-size:13px;cursor:pointer}
     .chip.active{outline:2px solid rgba(110,168,254,.5)}
 
-    /* Grid -- compact square-ish cards (match your first few) */
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    .card{border-radius:var(--radius);padding:12px;position:relative;display:flex;flex-direction:column;min-height:190px}
-    .thumb{height:90px;border-radius:12px;overflow:hidden;margin-bottom:8px;display:flex;align-items:center;justify-content:center;background:#0e0e12}
+    /* Grid -- make cards look like *little squares* */
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .card{
+      border-radius:var(--radius);padding:10px;position:relative;display:flex;flex-direction:column;
+      min-height:172px; /* compact height so it feels square-ish */
+    }
+    .thumb{
+      height:96px;border-radius:12px;overflow:hidden;margin-bottom:8px;display:flex;align-items:center;justify-content:center;background:#0e0e12
+    }
     .thumb img{width:100%;height:100%;object-fit:contain}
-    .title{font-weight:700;margin:4px 0 2px}
-    .price{color:#c7c7cc;font-weight:600;margin-top:auto}
-    .add{position:absolute;right:12px;bottom:12px;background:var(--accent);border:0;color:#001230;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer}
-    .fav{position:absolute;right:12px;top:12px;width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);cursor:pointer}
+    .title{font-weight:700;margin:2px 0 2px;font-size:14px;line-height:1.2}
+    .price{color:#c7c7cc;font-weight:600;margin-top:auto;font-size:13px}
+    .add{position:absolute;right:10px;bottom:10px;background:var(--accent);border:0;color:#001230;border-radius:12px;width:38px;height:38px;font-size:20px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer}
+    .fav{position:absolute;right:10px;top:10px;width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);cursor:pointer}
     .fav.active{background:rgba(255,215,0,.15);box-shadow:0 0 0 1px rgba(255,215,0,.35) inset}
+
+    /* Class-based hiding (reliable filters/search) */
+    .card.hidden-filter, .card.hidden-search{ display:none !important; }
 
     /* Overlays */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
@@ -121,6 +134,11 @@
     }
     #cartBar.show{display:flex}
 
+    /* Toasts */
+    #toastHost{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;z-index:11000}
+    .toast{pointer-events:auto;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(24,24,32,.9);font-weight:600;opacity:0;transform:translateY(8px);transition:opacity .22s ease,transform .22s ease}
+    .toast.show{opacity:1;transform:translateY(0)}
+
     /* Z fix: order sheet above settings */
     #settingsOverlay{ z-index: 10000; }
     #orderSheet{ z-index: 10050; }
@@ -154,9 +172,10 @@
       </div>
       <div id="snapDots" class="snap-dots" aria-hidden="true"></div>
     </div>
-        <!-- Chips -->
+
+    <!-- Chips -->
     <div class="chips" id="chips">
-      <div class="chip active" data-filter="">all</div>
+      <div class="chip" data-filter="">all</div>
       <div class="chip" data-filter="vegan">vegan</div>
       <div class="chip" data-filter="gluten-free">gluten-free</div>
       <div class="chip" data-filter="protein">protein</div>
@@ -210,7 +229,7 @@
         <button class="add" aria-label="Add Doritos Flamin’ Hot Nacho">+</button>
       </div>
 
-      <!-- 6 Greek Yogurt (image fallback chain, price $2.00) -->
+      <!-- 6 Greek Yogurt (with jpeg/jpg fallback) -->
       <div class="card" role="listitem"
            data-name="Greek Yogurt"
            data-price="2.00"
@@ -388,8 +407,10 @@
             <div class="ghost" aria-disabled="true">Dark Mode (disabled)</div>
             <div class="ghost" aria-disabled="true">Notifications (disabled)</div>
           </div>
+
           <!-- Admin -->
           <div id="panelAdmin" role="tabpanel" aria-labelledby="tabAdmin" style="display:none">
+            <!-- Login -->
             <div id="adminLogin">
               <div style="margin-top:6px;">Admin password:</div>
               <input id="adminPassword" type="password" class="field" style="width:100%;padding:10px;border-radius:10px">
@@ -398,6 +419,8 @@
                 <button class="primary" id="adminSubmit" type="button">Unlock</button>
               </div>
             </div>
+
+            <!-- Content (locked until unlock) -->
             <div id="adminContent" style="display:none">
               <div class="admin-subtabs">
                 <button class="subtab active" data-subtab="orders" type="button">Orders</button>
@@ -429,7 +452,7 @@
                 <div id="topProducts"></div>
               </div>
 
-              <!-- Heat Map (its own tab) -->
+              <!-- Heat Map -->
               <div id="subtab-heat" style="display:none">
                 <div id="heatGridHM"></div>
               </div>
@@ -439,9 +462,9 @@
                 <div id="historyList" class="admin-list">No history yet</div>
                 <button class="ghost" id="historyClear" type="button">Clear history</button>
               </div>
-            </div>
-          </div>
-        </div>
+            </div> <!-- /#adminContent -->
+          </div> <!-- /#panelAdmin -->
+        </div> <!-- /.sheet-body -->
       </div>
     </div>
 
@@ -454,10 +477,9 @@
 
     <!-- Toast Host -->
     <div id="toastHost"></div>
-
-    <!-- ========= Script (Part 1) ========= -->
+        <!-- ========= Script (Part 1) ========= -->
     <script>
-    /* Boot + schema */
+    /* ========= Boot ========= */
     const APP_SCHEMA_VERSION = 3, SCHEMA_KEY = 'fitsnacks.schema';
     try{
       const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY)||'0')||0;
@@ -487,7 +509,7 @@
     const ADMIN_PASSWORD='8TSB077';
     const fmt=n=>'$'+n.toFixed(2);
 
-    /* State + persist */
+    /* ========= State ========= */
     let cart=new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]'));
     let favorites=new Set(JSON.parse(localStorage.getItem(FAVORITES_KEY)||'[]'));
     function saveCart(){ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(cart.entries()))); }
@@ -500,7 +522,7 @@
       g.textContent = name ? `Hi, ${name} 👋` : 'Welcome 👋';
     }
 
-    /* Toast */
+    /* Toasts */
     function showToast(msg, ms=1800){
       const host=$('#toastHost'); const el=document.createElement('div');
       el.className='toast'; el.textContent=msg; host.appendChild(el);
@@ -508,7 +530,7 @@
       setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),250); }, ms);
     }
 
-    /* Carousel / Promos with safe auto-advance (no page jump) */
+    /* ========= Carousel ========= */
     function buildPromos(){
       const snapper=$('#snapper'); if(!snapper) return;
       let data=[];
@@ -544,7 +566,7 @@
         });
       });
 
-      // dots + safe auto-advance (no vertical page jump)
+      // dots + auto-advance
       const cards = $$('.snap-card');
       const dotsWrap = $('#snapDots');
       dotsWrap.innerHTML = cards.map(()=>'<div class="snap-dot"></div>').join('');
@@ -552,42 +574,31 @@
       function setDot(i){ dots.forEach((d,k)=>d.classList.toggle('active',k===i)); }
       setDot(0);
 
-      let idx = 0;
-      let userInteracting = false;
-      let lastInteract = 0;
-      const INTERACT_COOLDOWN = 3500;
-      let inView = true;
-
+      let idx=0,userInteracting=false,lastInteract=0,inView=true;
+      const INTERACT_COOLDOWN=3500;
       function scrollToCard(i){
         if (!cards[i]) return;
         const targetLeft = cards[i].offsetLeft - snapper.firstElementChild.offsetLeft;
         snapper.scrollTo({ left: targetLeft, behavior: 'smooth' });
         setDot(i);
       }
-
       ['pointerdown','wheel','touchstart','mousedown','scroll'].forEach(ev=>{
         snapper.addEventListener(ev, ()=>{
-          userInteracting = true;
-          lastInteract = Date.now();
+          userInteracting=true; lastInteract=Date.now();
         }, {passive:true});
       });
-
-      const obs = new IntersectionObserver((entries)=>{
-        inView = entries.some(e=>e.isIntersecting);
-      }, {root:null, threshold:0.2});
+      const obs=new IntersectionObserver((entries)=>{inView=entries.some(e=>e.isIntersecting);},{root:null,threshold:0.2});
       obs.observe(snapper);
-
       setInterval(()=>{
-        const now = Date.now();
+        const now=Date.now();
         if(!cards.length) return;
         if(!inView) return;
-        if(userInteracting && (now - lastInteract) < INTERACT_COOLDOWN) return;
-        idx = (idx + 1) % cards.length;
-        scrollToCard(idx);
-      }, 5000);
+        if(userInteracting && (now-lastInteract)<INTERACT_COOLDOWN) return;
+        idx=(idx+1)%cards.length; scrollToCard(idx);
+      },5000);
     }
 
-    /* Product Sheet */
+    /* ========= Product Sheet ========= */
     let currentProduct=null;
     function openProductSheet(card){
       currentProduct={ name:card.dataset.name, price:+card.dataset.price, img:card.dataset.img };
@@ -617,20 +628,17 @@
       renderCart(); refreshBadge(); closeProductSheet(); openCart();
       showToast(`Added ${n} × ${currentProduct.name}`);
     });
-
-    // Open sheet when clicking a card (not fav/+)
     document.addEventListener('click', e=>{
       const card=e.target.closest('.card'); if(!card) return;
-      if(e.target.closest('.fav') || e.target.closest('.add')) return;
+      if(e.target.closest('.fav')||e.target.closest('.add')) return;
       openProductSheet(card);
     }, {passive:true});
-    // Short-tap on "+" opens sheet too
     document.addEventListener('click', e=>{
       const btn=e.target.closest('.card .add'); if(!btn) return;
       e.stopPropagation(); openProductSheet(btn.closest('.card'));
     }, {passive:true});
 
-    /* Cart */
+    /* ========= Cart ========= */
     function refreshBadge(){
       let n=0; for(const v of cart.values()) n+=v.qty;
       const b=$('#cartBadge'); if(!b) return;
@@ -658,13 +666,12 @@
       $('#cartTotal').textContent = fmt(total);
       updateCartBar();
     }
-    // +/- and remove
     document.addEventListener('click', (e)=>{
       const b=e.target.closest('button[data-act][data-name]');
       if(b){
         const name=b.getAttribute('data-name'); const act=b.getAttribute('data-act');
         const entry=cart.get(name); if(!entry) return;
-        entry.qty=Math.max( (act==='+')?entry.qty+1:entry.qty-1 ,0);
+        entry.qty=Math.max((act==='+')?entry.qty+1:entry.qty-1,0);
         if(entry.qty===0) cart.delete(name);
         saveCart(); renderCart(); refreshBadge(); return;
       }
@@ -674,16 +681,15 @@
         saveCart(); renderCart(); refreshBadge(); return;
       }
     }, {passive:true});
-
     function openCart(){ $('#cartOverlay')?.classList.add('show'); }
     function closeCart(){ $('#cartOverlay')?.classList.remove('show'); }
     $('#cartBtn')?.addEventListener('click', openCart);
     $('#cartBack')?.addEventListener('click', closeCart);
 
-    /* Sticky cart bar */
+    /* ========= Sticky Cart Bar ========= */
     function updateCartBar(){
       const bar=$('#cartBar'); if(!bar) return;
-      let total=0, count=0; for(const [,info] of cart){ total+=info.price*info.qty; count+=info.qty; }
+      let total=0,count=0; for(const [,info] of cart){ total+=info.price*info.qty; count+=info.qty; }
       if(count>0){ $('#cartBarTotal').textContent=fmt(total); bar.classList.add('show'); }
       else { bar.classList.remove('show'); }
     }
@@ -695,34 +701,38 @@
       $('#checkoutOverlay').classList.add('show');
     });
 
-    /* Search + Filters (square grid verified) */
+    /* ========= Search + Filters ========= */
+    let currentFilter='';
     function searchAndFilter(){
-      const q = ($('#search').value||'').toLowerCase();
-      let shown=0;
+      const q = ($('#search')?.value||'').toLowerCase();
       $$('.card').forEach(c=>{
-        const hitsName=c.dataset.name.toLowerCase().includes(q);
-        const visible = c.style.display !== 'none-filter' && hitsName;
-        c.style.display = visible ? '' : 'none';
-        if(visible) shown++;
+        const hitsName=(c.dataset.name||'').toLowerCase().includes(q);
+        c.classList.toggle('hidden-search', !hitsName);
       });
     }
     function activateChip(val){
-      $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch.dataset.filter===val));
+      currentFilter=val||'';
+      $$('#chips .chip').forEach(ch=>ch.classList.toggle('active',(ch.dataset.filter||'')===currentFilter));
       $$('.card').forEach(c=>{
         const tags=(c.dataset.tags||'').toLowerCase();
-        const show=!val||val===''||(val==='favorites'?favorites.has(c.dataset.name):tags.includes(val));
-        if(show) c.style.removeProperty('display');
-        else c.style.display='none-filter';
+        const name=c.dataset.name||'';
+        const inFav=favorites.has(name);
+        let pass=true;
+        if(currentFilter){
+          if(currentFilter==='favorites') pass=inFav;
+          else pass=tags.includes(currentFilter);
+        }
+        c.classList.toggle('hidden-filter', !pass);
       });
       searchAndFilter();
     }
     $('#chips')?.addEventListener('click', e=>{
       const chip=e.target.closest('.chip'); if(!chip) return;
       activateChip(chip.dataset.filter||'');
-    });
+    }, {passive:true});
     $('#search')?.addEventListener('input', searchAndFilter);
 
-    /* Favorites */
+    /* ========= Favorites ========= */
     function syncFavStars(){
       $$('.card').forEach(card=>{
         card.querySelector('.fav')?.classList.toggle('active', favorites.has(card.dataset.name));
@@ -734,9 +744,9 @@
       const card=fav.closest('.card'); const name=card.dataset.name;
       if(favorites.has(name)) favorites.delete(name); else favorites.add(name);
       saveFavs(); syncFavStars();
-      // If favorites chip is active, hide removed ones immediately
-      const favChipActive = $('#chips .chip.active')?.dataset.filter === 'favorites';
-      if(favChipActive && !favorites.has(name)){ card.style.display='none-filter'; searchAndFilter(); }
+      if($('#chips .chip.active')?.dataset.filter==='favorites' && !favorites.has(name)){
+        card.classList.add('hidden-filter'); searchAndFilter();
+      }
     }, {passive:true});
         /* ========= Checkout ========= */
     function computeTotals(){
@@ -773,12 +783,12 @@
       cart.clear(); saveCart(); renderCart(); refreshBadge(); updateGreeting(); showToast('Order placed 🎉');
       $('#checkoutOverlay').classList.remove('show');
 
-      // ✅ IFTTT GET trigger (mirrors browser test)
+      // ✅ IFTTT GET trigger (your working form)
       const summary = `${order.name} @ ${order.location} • ${fmt(order.total)}`;
       const lineItems = order.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('\n');
       const url = `${IFTTT_URL}?value1=${encodeURIComponent(summary)}&value2=${encodeURIComponent(lineItems)}&value3=`;
       try{ fetch(url, {method:'GET', mode:'no-cors'}); }catch{}
-      renderOrders(); 
+      renderOrders();
     });
 
     /* ========= Orders ========= */
@@ -800,7 +810,7 @@
       $('#orderLines').innerHTML=o.lines.map(l=>`<div class="row-between" style="padding:6px 0">
         <div>${l.name} × ${l.qty}</div><div style="font-weight:700">${fmt(l.line)}</div></div>`).join('');
       $('#orderTotal').textContent=fmt(o.total);
-      document.body.appendChild($('#orderSheet')); // ensure above settings
+      document.body.appendChild($('#orderSheet')); // ensure on top
       $('#orderSheet').classList.add('show');
     }
     document.addEventListener('click', e=>{
@@ -824,7 +834,7 @@
       $('#kpiAOV').textContent=fmt(aov);
       $('#kpiItems').textContent=items;
 
-      // sparkline (last 7 days revenue)
+      // Sparkline (7 days)
       const days=Array(7).fill(0), now=Date.now();
       all.forEach(o=>{
         const d=new Date(o.when); const diff=Math.floor((now-d)/86400000);
@@ -854,9 +864,7 @@
     function renderInventory(){
       const wrap=$('#inventoryList'); if(!wrap) return;
       const cards=$$('.card');
-      wrap.innerHTML=[...cards].map(c=>`<div class="field"><div style="flex:1;font-weight:600">${c.dataset.name}</div><div class="muted">${
-        fmt(+c.dataset.price)
-      }</div></div>`).join('');
+      wrap.innerHTML=[...cards].map(c=>`<div class="field"><div style="flex:1;font-weight:600">${c.dataset.name}</div><div class="muted">${fmt(+c.dataset.price)}</div></div>`).join('');
     }
 
     /* ========= Heat Map ========= */
@@ -867,7 +875,7 @@
       for(let i=0;i<total;i++){
         const cell=document.createElement('div');
         cell.className='heat-cell';
-        const a=0.15+0.65*Math.random(); // demo heat intensity
+        const a=0.15+0.65*Math.random();
         cell.style.background=`rgba(110,168,254,${a})`;
         grid.appendChild(cell);
         if((i%24)===23) grid.appendChild(document.createElement('br'));
@@ -884,8 +892,7 @@
 
     /* ========= Admin Tabs & Login ========= */
     function switchTab(which){
-      const g=$('#tabGeneral'), a=$('#tabAdmin'),
-            pg=$('#panelGeneral'), pa=$('#panelAdmin');
+      const g=$('#tabGeneral'), a=$('#tabAdmin'), pg=$('#panelGeneral'), pa=$('#panelAdmin');
       if(which==='admin'){
         g.classList.remove('active'); g.setAttribute('aria-selected','false');
         a.classList.add('active');    a.setAttribute('aria-selected','true');
@@ -905,13 +912,12 @@
     }
     document.addEventListener('click', e=>{
       if(e.target.closest('#tabGeneral')) switchTab('general');
-      if(e.target.closest('#tabAdmin'))   switchTab('admin');
+      if(e.target.closest('#tabAdmin')) switchTab('admin');
       if(e.target.closest('#adminSubmit')){
         const ok=$('#adminPassword').value===ADMIN_PASSWORD;
         if(ok){ localStorage.setItem(UNLOCK_KEY,'1'); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
         else { $('#adminError').style.display='block'; }
       }
-      // subtab switch
       const sub=e.target.closest('.subtab');
       if(sub){
         $$('.subtab').forEach(s=>s.classList.remove('active'));
@@ -937,7 +943,8 @@
       `).join('');
     }
     $('#historyClear')?.addEventListener('click',()=>{ localStorage.setItem(DELIVERED_KEY,'[]'); renderHistory(); });
-        /* ========= Init ========= */
+
+    /* ========= Init ========= */
     updateGreeting();
     buildPromos();
     renderCart();
@@ -951,28 +958,14 @@
     renderHistory();
     activateChip(''); // default chip
 
-    // Hotfix: guarantee z-index and critical button bindings even if earlier code failed
+    // Safety binds
     (function(){
-      const $ = s => document.querySelector(s);
-
-      // Ensure stacking: Order sheet above Settings
       $('#settingsOverlay')?.style.setProperty('z-index','10000');
       $('#orderSheet')?.style.setProperty('z-index','10050');
-
-      // Core buttons (idempotent)
       $('#settingsBtn')?.addEventListener('click',()=>$('#settingsOverlay')?.classList.add('show'));
       $('#settingsClose')?.addEventListener('click',()=>$('#settingsOverlay')?.classList.remove('show'));
       $('#cartBtn')?.addEventListener('click',()=>$('#cartOverlay')?.classList.add('show'));
       $('#cartBack')?.addEventListener('click',()=>$('#cartOverlay')?.classList.remove('show'));
-
-      // Ensure admin login view matches stored state on load
-      (function ensureAdminLoginVisible(){
-        const logged = localStorage.getItem(UNLOCK_KEY)==='1';
-        const login  = $('#adminLogin');
-        const content= $('#adminContent');
-        if(login)   login.style.display   = logged?'none':'block';
-        if(content) content.style.display = logged?'block':'none';
-      })();
     })();
     </script>
   </div> <!-- /.app -->
