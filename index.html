@@ -28,46 +28,25 @@
       box-shadow:0 4px 24px rgba(0,255,0,.08);
     }
 
-    /* Header (shorter search so buttons don’t overlap) */
+    /* Header -- shorten search so it never overlaps the two right buttons */
     .row{display:flex;align-items:center;gap:10px}
-    .search-wrap{
-      position:relative;
-      flex:1 1 auto;
-      min-width:0;                /* allow flex to shrink */
-      max-width:calc(100% - 112px); /* keeps space for 2 buttons (44px each) + gaps */
-    }
-    .icon-rights{display:flex;gap:10px;flex-shrink:0}
-    .search{
-      width:100%;border-radius:999px;padding:12px 44px;color:var(--text);
-      outline:0;border:1px solid #2a2a2e
-    }
+    .search-wrap{position:relative;flex:1 1 auto;min-width:0;max-width:calc(100% - 120px);} /* 2×44px buttons + gaps */
+    .icon-rights{display:flex;gap:10px;flex:0 0 104px} /* 44 + 44 + gap */
+    .search{width:100%;border-radius:999px;padding:12px 44px;color:var(--text);outline:0;border:1px solid #2a2a2e}
     .search::placeholder{color:#6c6c70}
     .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
     .btn{border-radius:14px;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
     #cartBtn{position:relative}
     .badge{position:absolute;top:-6px;right:-8px;background:var(--badge);color:#fff;border-radius:999px;padding:1px 6px;font-size:12px;font-weight:700;display:none}
 
-    /* Extra guard on very small widths */
-    @media (max-width:360px){
-      .search-wrap{ max-width:calc(100% - 120px); }
-    }
-
     .greet{margin:8px 2px 2px;color:#c7c7cc;font-size:14px}
 
     /* Carousel */
     .carousel{margin:10px 0 6px}
-    .snapper{
-      height:100px;display:flex;align-items:stretch;gap:var(--snap-gap);
-      overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;
-      padding:0 var(--snap-gap)
-    }
+    .snapper{height:100px;display:flex;align-items:stretch;gap:var(--snap-gap);overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:0 var(--snap-gap)}
     .snapper::-webkit-scrollbar{display:none}
     .snap-spacer{flex:0 0 7.5%}
-    .snap-card{
-      position:relative;flex:0 0 85%;scroll-snap-align:center;border-radius:14px;overflow:hidden;
-      border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);
-      display:flex;align-items:center;justify-content:center
-    }
+    .snap-card{position:relative;flex:0 0 85%;scroll-snap-align:center;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center}
     .banner{width:100%;height:100%;object-fit:cover}
     .snap-meta{position:absolute;left:10px;bottom:8px;right:10px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}
     .snap-title{font-weight:800;text-shadow:0 1px 6px rgba(0,0,0,.6)}
@@ -77,45 +56,22 @@
     .snap-dot.active{background:#7fb1ff}
 
     /* Chips */
-    .chips{display:flex;gap:10px;margin:6px 0 12px;flex-wrap:wrap}
-    .chip{padding:6px 10px;border-radius:999px;font-size:13px;cursor:pointer;user-select:none}
+    .chips{display:flex;gap:10px;margin:6px 0 8px;flex-wrap:wrap}
+    .chip{padding:6px 10px;border-radius:999px;font-size:13px;cursor:pointer}
     .chip.active{outline:2px solid rgba(110,168,254,.5)}
 
-    /* Grid: square cards (2-up) */
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(2, 1fr);
-      gap:12px;
-    }
-    .card{
-      border-radius:var(--radius);
-      padding:10px;
-      position:relative;
-      display:flex;flex-direction:column;
-      min-height:0;
-      aspect-ratio:1/1;           /* square cards */
-    }
-    .thumb{
-      flex:1 1 auto;
-      border-radius:12px;overflow:hidden;margin-bottom:8px;
-      display:flex;align-items:center;justify-content:center;background:#0e0e12;
-      min-height:0;
-    }
-    .thumb img{width:100%;height:100%;object-fit:contain}
-    .title{font-weight:700;margin:2px 0 0;font-size:14px;line-height:1.2}
-    .price{color:#c7c7cc;font-weight:600;margin-top:2px;font-size:13px}
-    .add{
-      position:absolute;right:10px;bottom:10px;background:var(--accent);border:0;color:#001230;
-      border-radius:12px;width:38px;height:38px;font-size:20px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer
-    }
-    .fav{
-      position:absolute;right:10px;top:10px;width:32px;height:32px;border-radius:10px;
-      display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.25);cursor:pointer
-    }
+    /* Grid -- uniform "little square" cards */
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .card{border-radius:var(--radius);padding:12px;position:relative;display:flex;flex-direction:column;min-height:190px}
+    .thumb{height:114px;border-radius:12px;overflow:hidden;margin-bottom:8px;display:flex;align-items:center;justify-content:center;background:#0e0e12}
+    .thumb img{width:100%;height:100%;object-fit:cover} /* cover to keep square look */
+    .title{font-weight:700;margin:4px 0 2px}
+    .price{color:#c7c7cc;font-weight:600;margin-top:auto}
+    .add{position:absolute;right:12px;bottom:12px;background:var(--accent);border:0;color:#001230;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer}
+    .fav{position:absolute;right:12px;top:12px;width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);cursor:pointer}
     .fav.active{background:rgba(255,215,0,.15);box-shadow:0 0 0 1px rgba(255,215,0,.35) inset}
 
-    /* Overlays */
+    /* Overlays + z-index fix (order sheet above settings) */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}
     .overlay.show{display:flex}
     .sheet{width:92%;max-width:480px;border-radius:20px;padding:16px}
@@ -126,6 +82,9 @@
       transform:translateY(100%);animation:slideUp 220ms ease-out forwards
     }
     @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+    #settingsOverlay{ z-index: 10000; }
+    #orderSheet{ z-index: 10050; }
+
     .row-between{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .qty{display:flex;align-items:center;gap:10px}
     .qty button{width:36px;height:36px;border-radius:10px;border:1px solid #2a2a30;background:#1c1c22;color:var(--text);font-size:20px;font-weight:700}
@@ -169,10 +128,6 @@
     #toastHost{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;z-index:11000}
     .toast{pointer-events:auto;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(24,24,32,.9);font-weight:600;opacity:0;transform:translateY(8px);transition:opacity .22s ease,transform .22s ease}
     .toast.show{opacity:1;transform:translateY(0)}
-
-    /* Z fix: order sheet above settings */
-    #settingsOverlay{ z-index: 10000; }
-    #orderSheet{ z-index: 10050; }
   </style>
 </head>
 <body>
@@ -212,6 +167,9 @@
       <div class="chip" data-filter="protein">protein</div>
       <div class="chip" data-filter="favorites">favorites</div>
     </div>
+
+    <!-- No results banner -->
+    <div id="noResultsBanner" style="display:none;color:#c7c7cc;margin:8px 4px;">No results found</div>
 
     <!-- Products Grid -->
     <div id="grid" class="grid" role="list">
@@ -261,11 +219,19 @@
       </div>
 
       <!-- 6 Greek Yogurt -->
-      <div class="card" role="listitem" data-name="Greek Yogurt" data-price="2.00" data-img="assets/greek-yogurt.jpeg" data-tags="protein">
+      <div class="card" role="listitem"
+           data-name="Greek Yogurt"
+           data-price="2.00"
+           data-img="assets/greek-yogurt.jpeg"
+           data-tags="protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb">
-          <img src="assets/greek-yogurt.jpeg" alt="Greek Yogurt" loading="lazy"
-               onerror="if(!this.__triedJPG){this.__triedJPG=1;this.src='assets/greek-yogurt.jpg';}else{this.src='assets/product-yogurt.jpg';}">
+          <img
+            src="assets/greek-yogurt.jpeg?v=3"
+            alt="Greek Yogurt"
+            loading="lazy"
+            onerror="if(!this.__triedJPG){this.__triedJPG=1;this.src='assets/greek-yogurt.jpg?v=3';}else{this.src='assets/product-yogurt.jpg';}"
+          >
         </div>
         <div class="title">Greek Yogurt</div>
         <div class="price">$2.00</div>
@@ -355,7 +321,7 @@
       </div>
     </div>
 
-    <!-- Cart -->
+    <!-- Cart bottom-sheet -->
     <div id="cartOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Cart">
       <div class="sheet" role="document">
         <div class="row-between">
@@ -373,31 +339,36 @@
       </div>
     </div>
 
-    <!-- Checkout -->
+    <!-- Checkout bottom-sheet -->
     <div id="checkoutOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Checkout">
       <div class="sheet" role="document">
         <div class="row-between">
           <h3>Checkout</h3>
           <button class="ghost" id="checkoutClose" type="button">Close</button>
         </div>
+
         <div class="sheet-body">
+          <!-- Profile -->
           <div style="margin-top:6px;">Your name:</div>
           <input id="checkoutName" class="field" style="width:100%;padding:10px;border-radius:10px">
           <div style="margin-top:10px;">Where are you on campus?</div>
           <input id="checkoutLocation" class="field" style="width:100%;padding:10px;border-radius:10px">
 
+          <!-- Promo (simple) -->
           <div style="margin-top:12px;">Promo code</div>
           <input id="checkoutPromo" class="field" style="width:100%;padding:10px;border-radius:10px">
           <div id="promoStatus" style="margin-top:6px;color:#aaa;font-size:13px"></div>
 
+          <!-- Tip -->
           <div style="margin-top:12px;">Tip (optional)</div>
-          <div id="tipGroup">
+          <div class="tip-group" id="tipGroup">
             <button class="ghost tip-btn" data-tip="none" type="button">No tip</button>
             <button class="ghost tip-btn" data-tip="amount:1" type="button">$1</button>
             <button class="ghost tip-btn" data-tip="amount:2" type="button">$2</button>
             <button class="ghost tip-btn" data-tip="percent:10" type="button">10%</button>
           </div>
 
+          <!-- Breakdown -->
           <div class="breakdown" style="margin-top:12px">
             <div class="break-row"><div class="muted">Subtotal</div><div id="ckSub">$0.00</div></div>
             <div class="break-row"><div class="muted">Discount</div><div id="ckDisc">-$0.00</div></div>
@@ -407,31 +378,35 @@
 
           <div id="checkoutError" style="display:none;color:#ff6b6b;margin-top:10px;">Please fill both fields.</div>
         </div>
+
         <div class="actions" style="margin-top:12px;">
           <button class="primary" id="checkoutSubmit" type="button">Place Order</button>
         </div>
       </div>
     </div>
-
-    <!-- Settings -->
+        <!-- Settings -->
     <div id="settingsOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Settings">
       <div class="sheet" role="document">
         <div class="row-between">
           <h3>Settings</h3>
           <button class="ghost" id="settingsClose" type="button">Close</button>
         </div>
+
         <div class="tabs" role="tablist" aria-label="Settings Tabs">
           <button id="tabGeneral" class="tab active" role="tab" aria-selected="true" aria-controls="panelGeneral" type="button">General</button>
           <button id="tabAdmin" class="tab" role="tab" aria-selected="false" aria-controls="panelAdmin" type="button">Admin</button>
         </div>
+
         <div class="sheet-body">
           <!-- General -->
           <div id="panelGeneral" role="tabpanel" aria-labelledby="tabGeneral">
             <div class="ghost" aria-disabled="true">Dark Mode (disabled)</div>
             <div class="ghost" aria-disabled="true">Notifications (disabled)</div>
           </div>
+
           <!-- Admin -->
           <div id="panelAdmin" role="tabpanel" aria-labelledby="tabAdmin" style="display:none">
+            <!-- Login -->
             <div id="adminLogin">
               <div style="margin-top:6px;">Admin password:</div>
               <input id="adminPassword" type="password" class="field" style="width:100%;padding:10px;border-radius:10px">
@@ -440,6 +415,8 @@
                 <button class="primary" id="adminSubmit" type="button">Unlock</button>
               </div>
             </div>
+
+            <!-- Content (hidden until unlock) -->
             <div id="adminContent" style="display:none">
               <div class="admin-subtabs">
                 <button class="subtab active" data-subtab="orders" type="button">Orders</button>
@@ -448,31 +425,60 @@
                 <button class="subtab" data-subtab="heat" type="button">Heat Map</button>
                 <button class="subtab" data-subtab="history" type="button">History</button>
               </div>
-              <div id="subtab-orders"> <div id="ordersList" class="admin-list">No orders yet</div></div>
-              <div id="subtab-inventory" style="display:none"><div id="inventoryList" class="admin-list">Loading…</div></div>
+
+              <!-- Orders -->
+              <div id="subtab-orders">
+                <div style="margin-top:6px;font-weight:700">Orders</div>
+                <div id="ordersList" class="admin-list">No orders yet</div>
+              </div>
+
+              <!-- Inventory -->
+              <div id="subtab-inventory" style="display:none">
+                <div style="margin-top:6px;font-weight:700">Inventory</div>
+                <div id="inventoryList" class="admin-list">Loading…</div>
+              </div>
+
+              <!-- Analytics -->
               <div id="subtab-analytics" style="display:none">
+                <div style="margin-top:6px;font-weight:700">Analytics Overview</div>
                 <div class="kpis" style="margin-top:8px">
                   <div class="kpi"><div class="label">Revenue</div><div id="kpiRevenue" class="value">$0.00</div></div>
                   <div class="kpi"><div class="label">Orders</div><div id="kpiOrders" class="value">0</div></div>
                   <div class="kpi"><div class="label">AOV</div><div id="kpiAOV" class="value">$0.00</div></div>
                   <div class="kpi"><div class="label">Items</div><div id="kpiItems" class="value">0</div></div>
                 </div>
-                <svg id="revSpark" class="spark" viewBox="0 0 100 40" preserveAspectRatio="none"></svg>
-                <div id="topProducts"></div>
+                <div style="margin-top:12px">
+                  <div class="label" style="margin-bottom:6px">Revenue (last 7 days)</div>
+                  <svg id="revSpark" class="spark" viewBox="0 0 100 40" preserveAspectRatio="none" aria-label="Revenue last 7 days"></svg>
+                </div>
+                <div style="margin-top:12px;font-weight:700">Top Products</div>
+                <div class="table">
+                  <div class="rowh"><div>Product</div><div>Qty</div><div>Revenue</div><div>Conv%</div></div>
+                  <div id="topProducts"></div>
+                </div>
               </div>
+
+              <!-- Heat Map -->
               <div id="subtab-heat" style="display:none">
-                <div id="heatGridHM"></div>
+                <div style="margin-top:6px;font-weight:700">Sales Heat Map</div>
+                <div id="heatGridHM" class="admin-list"></div>
               </div>
+
+              <!-- History -->
               <div id="subtab-history" style="display:none">
-                <div id="historyList" class="admin-list">No history yet</div>
-                <button class="ghost" id="historyClear" type="button">Clear history</button>
+                <div class="row-between" style="margin-top:6px;">
+                  <div style="font-weight:700">Delivered Orders (auto-clears after 3 days)</div>
+                  <button class="ghost" id="historyClear" type="button" style="padding:6px 10px">Clear history now</button>
+                </div>
+                <div id="historyList" class="admin-list" style="margin-top:8px">No delivered orders</div>
               </div>
-            </div>
-          </div>
-        </div>
+            </div> <!-- /#adminContent -->
+          </div> <!-- /#panelAdmin -->
+        </div> <!-- /.sheet-body -->
       </div>
     </div>
-        <!-- Sticky Cart Bar -->
+
+    <!-- Sticky Cart Bar -->
     <div id="cartBar">
       <div id="cartBarTotal">$0.00</div>
       <button class="ghost" id="cartBarView" type="button">View</button>
@@ -481,8 +487,7 @@
 
     <!-- Toast Host -->
     <div id="toastHost"></div>
-
-    <script>
+        <script>
     /* ========= App boot ========= */
     const APP_SCHEMA_VERSION = 3, SCHEMA_KEY = 'fitsnacks.schema';
     try{
@@ -507,12 +512,9 @@
     const DELIVERED_KEY='fitsnacks.orders.delivered';
     const PROFILE_NAME_KEY='fitsnacks.profile.name';
     const PROFILE_LOC_KEY='fitsnacks.profile.location';
-
-    // IFTTT (GET form since that’s what works for you)
     const IFTTT_EVENT='Fitsnack_order';
     const IFTTT_KEY='fI-MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA';
     const IFTTT_URL=`https://maker.ifttt.com/trigger/${IFTTT_EVENT}/with/key/${IFTTT_KEY}`;
-
     const ADMIN_PASSWORD='8TSB077';
     const fmt=n=>'$'+n.toFixed(2);
 
@@ -538,7 +540,7 @@
       setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),250); }, ms);
     }
 
-    /* ========= Carousel / Promos (safe auto-advance -- no page jump) ========= */
+    /* ========= Carousel / Promos ========= */
     function buildPromos(){
       const snapper=$('#snapper'); if(!snapper) return;
       let data=[];
@@ -561,55 +563,46 @@
           ${p.cta?`<button class="ghost snap-cta" type="button">${p.cta}</button>`:''}</div>`;
         snapper.insertBefore(c, after);
 
-        const go = (act)=>{
-          if(act==='scrollGrid') $('#grid')?.scrollIntoView({behavior:'smooth'});
-          if(act==='filter') activateChip(p.value||'');
-          if(act==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
+        const go = ()=>{
+          if(p.action==='scrollGrid') $('#grid')?.scrollIntoView({behavior:'smooth'});
+          if(p.action==='filter') activateChip(p.value||'');
+          if(p.action==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
         };
-        c.addEventListener('click', e=>{ if(!e.target.closest('.snap-cta')) go(p.action); }, {passive:true});
-        c.querySelector('.snap-cta')?.addEventListener('click', e=>{ e.stopPropagation(); go(p.action); }, {passive:true});
+        c.addEventListener('click', e=>{ if(!e.target.closest('.snap-cta')) go(); }, {passive:true});
+        c.querySelector('.snap-cta')?.addEventListener('click', e=>{ e.stopPropagation(); go(); }, {passive:true});
       });
 
       // dots + safe auto-advance
-      const cards = $$('.snap-card');
-      const dotsWrap = $('#snapDots');
+      const cards=$$('.snap-card');
+      const dotsWrap=$('#snapDots');
       dotsWrap.innerHTML = cards.map(()=>'<div class="snap-dot"></div>').join('');
-      const dots = $$('.snap-dot');
-      const setDot = i => dots.forEach((d,k)=>d.classList.toggle('active',k===i));
+      const dots=$$('.snap-dot');
+      const setDot=i=>dots.forEach((d,k)=>d.classList.toggle('active',k===i));
       setDot(0);
 
-      let idx = 0;
-      let userInteracting = false;
-      let lastInteract = 0;
-      let inView = true;
-      const INTERACT_COOLDOWN = 3500;
+      let idx=0, userInteracting=false, lastInteract=0, inView=true;
+      const INTERACT_COOLDOWN=3500;
 
-      const scrollToCard = i => {
-        if (!cards[i]) return;
-        const targetLeft = cards[i].offsetLeft - snapper.firstElementChild.offsetLeft;
-        snapper.scrollTo({ left: targetLeft, behavior: 'smooth' });
-        setDot(i);
+      const scrollToCard=i=>{
+        if(!cards[i]) return;
+        const targetLeft=cards[i].offsetLeft - snapper.firstElementChild.offsetLeft;
+        snapper.scrollTo({left:targetLeft,behavior:'smooth'}); setDot(i);
       };
 
       ['pointerdown','wheel','touchstart','mousedown','scroll'].forEach(ev=>{
-        snapper.addEventListener(ev, ()=>{
-          userInteracting = true;
-          lastInteract = Date.now();
-        }, {passive:true});
+        snapper.addEventListener(ev, ()=>{userInteracting=true;lastInteract=Date.now();},{passive:true});
       });
-
-      const obs = new IntersectionObserver((entries)=>{
-        inView = entries.some(e=>e.isIntersecting);
-      }, {root:null, threshold:0.2});
+      const obs=new IntersectionObserver(entries=>{
+        inView=entries.some(e=>e.isIntersecting);
+      },{threshold:0.2});
       obs.observe(snapper);
 
       setInterval(()=>{
-        const now = Date.now();
-        if(!cards.length || !inView) return;
-        if(userInteracting && (now - lastInteract) < INTERACT_COOLDOWN) return;
-        idx = (idx + 1) % cards.length;
-        scrollToCard(idx);
-      }, 5000);
+        const now=Date.now();
+        if(!cards.length||!inView) return;
+        if(userInteracting && (now-lastInteract)<INTERACT_COOLDOWN) return;
+        idx=(idx+1)%cards.length; scrollToCard(idx);
+      },5000);
     }
 
     /* ========= Product Sheet ========= */
@@ -617,24 +610,22 @@
     function openProductSheet(card){
       currentProduct={ name:card.dataset.name, price:+card.dataset.price, img:card.dataset.img };
       $('#sheetTitle').textContent=currentProduct.name;
-      $('#sheetImg').src=currentProduct.img||'';
-      $('#sheetImg').alt=currentProduct.name||'';
+      $('#sheetImg').src=currentProduct.img||''; $('#sheetImg').alt=currentProduct.name||'';
       $('#sheetPrice').textContent=fmt(currentProduct.price);
-      $('#qtyVal').textContent='1';
-      $('#sheetAdd').textContent='Add • '+fmt(currentProduct.price);
+      $('#qtyVal').textContent='1'; $('#sheetAdd').textContent='Add • '+fmt(currentProduct.price);
       $('#productSheet').classList.add('show');
     }
     function closeProductSheet(){ $('#productSheet').classList.remove('show'); }
     $('#sheetClose')?.addEventListener('click', closeProductSheet);
-    $('#qtyPlus')?.addEventListener('click', ()=>{
-      let n=(+$('#qtyVal').textContent)||1; n=Math.min(99, n+1);
+    $('#qtyPlus')?.addEventListener('click',()=>{
+      let n=(+$('#qtyVal').textContent)||1; n=Math.min(99,n+1);
       $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(n*(currentProduct?.price||0));
     });
-    $('#qtyMinus')?.addEventListener('click', ()=>{
-      let n=(+$('#qtyVal').textContent)||1; n=Math.max(1, n-1);
+    $('#qtyMinus')?.addEventListener('click',()=>{
+      let n=(+$('#qtyVal').textContent)||1; n=Math.max(1,n-1);
       $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(n*(currentProduct?.price||0));
     });
-    $('#sheetAdd')?.addEventListener('click', ()=>{
+    $('#sheetAdd')?.addEventListener('click',()=>{
       if(!currentProduct) return;
       const n=(+$('#qtyVal').textContent)||1;
       const entry=cart.get(currentProduct.name)||{price:currentProduct.price,qty:0};
@@ -643,17 +634,15 @@
       showToast(`Added ${n} × ${currentProduct.name}`);
     });
 
-    // Open sheet when clicking a card (not fav/+)
-    document.addEventListener('click', e=>{
+    document.addEventListener('click',e=>{
       const card=e.target.closest('.card'); if(!card) return;
-      if(e.target.closest('.fav') || e.target.closest('.add')) return;
+      if(e.target.closest('.fav')||e.target.closest('.add')) return;
       openProductSheet(card);
-    }, {passive:true});
-    // Short-tap on "+" opens sheet too
-    document.addEventListener('click', e=>{
+    },{passive:true});
+    document.addEventListener('click',e=>{
       const btn=e.target.closest('.card .add'); if(!btn) return;
       e.stopPropagation(); openProductSheet(btn.closest('.card'));
-    }, {passive:true});
+    },{passive:true});
 
     /* ========= Cart ========= */
     function refreshBadge(){
@@ -666,7 +655,7 @@
       let total=0, html='';
       for(const [name,info] of cart){
         const line=info.price*info.qty; total+=line;
-        html += `<div class="row-between" style="margin-top:6px">
+        html+=`<div class="row-between" style="margin-top:6px">
           <div style="display:flex;gap:10px;align-items:center">
             <button data-act="-" data-name="${name}" class="ghost" type="button">−</button>
             <div style="min-width:24px;text-align:center">${info.qty}</div>
@@ -680,89 +669,85 @@
         </div>`;
       }
       $('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
-      $('#cartTotal').textContent = fmt(total);
-      updateCartBar();
+      $('#cartTotal').textContent = fmt(total); updateCartBar();
     }
-    // cart +/- and remove
-    document.addEventListener('click', (e)=>{
+    document.addEventListener('click',e=>{
       const b=e.target.closest('button[data-act][data-name]');
-      if(b){
-        const name=b.getAttribute('data-name'); const act=b.getAttribute('data-act');
+      if(b){ const name=b.dataset.name, act=b.dataset.act;
         const entry=cart.get(name); if(!entry) return;
-        entry.qty=Math.max( (act==='+')?entry.qty+1:entry.qty-1 ,0);
+        entry.qty=Math.max((act==='+')?entry.qty+1:entry.qty-1,0);
         if(entry.qty===0) cart.delete(name);
         saveCart(); renderCart(); refreshBadge(); return;
       }
       const rm=e.target.closest('button[data-remove]');
-      if(rm){
-        const name=rm.getAttribute('data-remove'); cart.delete(name);
+      if(rm){ const name=rm.dataset.remove; cart.delete(name);
         saveCart(); renderCart(); refreshBadge(); return;
       }
-    }, {passive:true});
-
+    },{passive:true});
     function openCart(){ $('#cartOverlay')?.classList.add('show'); }
     function closeCart(){ $('#cartOverlay')?.classList.remove('show'); }
-    $('#cartBtn')?.addEventListener('click', openCart);
-    $('#cartBack')?.addEventListener('click', closeCart);
+    $('#cartBtn')?.addEventListener('click',openCart);
+    $('#cartBack')?.addEventListener('click',closeCart);
 
     /* ========= Sticky cart bar ========= */
     function updateCartBar(){
       const bar=$('#cartBar'); if(!bar) return;
-      let total=0, count=0; for(const [,info] of cart){ total+=info.price*info.qty; count+=info.qty; }
+      let total=0,count=0; for(const [,i] of cart){ total+=i.price*i.qty; count+=i.qty; }
       if(count>0){ $('#cartBarTotal').textContent=fmt(total); bar.classList.add('show'); }
       else { bar.classList.remove('show'); }
     }
-    $('#cartBarView')?.addEventListener('click', openCart);
-    $('#cartBarCheckout')?.addEventListener('click', ()=>{
+    $('#cartBarView')?.addEventListener('click',openCart);
+    $('#cartBarCheckout')?.addEventListener('click',()=>{
       let count=0; for(const v of cart.values()) count+=v.qty;
       if(count===0){ showToast('Your cart is empty'); return; }
       $('#checkoutError').style.display='none'; updateCheckoutBreakdown();
       $('#checkoutOverlay').classList.add('show');
     });
 
-    /* ========= Search + Filters (chip fix so they actually filter) ========= */
+    /* ========= Search + Filters ========= */
     function searchAndFilter(){
-      const q = ($('#search').value||'').toLowerCase();
+      const q=($('#search').value||'').toLowerCase();
       let shown=0;
       $$('.card').forEach(c=>{
         const hitsName=c.dataset.name.toLowerCase().includes(q);
-        const visible = c.style.display !== 'none-filter' && hitsName;
-        c.style.display = visible ? '' : 'none';
+        const visible=(c.style.display!=='none-filter')&&hitsName;
+        c.style.display=visible?'':'none';
         if(visible) shown++;
       });
+      $('#noResultsBanner').style.display=shown? 'none':'block';
     }
     function activateChip(val){
-      $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch.dataset.filter===val));
+      $$('#chips .chip').forEach(ch=>ch.classList.toggle('active',ch.dataset.filter===val));
       $$('.card').forEach(c=>{
         const tags=(c.dataset.tags||'').toLowerCase();
         const show=!val||val===''||(val==='favorites'?favorites.has(c.dataset.name):tags.includes(val));
         if(show) c.style.removeProperty('display');
-        else c.style.display='none-filter'; // special internal state
+        else c.style.display='none-filter';
       });
       searchAndFilter();
     }
-    $('#chips')?.addEventListener('click', e=>{
+    $('#chips')?.addEventListener('click',e=>{
       const chip=e.target.closest('.chip'); if(!chip) return;
       activateChip(chip.dataset.filter||'');
     });
-    $('#search')?.addEventListener('input', searchAndFilter);
+    $('#search')?.addEventListener('input',searchAndFilter);
 
     /* ========= Favorites ========= */
     function syncFavStars(){
       $$('.card').forEach(card=>{
-        card.querySelector('.fav')?.classList.toggle('active', favorites.has(card.dataset.name));
+        card.querySelector('.fav')?.classList.toggle('active',favorites.has(card.dataset.name));
       });
     }
-    document.addEventListener('click', e=>{
+    document.addEventListener('click',e=>{
       const fav=e.target.closest('.fav'); if(!fav) return;
       e.stopPropagation();
       const card=fav.closest('.card'); const name=card.dataset.name;
       if(favorites.has(name)) favorites.delete(name); else favorites.add(name);
       saveFavs(); syncFavStars();
-      const favChipActive = $('#chips .chip.active')?.dataset.filter === 'favorites';
+      const favChipActive=$('#chips .chip.active')?.dataset.filter==='favorites';
       if(favChipActive && !favorites.has(name)){ card.style.display='none-filter'; searchAndFilter(); }
-    }, {passive:true});
-        /* ========= Checkout ========= */
+    },{passive:true});
+        /* ========= Checkout (totals + submit with IFTTT GET) ========= */
     function computeTotals(){
       let subtotal=0; for(const[,info] of cart) subtotal+=info.price*info.qty;
       return {subtotal,disc:0,tip:0,total:subtotal};
@@ -774,10 +759,13 @@
       $('#ckTip').textContent=fmt(tip);
       $('#ckTotal').textContent=fmt(total);
     }
+
     $('#cartCheckout')?.addEventListener('click', ()=>{
       $('#checkoutError').style.display='none'; updateCheckoutBreakdown();
-      closeCart(); $('#checkoutOverlay').classList.add('show');
+      $('#cartOverlay')?.classList.remove('show');
+      $('#checkoutOverlay')?.classList.add('show');
     });
+
     $('#checkoutClose')?.addEventListener('click', ()=>$('#checkoutOverlay')?.classList.remove('show'));
 
     $('#checkoutSubmit')?.addEventListener('click', ()=>{
@@ -793,18 +781,21 @@
       const list=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]'); list.unshift(order);
       localStorage.setItem(ORDERS_KEY, JSON.stringify(list));
 
-      cart.clear(); saveCart(); renderCart(); refreshBadge(); updateGreeting(); showToast('Order placed 🎉');
-      $('#checkoutOverlay').classList.remove('show');
+      // Clear cart & close
+      cart.clear(); saveCart(); renderCart(); refreshBadge(); updateGreeting();
+      $('#checkoutOverlay')?.classList.remove('show');
+      showToast('Order placed 🎉');
 
-      // IFTTT GET trigger
+      // IFTTT GET (matches what works when you hit it in the browser)
       const summary = `${order.name} @ ${order.location} • ${fmt(order.total)}`;
       const lineItems = order.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('\n');
       const url = `${IFTTT_URL}?value1=${encodeURIComponent(summary)}&value2=${encodeURIComponent(lineItems)}&value3=`;
-      try{ fetch(url,{method:'GET',mode:'no-cors'}); }catch{}
-      renderOrders();
+      try{ fetch(url, {method:'GET', mode:'no-cors'}); }catch{}
+
+      renderOrders(); // refresh Orders tab if open
     });
 
-    /* ========= Orders ========= */
+    /* ========= Orders list + Click-to-open details ========= */
     function renderOrders(){
       const list=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
       const box=$('#ordersList'); if(!box) return;
@@ -817,23 +808,41 @@
         </div>
       `).join('');
     }
+
     function openOrderSheet(idx){
       const list=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]'); const o=list[idx]; if(!o) return;
       $('#orderMeta').textContent=`${new Date(o.when).toLocaleString()} • ${o.name} @ ${o.location}`;
       $('#orderLines').innerHTML=o.lines.map(l=>`<div class="row-between" style="padding:6px 0">
         <div>${l.name} × ${l.qty}</div><div style="font-weight:700">${fmt(l.line)}</div></div>`).join('');
       $('#orderTotal').textContent=fmt(o.total);
-      document.body.appendChild($('#orderSheet'));
-      $('#orderSheet').classList.add('show');
+
+      // ensure this sheet sits above settings
+      const os=$('#orderSheet'); document.body.appendChild(os);
+      os.classList.add('show');
+      os.dataset.idx = idx; // remember which order is open
     }
+
     document.addEventListener('click', e=>{
-      const row=e.target.closest('.order-item'); if(row) openOrderSheet(parseInt(row.dataset.idx,10));
-    },{passive:true});
-    $('#orderClose')?.addEventListener('click', ()=>$('#orderSheet').classList.remove('show'));
-    $('#orderCancel')?.addEventListener('click', ()=>$('#orderSheet').classList.remove('show'));
+      const row=e.target.closest('.order-item'); if(row){ openOrderSheet(parseInt(row.dataset.idx,10)); }
+    }, {passive:true});
+
+    $('#orderClose')?.addEventListener('click', ()=>$('#orderSheet')?.classList.remove('show'));
+    $('#orderCancel')?.addEventListener('click', ()=>$('#orderSheet')?.classList.remove('show'));
+
     $('#orderDelivered')?.addEventListener('click', ()=>{
-      $('#orderSheet').classList.remove('show');
-      renderOrders();
+      const idx = parseInt($('#orderSheet')?.dataset.idx||'-1',10);
+      if(isNaN(idx) || idx<0) { $('#orderSheet')?.classList.remove('show'); return; }
+      const active=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
+      if(idx>=0 && idx<active.length){
+        const delivered=active.splice(idx,1)[0];
+        delivered.deliveredWhen=new Date().toISOString();
+        const hist=JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]');
+        hist.unshift(delivered);
+        localStorage.setItem(DELIVERED_KEY, JSON.stringify(hist));
+        localStorage.setItem(ORDERS_KEY, JSON.stringify(active));
+        renderOrders(); renderHistory();
+      }
+      $('#orderSheet')?.classList.remove('show');
     });
 
     /* ========= Analytics ========= */
@@ -846,6 +855,7 @@
       $('#kpiAOV').textContent=fmt(aov);
       $('#kpiItems').textContent=items;
 
+      // simple spark (7 buckets by day)
       const days=Array(7).fill(0), now=Date.now();
       all.forEach(o=>{
         const d=new Date(o.when); const diff=Math.floor((now-d)/86400000);
@@ -857,6 +867,7 @@
         svg.innerHTML=`<polyline points="${pts}" fill="none" stroke="#6ea8fe" stroke-width="2"/>`;
       }
 
+      // Top products
       const agg={};
       all.forEach(o=>o.lines.forEach(l=>{
         agg[l.name]=agg[l.name]||{qty:0,rev:0};
@@ -864,22 +875,22 @@
       }));
       const sorted=Object.entries(agg).sort((a,b)=>b[1].rev-a[1].rev).slice(0,8);
       $('#topProducts').innerHTML = sorted.length
-        ? `<div class="table"><div class="rowh"><div>Product</div><div>Qty</div><div>Revenue</div><div>-</div></div>${
-            sorted.map(([n,v])=>`<div class="rowd"><div>${n}</div><div>${v.qty}</div><div>${fmt(v.rev)}</div><div>-</div></div>`).join('')
-          }</div>`
-        : '<div class="admin-list">No sales yet</div>';
+        ? sorted.map(([n,v])=>`<div class="rowd"><div>${n}</div><div>${v.qty}</div><div>${fmt(v.rev)}</div><div>-</div></div>`).join('')
+        : '<div class="rowd"><div>No sales</div></div>';
     }
 
-    /* ========= Inventory ========= */
+    /* ========= Inventory (simple, from cards) ========= */
     function renderInventory(){
       const wrap=$('#inventoryList'); if(!wrap) return;
       const cards=$$('.card');
-      wrap.innerHTML=[...cards].map(c=>`<div class="field"><div style="flex:1;font-weight:600">${c.dataset.name}</div><div class="muted">${
-        fmt(+c.dataset.price)
-      }</div></div>`).join('');
+      if(!cards.length){ wrap.textContent='No products'; return; }
+      wrap.innerHTML=[...cards].map(c=>`<div class="field">
+        <div style="flex:1;font-weight:600">${c.dataset.name}</div>
+        <div class="muted">${fmt(+c.dataset.price)}</div>
+      </div>`).join('');
     }
 
-    /* ========= Heat Map ========= */
+    /* ========= Heat Map (demo grid) ========= */
     function renderHeat(){
       const grid=$('#heatGridHM'); if(!grid) return;
       grid.innerHTML='';
@@ -887,52 +898,12 @@
       for(let i=0;i<total;i++){
         const cell=document.createElement('div');
         cell.className='heat-cell';
-        const a=0.15+0.65*Math.random();
+        const a=0.15+0.65*Math.random(); // demo heat
         cell.style.background=`rgba(110,168,254,${a})`;
         grid.appendChild(cell);
         if((i%24)===23) grid.appendChild(document.createElement('br'));
       }
     }
-
-    /* ========= Admin Tabs & Login ========= */
-    function switchTab(which){
-      const g=$('#tabGeneral'), a=$('#tabAdmin'),
-            pg=$('#panelGeneral'), pa=$('#panelAdmin');
-      if(which==='admin'){
-        g.classList.remove('active'); g.setAttribute('aria-selected','false');
-        a.classList.add('active');    a.setAttribute('aria-selected','true');
-        pg.style.display='none'; pa.style.display='block';
-        ensureAdminLoginVisible();
-      }else{
-        a.classList.remove('active'); a.setAttribute('aria-selected','false');
-        g.classList.add('active');    g.setAttribute('aria-selected','true');
-        pa.style.display='none'; pg.style.display='block';
-      }
-    }
-    function ensureAdminLoginVisible(){
-      const logged=localStorage.getItem(UNLOCK_KEY)==='1';
-      $('#adminLogin').style.display=logged?'none':'block';
-      $('#adminContent').style.display=logged?'block':'none';
-      if(logged){ renderOrders(); renderInventory(); renderAnalytics(); renderHeat(); renderHistory(); }
-    }
-    document.addEventListener('click', e=>{
-      if(e.target.closest('#tabGeneral')) switchTab('general');
-      if(e.target.closest('#tabAdmin'))   switchTab('admin');
-      if(e.target.closest('#adminSubmit')){
-        const ok=$('#adminPassword').value===ADMIN_PASSWORD;
-        if(ok){ localStorage.setItem(UNLOCK_KEY,'1'); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
-        else { $('#adminError').style.display='block'; }
-      }
-      const sub=e.target.closest('.subtab');
-      if(sub){
-        $$('.subtab').forEach(s=>s.classList.remove('active'));
-        sub.classList.add('active');
-        const id=sub.dataset.subtab;
-        ['orders','inventory','analytics','heat','history'].forEach(k=>{
-          $('#subtab-'+k).style.display=(k===id)?'block':'none';
-        });
-      }
-    },{passive:true});
 
     /* ========= History ========= */
     function renderHistory(){
@@ -941,21 +912,80 @@
       if(!list.length){ box.textContent='No delivered orders'; return; }
       box.innerHTML=list.map(o=>`
         <div style="padding:8px;border-bottom:1px solid #2a2a30">
-          <div style="font-weight:700">Delivered ${new Date(o.when).toLocaleString()}</div>
+          <div style="font-weight:700">Delivered ${new Date(o.deliveredWhen||o.when).toLocaleString()}</div>
           <div>${o.name} @ ${o.location}</div>
           <div>Total ${fmt(o.total)}</div>
         </div>
       `).join('');
     }
-    $('#historyClear')?.addEventListener('click',()=>{ localStorage.setItem(DELIVERED_KEY,'[]'); renderHistory(); });
+    $('#historyClear')?.addEventListener('click',()=>{
+      localStorage.setItem(DELIVERED_KEY,'[]'); renderHistory();
+    });
 
-    /* ========= Overlay helpers ========= */
+    /* ========= Admin Tabs & Login ========= */
+    const ADMIN_PASSWORD='8TSB077';
+
+    function switchTab(which){
+      const g=$('#tabGeneral'), a=$('#tabAdmin'), pg=$('#panelGeneral'), pa=$('#panelAdmin');
+      if(which==='admin'){
+        g.classList.remove('active'); g.setAttribute('aria-selected','false');
+        a.classList.add('active');    a.setAttribute('aria-selected','true');
+        pg.style.display='none';      pa.style.display='block';
+        ensureAdminLoginVisible();
+      }else{
+        a.classList.remove('active'); a.setAttribute('aria-selected','false');
+        g.classList.add('active');    g.setAttribute('aria-selected','true');
+        pa.style.display='none';      pg.style.display='block';
+      }
+    }
+
+    function ensureAdminLoginVisible(){
+      const logged=localStorage.getItem(UNLOCK_KEY)==='1';
+      $('#adminLogin').style.display=logged?'none':'block';
+      $('#adminContent').style.display=logged?'block':'none';
+      if(logged){ renderOrders(); renderInventory(); renderAnalytics(); renderHeat(); renderHistory(); }
+    }
+
+    document.addEventListener('click', e=>{
+      if(e.target.closest('#tabGeneral')) switchTab('general');
+      if(e.target.closest('#tabAdmin'))   switchTab('admin');
+
+      if(e.target.closest('#adminSubmit')){
+        const ok=$('#adminPassword').value===ADMIN_PASSWORD;
+        if(ok){ localStorage.setItem(UNLOCK_KEY,'1'); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
+        else { $('#adminError').style.display='block'; }
+      }
+
+      // subtab switching
+      const sub=e.target.closest('.subtab');
+      if(sub){
+        $$('.subtab').forEach(s=>s.classList.remove('active'));
+        sub.classList.add('active');
+        const id=sub.dataset.subtab;
+        ['orders','inventory','analytics','heat','history'].forEach(k=>{
+          $('#subtab-'+k).style.display = (k===id)?'block':'none';
+        });
+      }
+    }, {passive:true});
+
+    /* ========= Overlay closing helpers ========= */
     document.querySelectorAll('.overlay').forEach(ov=>{
-      ov.addEventListener('click', e=>{ if(e.target===ov) ov.classList.remove('show'); },{passive:true});
+      ov.addEventListener('click', (e)=>{ if(e.target===ov) ov.classList.remove('show'); }, {passive:true});
     });
     document.addEventListener('keydown', e=>{
       if(e.key==='Escape'){ document.querySelectorAll('.overlay.show').forEach(ov=>ov.classList.remove('show')); }
     });
+
+    /* ========= No-results banner (for search) ========= */
+    (function ensureNoResultsBanner(){
+      if(document.getElementById('noResultsBanner')) return;
+      const n=document.createElement('div');
+      n.id='noResultsBanner';
+      n.textContent='No results found';
+      n.style.cssText='display:none;color:#c7c7cc;margin:8px 4px;';
+      const grid=document.getElementById('grid');
+      grid?.parentNode?.insertBefore(n,grid);
+    })();
 
     /* ========= Init ========= */
     updateGreeting();
@@ -969,8 +999,9 @@
     renderAnalytics();
     renderHeat();
     renderHistory();
-    activateChip('');
+    activateChip(''); // default chip
 
+    // Hotfix: ensure order sheet above settings & core buttons bound
     (function(){
       $('#settingsOverlay')?.style.setProperty('z-index','10000');
       $('#orderSheet')?.style.setProperty('z-index','10050');
