@@ -15,7 +15,7 @@
   <style>
     :root{
       --bg:#0b0b0d; --card:rgba(20,20,24,0.6); --text:#e9e9ec; --muted:#a9a9b1;
-      --accent:#6ea8fe; --good:#3cd27f; --warn:#ffb020; --badge:#ff3b30;
+      --accent:#6ea8fe; --good:#3cd27f; --warn:#ff6b6b; --badge:#ff3b30;
       --radius:18px; --blur:18px; --snap-gap:12px;
     }
     html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
@@ -31,9 +31,7 @@
     /* Header -- search shrinks; right controls fixed width so they never overlap */
     .row{display:flex;align-items:center;gap:12px}
     .search-wrap{position:relative;flex:1;min-width:0}
-    .icon-rights{
-      display:flex;gap:10px;flex:0 0 160px;justify-content:flex-end;
-    }
+    .icon-rights{display:flex;gap:10px;flex:0 0 160px;justify-content:flex-end}
     .search{width:100%;border-radius:999px;padding:12px 44px;color:var(--text);outline:0;border:1px solid #2a2a2e}
     .search::placeholder{color:#6c6c70}
     .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%)}
@@ -100,6 +98,8 @@
     .subtab{padding:6px 10px;border-radius:10px;cursor:pointer;border:1px solid #2a2a30;background:#18181d;font-size:13px}
     .subtab.active{background:#24242a}
     .admin-list{border:1px solid #2a2a30;border-radius:12px;padding:8px;margin-top:8px}
+    .field-row{display:grid;grid-template-columns:1fr 85px 85px;gap:8px;align-items:center;padding:6px;border-bottom:1px solid rgba(255,255,255,.06)}
+    .muted{color:#b7b7be;font-size:13px}
 
     .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .kpi{padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.1)}
@@ -160,8 +160,7 @@
       <div class="chip" data-filter="protein">protein</div>
       <div class="chip" data-filter="favorites">favorites</div>
     </div>
-
-    <!-- Products Grid -->
+        <!-- Products Grid -->
     <div id="grid" class="grid" role="list">
       <!-- 1 -->
       <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50" data-img="assets/product-funyuns.jpg" data-tags="snack">
@@ -265,7 +264,7 @@
       </div>
     </div>
 
-    <!-- Product mini sheet -->
+    <!-- Product mini sheet (now shows stock + low stock) -->
     <div id="productSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Add item">
       <div class="sheet" role="document">
         <div class="row-between">
@@ -278,6 +277,8 @@
           </div>
           <div style="flex:1">
             <div id="sheetPrice" class="price" style="font-size:18px;"></div>
+            <div id="sheetStock" class="muted" style="margin-top:6px;">Stock: --</div>
+            <div id="sheetLowWarn" style="display:none;margin-top:6px;color:var(--warn);font-weight:700;">Low stock</div>
           </div>
         </div>
         <div class="row-between" style="margin-top:10px;">
@@ -298,7 +299,7 @@
           <h3>Order</h3>
           <button class="ghost" id="orderClose" type="button">Close</button>
         </div>
-        <div id="orderMeta" style="margin-top:6px;color:#c7c7cc;font-size:13px">–</div>
+        <div id="orderMeta" class="muted" style="margin-top:6px;">–</div>
         <div id="orderLines" class="admin-list" style="margin-top:8px">–</div>
         <div class="row-between" style="margin-top:10px;">
           <strong>Total</strong><strong id="orderTotal">$0.00</strong>
@@ -389,11 +390,15 @@
                 <button class="subtab" data-subtab="heat" type="button">Heat Map</button>
                 <button class="subtab" data-subtab="history" type="button">History</button>
               </div>
-              <div id="subtab-orders">
-                <div id="ordersList" class="admin-list">No orders yet</div>
-              </div>
+              <div id="subtab-orders"><div id="ordersList" class="admin-list">No orders yet</div></div>
               <div id="subtab-inventory" style="display:none">
-                <div id="inventoryList" class="admin-list">Loading…</div>
+                <div class="admin-list">
+                  <div class="rowh" style="display:grid;grid-template-columns:1fr 85px 85px;gap:8px">
+                    <div>Product</div><div>Stock</div><div>Low @</div>
+                  </div>
+                  <div id="inventoryList"></div>
+                </div>
+                <div class="muted" style="margin-top:6px">Changes save automatically.</div>
               </div>
               <div id="subtab-analytics" style="display:none">
                 <div class="kpis" style="margin-top:8px">
@@ -405,9 +410,7 @@
                 <svg id="revSpark" class="spark" viewBox="0 0 100 40" preserveAspectRatio="none"></svg>
                 <div id="topProducts"></div>
               </div>
-              <div id="subtab-heat" style="display:none">
-                <div id="heatGridHM"></div>
-              </div>
+              <div id="subtab-heat" style="display:none"><div id="heatGridHM"></div></div>
               <div id="subtab-history" style="display:none">
                 <div id="historyList" class="admin-list">No history yet</div>
                 <button class="ghost" id="historyClear" type="button">Clear history</button>
@@ -420,8 +423,7 @@
 
     <!-- Toast Host -->
     <div id="toastHost"></div>
-
-    <!-- Firebase (only init; Firestore not wired in this file) -->
+        <!-- Firebase (init only) -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
       const firebaseConfig = {
@@ -437,7 +439,7 @@
 
     <script>
     /* ========= App boot ========= */
-    const APP_SCHEMA_VERSION = 3, SCHEMA_KEY = 'fitsnacks.schema';
+    const APP_SCHEMA_VERSION = 4, SCHEMA_KEY = 'fitsnacks.schema';
     try{
       const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY)||'0')||0;
       if(cur < APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
@@ -454,12 +456,14 @@
     /* Keys & constants */
     const CART_KEY='fitsnacks.cart.v1';
     const ORDERS_KEY='fitsnacks.orders';
+    const DELIVERED_KEY='fitsnacks.orders.delivered';
     const UNLOCK_KEY='fitsnacks.admin.unlocked';
     const FAVORITES_KEY='fitsnacks.favorites';
     const PROMOS_KEY='fitsnacks.promos';
-    const DELIVERED_KEY='fitsnacks.orders.delivered';
     const PROFILE_NAME_KEY='fitsnacks.profile.name';
     const PROFILE_LOC_KEY='fitsnacks.profile.location';
+    const INVENTORY_KEY='fitsnacks.inventory.v1'; // NEW
+
     const IFTTT_EVENT='Fitsnack_order';
     const IFTTT_KEY='fI-MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA';
     const IFTTT_URL=`https://maker.ifttt.com/trigger/${IFTTT_EVENT}/with/key/${IFTTT_KEY}`;
@@ -469,9 +473,26 @@
     /* State */
     let cart=new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]'));
     let favorites=new Set(JSON.parse(localStorage.getItem(FAVORITES_KEY)||'[]'));
+    let inventory = loadInventory(); // { [name]: {stock:number, low:number} }
 
     function saveCart(){ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(cart.entries()))); }
     function saveFavs(){ localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(favorites))); }
+
+    function loadInventory(){
+      // seed from product cards if no data yet
+      const saved = JSON.parse(localStorage.getItem(INVENTORY_KEY)||'null');
+      if(saved && typeof saved==='object') return saved;
+      const obj={};
+      $$('#grid .card').forEach(c=>{
+        const name=c.dataset.name;
+        obj[name]={stock:20, low:5}; // defaults
+      });
+      localStorage.setItem(INVENTORY_KEY, JSON.stringify(obj));
+      return obj;
+    }
+    function saveInventory(){
+      localStorage.setItem(INVENTORY_KEY, JSON.stringify(inventory));
+    }
 
     /* Greeting */
     function updateGreeting(){
@@ -488,7 +509,7 @@
       setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),250); }, ms);
     }
 
-    /* Carousel / Promos (no page jump) */
+    /* Carousel */
     function buildPromos(){
       const snapper=$('#snapper'); if(!snapper) return;
       let data=[];
@@ -514,12 +535,12 @@
           if(e.target.closest('.snap-cta')) return;
           if(p.action==='scrollGrid') $('#grid')?.scrollIntoView({behavior:'smooth'});
           if(p.action==='filter') activateChip(p.value||'');
-          if(p.action==='openSettings') openSettingsAndFocusAdmin();
+          if(p.action==='openSettings') openSettingsGeneral(); // open on General now
         }, {passive:true});
         c.querySelector('.snap-cta')?.addEventListener('click', e=>{
           e.stopPropagation();
           if(p.action==='filter') activateChip(p.value||'');
-          if(p.action==='openSettings') openSettingsAndFocusAdmin();
+          if(p.action==='openSettings') openSettingsGeneral();
           if(p.action==='scrollGrid') $('#grid')?.scrollIntoView({behavior:'smooth'});
         });
       });
@@ -560,7 +581,7 @@
       }, 5000);
     }
 
-    /* Product Sheet */
+    /* Product Sheet (includes inventory view) */
     let currentProduct=null;
     function openProductSheet(card){
       currentProduct={ name:card.dataset.name, price:+card.dataset.price, img:card.dataset.img };
@@ -568,6 +589,9 @@
       $('#sheetImg').src=currentProduct.img||'';
       $('#sheetImg').alt=currentProduct.name||'';
       $('#sheetPrice').textContent=fmt(currentProduct.price);
+      const inv = inventory[currentProduct.name] || {stock:0,low:0};
+      $('#sheetStock').textContent = `Stock: ${inv.stock}`;
+      $('#sheetLowWarn').style.display = (inv.stock<=inv.low) ? 'block' : 'none';
       $('#qtyVal').textContent='1';
       $('#sheetAdd').textContent='Add • '+fmt(currentProduct.price);
       $('#productSheet').classList.add('show');
@@ -591,7 +615,7 @@
       showToast(`Added ${n} × ${currentProduct.name}`);
     });
 
-    // click handlers for cards
+    // open sheet by clicking card or "+"
     document.addEventListener('click', e=>{
       const btn=e.target.closest('.card .add'); if(btn){ e.stopPropagation(); openProductSheet(btn.closest('.card')); return; }
       const card=e.target.closest('.card'); if(card && !e.target.closest('.fav')) openProductSheet(card);
@@ -624,7 +648,6 @@
       $('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
       $('#cartTotal').textContent = fmt(total);
     }
-    // +/- / remove
     document.addEventListener('click', (e)=>{
       const b=e.target.closest('button[data-act][data-name]');
       if(b){
@@ -646,7 +669,7 @@
     $('#cartBtn')?.addEventListener('click', openCart);
     $('#cartBack')?.addEventListener('click', closeCart);
 
-    /* Search + Filters (minimal & reliable) */
+    /* Search + Filters */
     let currentFilter = '';
     function searchAndFilter(){
       const q = ($('#search').value||'').toLowerCase();
@@ -720,6 +743,14 @@
       const list=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]'); list.unshift(order);
       localStorage.setItem(ORDERS_KEY, JSON.stringify(list));
 
+      // decrement inventory
+      lines.forEach(l=>{
+        if(!inventory[l.name]) inventory[l.name]={stock:0,low:0};
+        inventory[l.name].stock = Math.max(0, (inventory[l.name].stock||0) - l.qty);
+      });
+      saveInventory();
+      renderInventory(); // refresh admin inventory if open
+
       // Clear & UI
       cart.clear(); saveCart(); renderCart(); refreshBadge(); updateGreeting(); showToast('Order placed 🎉');
       $('#checkoutOverlay').classList.remove('show');
@@ -732,7 +763,7 @@
       renderOrders();
     });
 
-    /* Orders (list + detail) */
+    /* Orders */
     function renderOrders(){
       const list=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
       const box=$('#ordersList'); if(!box) return;
@@ -751,7 +782,7 @@
       $('#orderLines').innerHTML=o.lines.map(l=>`<div class="row-between" style="padding:6px 0">
         <div>${l.name} × ${l.qty}</div><div style="font-weight:700">${fmt(l.line)}</div></div>`).join('');
       $('#orderTotal').textContent=fmt(o.total);
-      document.body.appendChild($('#orderSheet')); // ensure above settings
+      document.body.appendChild($('#orderSheet'));
       $('#orderSheet').classList.add('show');
     }
     document.addEventListener('click', e=>{
@@ -760,7 +791,6 @@
     $('#orderClose')?.addEventListener('click', ()=>$('#orderSheet').classList.remove('show'));
     $('#orderCancel')?.addEventListener('click', ()=>$('#orderSheet').classList.remove('show'));
     $('#orderDelivered')?.addEventListener('click', ()=>{
-      // simple delivered list demo
       const orders=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
       const delivered = orders.shift();
       if(delivered){
@@ -807,17 +837,42 @@
         : '<div class="admin-list">No sales yet</div>';
     }
 
-    /* Inventory (simple read-only list for now) */
+    /* Inventory (editable) */
     function renderInventory(){
       const wrap=$('#inventoryList'); if(!wrap) return;
-      const cards=$$('.card');
-      wrap.innerHTML=[...cards].map(c=>`<div class="field">
-        <div style="flex:1;font-weight:600">${c.dataset.name}</div>
-        <div class="muted">${fmt(+c.dataset.price)}</div>
-      </div>`).join('');
+      // ensure we have rows for all products visible in grid
+      $$('#grid .card').forEach(c=>{
+        const name=c.dataset.name;
+        if(!inventory[name]) inventory[name]={stock:20,low:5};
+      });
+      saveInventory();
+
+      wrap.innerHTML = Object.entries(inventory).map(([name,rec])=>`
+        <div class="field-row" data-name="${name}">
+          <div style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</div>
+          <input type="number" class="field inv-stock" value="${rec.stock}" min="0" style="padding:8px;border-radius:10px">
+          <input type="number" class="field inv-low" value="${rec.low}" min="0" style="padding:8px;border-radius:10px">
+        </div>
+      `).join('');
+
+      // listeners (save-on-change)
+      wrap.querySelectorAll('.inv-stock').forEach(inp=>{
+        inp.addEventListener('input', (e)=>{
+          const row=e.target.closest('.field-row'); const name=row.dataset.name;
+          const v=Math.max(0, parseInt(e.target.value||'0',10));
+          inventory[name].stock = v; saveInventory();
+        });
+      });
+      wrap.querySelectorAll('.inv-low').forEach(inp=>{
+        inp.addEventListener('input', (e)=>{
+          const row=e.target.closest('.field-row'); const name=row.dataset.name;
+          const v=Math.max(0, parseInt(e.target.value||'0',10));
+          inventory[name].low = v; saveInventory();
+        });
+      });
     }
 
-    /* Heat Map (demo grid) */
+    /* Heat Map (demo) */
     function renderHeat(){
       const grid=$('#heatGridHM'); if(!grid) return;
       grid.innerHTML='';
@@ -832,7 +887,7 @@
       }
     }
 
-    /* Overlays close helpers */
+    /* Overlays */
     $$('.overlay').forEach(ov=>{
       ov.addEventListener('click', (e)=>{ if(e.target===ov) ov.classList.remove('show'); }, {passive:true});
     });
@@ -840,7 +895,7 @@
       if(e.key==='Escape'){ $$('.overlay.show').forEach(ov=>ov.classList.remove('show')); }
     });
 
-    /* Admin Tabs & Login */
+    /* Settings open/close -- open on GENERAL tab now */
     function switchTab(which){
       const g=$('#tabGeneral'), a=$('#tabAdmin'),
             pg=$('#panelGeneral'), pa=$('#panelAdmin');
@@ -855,78 +910,22 @@
         pa.style.display='none'; pg.style.display='block';
       }
     }
-
     function ensureAdminLoginVisible(){
       const logged=localStorage.getItem(UNLOCK_KEY)==='1';
       $('#adminLogin').style.display=logged?'none':'block';
       $('#adminContent').style.display=logged?'block':'none';
       if(logged){ renderOrders(); renderInventory(); renderAnalytics(); renderHeat(); renderHistory(); }
     }
-
-    function openSettingsAndFocusAdmin(){
+    function openSettingsGeneral(){
       const ov = $('#settingsOverlay'); if(!ov) return;
       ov.classList.add('show');
-      switchTab('admin');
-      const login = $('#adminLogin');
-      const pwd = $('#adminPassword');
-      if (login && getComputedStyle(login).display !== 'none' && pwd) {
-        setTimeout(()=>pwd.focus(), 50);
-      }
+      switchTab('general'); // OPEN ON GENERAL as requested
     }
+    $('#settingsBtn')?.addEventListener('click', openSettingsGeneral);
+    $('#settingsClose')?.addEventListener('click', () => $('#settingsOverlay')?.classList.remove('show'));
 
     document.addEventListener('click', e=>{
       if(e.target.closest('#tabGeneral')) switchTab('general');
       if(e.target.closest('#tabAdmin'))   switchTab('admin');
       if(e.target.closest('#adminSubmit')){
-        const ok=$('#adminPassword').value===ADMIN_PASSWORD;
-        if(ok){ localStorage.setItem(UNLOCK_KEY,'1'); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
-        else { $('#adminError').style.display='block'; }
-      }
-      // subtabs
-      const sub=e.target.closest('.subtab');
-      if(sub){
-        $$('.subtab').forEach(s=>s.classList.remove('active'));
-        sub.classList.add('active');
-        const id=sub.dataset.subtab;
-        ['orders','inventory','analytics','heat','history'].forEach(k=>{
-          $('#subtab-'+k).style.display = (k===id)?'block':'none';
-        });
-      }
-    }, {passive:true});
-
-    // Settings open/close
-    $('#settingsBtn')?.addEventListener('click', openSettingsAndFocusAdmin);
-    $('#settingsClose')?.addEventListener('click', () => $('#settingsOverlay')?.classList.remove('show'));
-
-    /* History */
-    function renderHistory(){
-      const list=JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]');
-      const box=$('#historyList'); if(!box) return;
-      if(!list.length){ box.textContent='No delivered orders'; return; }
-      box.innerHTML=list.map(o=>`
-        <div style="padding:8px;border-bottom:1px solid #2a2a30">
-          <div style="font-weight:700">Delivered ${new Date(o.deliveredWhen||o.when).toLocaleString()}</div>
-          <div>${o.name} @ ${o.location}</div>
-          <div>Total ${fmt(o.total)}</div>
-        </div>
-      `).join('');
-    }
-    $('#historyClear')?.addEventListener('click',()=>{ localStorage.setItem(DELIVERED_KEY,'[]'); renderHistory(); });
-
-    /* Init */
-    updateGreeting();
-    buildPromos();
-    renderCart();
-    refreshBadge();
-    syncFavStars();
-    renderOrders();
-    renderInventory();
-    renderAnalytics();
-    renderHeat();
-    renderHistory();
-    activateChip(''); // default
-
-    </script>
-  </div> <!-- /.app -->
-</body>
-</html>
+        const ok=$('#
