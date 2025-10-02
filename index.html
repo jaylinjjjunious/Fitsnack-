@@ -118,6 +118,10 @@
     /* Z fix: order sheet above settings */
     #settingsOverlay{ z-index: 10000; }
     #orderSheet{ z-index: 10050; }
+    /* Header layout fix: pin buttons on the right, cap search width */
+.row{display:flex;align-items:center;gap:12px}
+.search-wrap{position:relative;flex:1 1 auto;min-width:0;max-width:calc(100% - 160px)}
+.icon-rights{display:flex;gap:10px;flex:0 0 160px;justify-content:flex-end}
   </style>
 </head>
 <body>
