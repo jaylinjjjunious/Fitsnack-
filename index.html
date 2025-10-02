@@ -118,10 +118,33 @@
     /* Z fix: order sheet above settings */
     #settingsOverlay{ z-index: 10000; }
     #orderSheet{ z-index: 10050; }
-    /* Header layout fix: pin buttons on the right, cap search width */
-.row{display:flex;align-items:center;gap:12px}
-.search-wrap{position:relative;flex:1 1 auto;min-width:0;max-width:calc(100% - 160px)}
-.icon-rights{display:flex;gap:10px;flex:0 0 160px;justify-content:flex-end}
+    /* FINAL header fix: buttons fixed on the right, search never overlaps */
+.row{
+  position:relative !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+}
+/* reserve space on the right so the search never goes under the buttons */
+.search-wrap{
+  position:relative !important;
+  flex:1 1 auto !important;
+  min-width:0 !important;
+  padding-right:172px !important; /* 160px buttons + ~12px gap */
+}
+/* pin the cart/settings cluster to the right, vertically centered */
+.icon-rights{
+  position:absolute !important;
+  right:0 !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  display:flex !important;
+  gap:10px !important;
+  width:160px !important;           /* requested width */
+  justify-content:flex-end !important;
+  pointer-events:auto !important;
+  z-index:5 !important;
+}
   </style>
 </head>
 <body>
