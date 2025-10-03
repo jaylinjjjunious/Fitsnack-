@@ -6,7 +6,7 @@
    - Exclude Firestore & other cross-origin APIs from caching
 */
 
-const CACHE_VER = "v5";
+const CACHE_VER = "v6";
 const SHELL_CACHE = `fitsnacks-shell-${CACHE_VER}`;
 const IMG_CACHE   = `fitsnacks-imgs-${CACHE_VER}`;
 
