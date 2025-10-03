@@ -28,7 +28,7 @@
       box-shadow:0 4px 24px rgba(0,0,0,.18);
     }
 
-    /* Header (search + icons pinned right; icons always on top/clickable) */
+    /* Header */
     .row{display:flex;align-items:center;gap:12px;position:relative}
     .search-wrap{flex:0 0 160px;min-width:0}
     .search{width:100%;border-radius:999px;padding:12px 44px 12px 36px;color:var(--text);outline:0;border:1px solid #2a2a2e}
@@ -79,9 +79,15 @@
     #cartOverlay .sheet,#checkoutOverlay .sheet,#settingsOverlay .sheet,#orderSheet .sheet,#productSheet .sheet{
       width:100%;border-top-left-radius:24px;border-top-right-radius:24px;border-bottom-left-radius:0;border-bottom-right-radius:0;
       padding-bottom:calc(16px + env(safe-area-inset-bottom));
-      transform:translateY(100%);animation:slideUp 220ms ease-out forwards
+      transform:translateY(100%);animation:slideUp 220ms ease-out forwards;
+      -webkit-transform:translateY(100%);-webkit-animation:slideUp 220ms ease-out forwards;
+      will-change: transform;
     }
     @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+    /* iOS/Safari fallback: ensure sheet appears even if animation is skipped */
+    .overlay.show .sheet { transform: translateY(0) !important; -webkit-transform: translateY(0) !important; }
+    @-webkit-keyframes slideUp { from { -webkit-transform: translateY(100%); } to { -webkit-transform: translateY(0); } }
+
     .row-between{display:flex;align-items:center;justify-content:space-between;gap:10px}
     .qty{display:flex;align-items:center;gap:10px}
     .qty button{width:36px;height:36px;border-radius:10px;border:1px solid #2a2a30;background:#1c1c22;color:var(--text);font-size:20px;font-weight:700}
@@ -129,6 +135,11 @@
     /* Z fix: detail sheet above settings */
     #settingsOverlay{ z-index: 10000; }
     #orderSheet{ z-index: 10050; }
+
+    /* Reduced motion safety */
+    @media (prefers-reduced-motion: reduce) {
+      .overlay .sheet { animation: none !important; -webkit-animation: none !important; transform: translateY(0) !important; -webkit-transform: translateY(0) !important; }
+    }
   </style>
 </head>
 <body>
@@ -172,9 +183,7 @@
 
     <!-- Products Grid -->
     <div id="grid" class="grid" role="list">
-      <!-- (10 product cards)… -->
-      <!-- … full list is in the downloadable file and continues in later chunks -->
-            <!-- 1 -->
+      <!-- Product 1 -->
       <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50" data-img="assets/product-funyuns.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Potato Chips" loading="lazy"></div>
@@ -182,8 +191,7 @@
         <div class="price">$2.50</div>
         <button class="add" aria-label="Add Potato Chips">+</button>
       </div>
-
-      <!-- 2 -->
+      <!-- Product 2 -->
       <div class="card" role="listitem" data-name="Protein Bar" data-price="2.99" data-img="assets/product-chesters.jpg" data-tags="protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-chesters.jpg" alt="Protein Bar" loading="lazy"></div>
@@ -191,8 +199,7 @@
         <div class="price">$2.99</div>
         <button class="add" aria-label="Add Protein Bar">+</button>
       </div>
-
-      <!-- 3 -->
+      <!-- Product 3 -->
       <div class="card" role="listitem" data-name="Trail Mix" data-price="3.49" data-img="assets/product-cheetos.jpg" data-tags="vegan,gluten-free">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-cheetos.jpg" alt="Trail Mix" loading="lazy"></div>
@@ -200,8 +207,7 @@
         <div class="price">$3.49</div>
         <button class="add" aria-label="Add Trail Mix">+</button>
       </div>
-
-      <!-- 4 -->
+      <!-- Product 4 -->
       <div class="card" role="listitem" data-name="Granola Bar" data-price="1.99" data-img="assets/product-granola.jpg" data-tags="vegan,protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-granola.jpg" alt="Granola Bar" loading="lazy"></div>
@@ -209,8 +215,7 @@
         <div class="price">$1.99</div>
         <button class="add" aria-label="Add Granola Bar">+</button>
       </div>
-
-      <!-- 5 -->
+      <!-- Product 5 -->
       <div class="card" role="listitem" data-name="Doritos Flamin’ Hot Nacho" data-price="2.00" data-img="assets/product-doritos.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-doritos.jpg" alt="Doritos Flamin’ Hot Nacho" loading="lazy"></div>
@@ -218,8 +223,7 @@
         <div class="price">$2.00</div>
         <button class="add" aria-label="Add Doritos Flamin’ Hot Nacho">+</button>
       </div>
-
-      <!-- 6 Greek Yogurt with fallback -->
+      <!-- Product 6 -->
       <div class="card" role="listitem" data-name="Greek Yogurt" data-price="2.00" data-img="assets/greek-yogurt.jpeg" data-tags="protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb">
@@ -234,8 +238,7 @@
         <div class="price">$2.00</div>
         <button class="add" aria-label="Add Greek Yogurt">+</button>
       </div>
-
-      <!-- 7 -->
+      <!-- Product 7 -->
       <div class="card" role="listitem" data-name="Mixed Nuts" data-price="3.20" data-img="assets/product-nuts.jpg" data-tags="vegan,protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-nuts.jpg" alt="Mixed Nuts" loading="lazy"></div>
@@ -243,8 +246,7 @@
         <div class="price">$3.20</div>
         <button class="add" aria-label="Add Mixed Nuts">+</button>
       </div>
-
-      <!-- 8 -->
+      <!-- Product 8 -->
       <div class="card" role="listitem" data-name="Fruit Cup" data-price="2.19" data-img="assets/product-fruit.jpg" data-tags="vegan,gluten-free">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-fruit.jpg" alt="Fruit Cup" loading="lazy"></div>
@@ -252,8 +254,7 @@
         <div class="price">$2.19</div>
         <button class="add" aria-label="Add Fruit Cup">+</button>
       </div>
-
-      <!-- 9 -->
+      <!-- Product 9 -->
       <div class="card" role="listitem" data-name="Energy Drink" data-price="2.99" data-img="assets/product-energy.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-energy.jpg" alt="Energy Drink" loading="lazy"></div>
@@ -261,8 +262,7 @@
         <div class="price">$2.99</div>
         <button class="add" aria-label="Add Energy Drink">+</button>
       </div>
-
-      <!-- 10 -->
+      <!-- Product 10 -->
       <div class="card" role="listitem" data-name="Chocolate Bar" data-price="1.75" data-img="assets/product-chocolate.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-chocolate.jpg" alt="Chocolate Bar" loading="lazy"></div>
@@ -274,27 +274,165 @@
 
     <!-- Product mini sheet -->
     <div id="productSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Add item">
-      <!-- … mini sheet content … -->
+      <div class="sheet" role="document">
+        <div class="row-between">
+          <h3 id="sheetTitle">Item</h3>
+          <button class="ghost" id="sheetClose" type="button">Close</button>
+        </div>
+        <div style="display:flex; gap:12px; align-items:center; margin-top:8px;">
+          <div style="width:88px;height:88px;border-radius:12px;overflow:hidden;border:1px solid #2a2a30;">
+            <img id="sheetImg" alt="" style="width:100%;height:100%;object-fit:cover">
+          </div>
+          <div style="flex:1">
+            <div id="sheetPrice" class="price" style="font-size:18px;"></div>
+            <div id="sheetStock" style="margin-top:6px;color:#c7c7cc;font-size:13px;">Stock: --</div>
+            <div id="sheetLowWarn" style="display:none;margin-top:6px;color:#ff6b6b;font-weight:600;font-size:13px;">Low stock</div>
+          </div>
+        </div>
+        <div class="row-between" style="margin-top:10px;">
+          <div class="qty">
+            <button id="qtyMinus" type="button">−</button>
+            <div id="qtyVal" aria-live="polite">1</div>
+            <button id="qtyPlus" type="button">+</button>
+          </div>
+          <button class="primary" id="sheetAdd" type="button">Add</button>
+        </div>
+      </div>
     </div>
 
     <!-- Order details sheet -->
     <div id="orderSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Order details">
-      <!-- … order detail content … -->
+      <div class="sheet" role="document">
+        <div class="row-between">
+          <h3>Order</h3>
+          <button class="ghost" id="orderClose" type="button">Close</button>
+        </div>
+        <div id="orderMeta" style="margin-top:6px;color:#c7c7cc;font-size:13px">–</div>
+        <div id="orderLines" class="admin-list" style="margin-top:8px">–</div>
+        <div class="row-between" style="margin-top:10px;">
+          <strong>Total</strong><strong id="orderTotal">$0.00</strong>
+        </div>
+        <div class="actions" style="margin-top:12px;">
+          <button class="ghost" id="orderCancel" type="button">Cancel</button>
+          <button class="primary" id="orderDelivered" type="button">Mark Delivered</button>
+        </div>
+      </div>
     </div>
 
     <!-- Cart -->
     <div id="cartOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Cart">
-      <!-- … cart content … -->
+      <div class="sheet" role="document">
+        <div class="row-between">
+          <h3>Cart</h3>
+          <button class="ghost" id="cartBack" type="button">Back</button>
+        </div>
+        <div id="cartContent" class="sheet-body">Cart is empty</div>
+        <div class="row-between" style="margin-top:10px;">
+          <strong>Total</strong><strong id="cartTotal">$0.00</strong>
+        </div>
+        <div class="actions">
+          <button class="ghost" id="reorderLast" type="button">Re-order last</button>
+          <button class="primary" id="cartCheckout" type="button">Checkout</button>
+        </div>
+      </div>
     </div>
 
     <!-- Checkout -->
     <div id="checkoutOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Checkout">
-      <!-- … checkout content (with promo & tip UI) … -->
+      <div class="sheet" role="document">
+        <div class="row-between">
+          <h3>Checkout</h3>
+          <button class="ghost" id="checkoutClose" type="button">Close</button>
+        </div>
+        <div class="sheet-body">
+          <div style="margin-top:6px;">Your name:</div>
+          <input id="checkoutName" class="field" style="width:100%;padding:10px;border-radius:10px">
+          <div style="margin-top:10px;">Where are you on campus?</div>
+          <input id="checkoutLocation" class="field" style="width:100%;padding:10px;border-radius:10px">
+
+          <div style="margin-top:12px;">Promo code</div>
+          <input id="checkoutPromo" class="field" style="width:100%;padding:10px;border-radius:10px" placeholder="e.g. SAVE10 or OFF2">
+          <div id="promoStatus" style="margin-top:6px;color:#aaa;font-size:13px"></div>
+
+          <div style="margin-top:12px;">Tip (optional)</div>
+          <div id="tipGroup">
+            <button class="ghost tip-btn" data-tip="none" type="button">No tip</button>
+            <button class="ghost tip-btn" data-tip="amount:1" type="button">$1</button>
+            <button class="ghost tip-btn" data-tip="amount:2" type="button">$2</button>
+            <button class="ghost tip-btn" data-tip="percent:10" type="button">10%</button>
+          </div>
+
+          <div class="breakdown" style="margin-top:12px">
+            <div class="break-row"><div class="muted">Subtotal</div><div id="ckSub">$0.00</div></div>
+            <div class="break-row"><div class="muted">Discount</div><div id="ckDisc">-$0.00</div></div>
+            <div class="break-row"><div class="muted">Tip</div><div id="ckTip">$0.00</div></div>
+            <div class="break-row" style="font-weight:800"><div>Total</div><div id="ckTotal">$0.00</div></div>
+          </div>
+
+          <div id="checkoutError" style="display:none;color:#ff6b6b;margin-top:10px;">Please fill both fields.</div>
+        </div>
+        <div class="actions" style="margin-top:12px;">
+          <button class="primary" id="checkoutSubmit" type="button">Place Order</button>
+        </div>
+      </div>
     </div>
 
     <!-- Settings -->
     <div id="settingsOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Settings">
-      <!-- … tabs for General & Admin (orders, inventory, analytics, heat, history) … -->
+      <div class="sheet" role="document">
+        <div class="row-between">
+          <h3>Settings</h3>
+          <button class="ghost" id="settingsClose" type="button">Close</button>
+        </div>
+        <div class="tabs" role="tablist" aria-label="Settings Tabs">
+          <button id="tabGeneral" class="tab active" role="tab" aria-selected="true" aria-controls="panelGeneral" type="button">General</button>
+          <button id="tabAdmin" class="tab" role="tab" aria-selected="false" aria-controls="panelAdmin" type="button">Admin</button>
+        </div>
+        <div class="sheet-body">
+          <!-- General -->
+          <div id="panelGeneral" role="tabpanel" aria-labelledby="tabGeneral">
+            <div class="ghost" aria-disabled="true">Dark Mode (disabled)</div>
+            <div class="ghost" aria-disabled="true">Notifications (disabled)</div>
+          </div>
+          <!-- Admin -->
+          <div id="panelAdmin" role="tabpanel" aria-labelledby="tabAdmin" style="display:none">
+            <div id="adminLogin">
+              <div style="margin-top:6px;">Admin password:</div>
+              <input id="adminPassword" type="password" class="field" style="width:100%;padding:10px;border-radius:10px">
+              <div id="adminError" style="display:none;color:#ff6b6b;margin-top:6px;">Wrong password.</div>
+              <div class="actions" style="margin-top:12px;">
+                <button class="primary" id="adminSubmit" type="button">Unlock</button>
+              </div>
+            </div>
+            <div id="adminContent" style="display:none">
+              <div class="admin-subtabs">
+                <button class="subtab active" data-subtab="orders" type="button">Orders</button>
+                <button class="subtab" data-subtab="inventory" type="button">Inventory</button>
+                <button class="subtab" data-subtab="analytics" type="button">Analytics</button>
+                <button class="subtab" data-subtab="heat" type="button">Heat Map</button>
+                <button class="subtab" data-subtab="history" type="button">History</button>
+              </div>
+              <div id="subtab-orders"> <div id="ordersList" class="admin-list">No orders yet</div></div>
+              <div id="subtab-inventory" style="display:none"><div id="inventoryList" class="admin-list">Loading…</div></div>
+              <div id="subtab-analytics" style="display:none">
+                <div class="kpis" style="margin-top:8px">
+                  <div class="kpi"><div class="label">Revenue</div><div id="kpiRevenue" class="value">$0.00</div></div>
+                  <div class="kpi"><div class="label">Orders</div><div id="kpiOrders" class="value">0</div></div>
+                  <div class="kpi"><div class="label">AOV</div><div id="kpiAOV" class="value">$0.00</div></div>
+                  <div class="kpi"><div class="label">Items</div><div id="kpiItems" class="value">0</div></div>
+                </div>
+                <svg id="revSpark" class="spark" viewBox="0 0 100 40" preserveAspectRatio="none"></svg>
+                <div id="topProducts"></div>
+              </div>
+              <div id="subtab-heat" style="display:none"><div id="heatGridHM"></div></div>
+              <div id="subtab-history" style="display:none">
+                <div id="historyList" class="admin-list">No history yet</div>
+                <button class="ghost" id="historyClear" type="button">Clear history</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Sticky Cart Bar -->
@@ -309,7 +447,10 @@
         <!-- Firebase + Firestore -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-      import { getFirestore, collection, addDoc, serverTimestamp, onSnapshot, query, orderBy, updateDoc, doc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+      import {
+        getFirestore, collection, addDoc, serverTimestamp,
+        onSnapshot, query, orderBy, updateDoc, doc
+      } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
       const firebaseConfig = {
         apiKey: "AIzaSyAdjxpOK1ir5y-sHCh4PodIxe8TkEYBAsY",
@@ -327,7 +468,10 @@
     <script>
     /* ========= Boot ========= */
     const APP_SCHEMA_VERSION = 4, SCHEMA_KEY = 'fitsnacks.schema';
-    try{ const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY)||'0')||0; if(cur < APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION)); }catch{ localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION)); }
+    try{
+      const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY)||'0')||0;
+      if(cur < APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
+    }catch{ localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION)); }
     if('serviceWorker' in navigator){ window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js')); }
 
     const $  = s => document.querySelector(s);
@@ -391,7 +535,7 @@
       setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),250); }, ms);
     }
 
-    /* Carousel build (rAF autoplay: hold 5s / slide 3.0s + dot sync) */
+    /* Carousel build with autoplay + dots */
     function buildPromos(){
       const snapper=$('#snapper'); if(!snapper) return;
       let data=[]; try{ data=JSON.parse(localStorage.getItem(PROMOS_KEY)||'[]'); }catch{}
@@ -426,7 +570,7 @@
         });
       });
 
-      // dots + rAF autoplay (5s hold, 3.0s slide)
+      // dots + autoplay (hold then slide)
       const cards = $$('.snap-card');
       const dotsWrap = $('#snapDots'); dotsWrap.innerHTML = cards.map(()=>'<div class="snap-dot"></div>').join('');
       const dots = $$('.snap-dot'); const setDot=i=>dots.forEach((d,k)=>d.classList.toggle('active',k===i)); setDot(0);
@@ -457,7 +601,7 @@
           }
         }else{
           const t = Math.min(1, (ts-start)/slide);
-          const e = t<.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,2*2*2)/2; // easeInOutCubic
+          const e = t<.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,8)/2; // easeInOutCubic
           snapper.scrollLeft = from + (to - from) * e;
           if(t>=1){ phase='hold'; start=ts; setDot(idx); }
         }
@@ -465,7 +609,7 @@
       }
       requestAnimationFrame(step);
 
-      // sync dots on manual scroll end
+      // sync dots after manual scroll
       let dotTimer=null;
       snapper.addEventListener('scroll', ()=>{
         clearTimeout(dotTimer);
@@ -496,7 +640,7 @@
       $('#sheetLowWarn').style.display = s>0 && s<=3 ? 'block':'none';
       $('#qtyVal').textContent='1';
       $('#sheetAdd').textContent='Add • '+fmt(currentProduct.price);
-      $('#productSheet').classList.add('show');
+      $('#productSheet').classList.add('show'); // iOS fallback CSS ensures visibility
     }
     function closeProductSheet(){ $('#productSheet').classList.remove('show'); }
     $('#sheetClose')?.addEventListener('click', closeProductSheet);
@@ -525,7 +669,12 @@
       e.stopPropagation(); openProductSheet(btn.closest('.card'));
     }, {passive:true});
         /* Cart */
-    function refreshBadge(){ let n=0; for(const v of cart.values()) n+=v.qty; const b=$('#cartBadge'); if(!b) return; if(n>0){ b.textContent=String(n); b.style.display='inline-flex'; } else { b.style.display='none'; } }
+    function refreshBadge(){
+      let n=0; for(const v of cart.values()) n+=v.qty;
+      const b=$('#cartBadge'); if(!b) return;
+      if(n>0){ b.textContent=String(n); b.style.display='inline-flex'; }
+      else { b.style.display='none'; }
+    }
     function renderCart(){
       let total=0, html='';
       for(const [name,info] of cart){
@@ -568,7 +717,8 @@
     function updateCartBar(){
       const bar=$('#cartBar'); if(!bar) return;
       let total=0, count=0; for(const [,info] of cart){ total+=info.price*info.qty; count+=info.qty; }
-      if(count>0){ $('#cartBarTotal').textContent=fmt(total); bar.classList.add('show'); } else { bar.classList.remove('show'); }
+      if(count>0){ $('#cartBarTotal').textContent=fmt(total); bar.classList.add('show'); }
+      else { bar.classList.remove('show'); }
     }
     $('#cartBarView')?.addEventListener('click', openCart);
     $('#cartBarCheckout')?.addEventListener('click', ()=>{
@@ -849,12 +999,15 @@
       `).join('');
     }
     $('#historyClear')?.addEventListener('click',()=>{ localStorage.setItem(DELIVERED_KEY,'[]'); renderHistory(); });
-
-    /* Overlay close on backdrop & ESC */
+        /* Overlay close on backdrop & ESC */
     document.querySelectorAll('.overlay').forEach(ov=>{
       ov.addEventListener('click', (e)=>{ if(e.target===ov) ov.classList.remove('show'); }, {passive:true});
     });
-    document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ document.querySelectorAll('.overlay.show').forEach(ov=>ov.classList.remove('show')); } });
+    document.addEventListener('keydown', e=>{
+      if(e.key==='Escape'){
+        document.querySelectorAll('.overlay.show').forEach(ov=>ov.classList.remove('show'));
+      }
+    });
 
     /* Admin Tabs & Login */
     function switchTab(which){
@@ -874,14 +1027,21 @@
       const logged=localStorage.getItem(UNLOCK_KEY)==='1';
       $('#adminLogin').style.display=logged?'none':'block';
       $('#adminContent').style.display=logged?'block':'none';
-      if(logged){ renderOrders(); renderInventory(); renderAnalytics(); renderHeat(); renderHistory(); subscribeOrdersRealtime(); }
+      if(logged){
+        renderOrders(); renderInventory(); renderAnalytics(); renderHeat(); renderHistory();
+        subscribeOrdersRealtime();
+      }
     }
     document.addEventListener('click', e=>{
       if(e.target.closest('#tabGeneral')) switchTab('general');
       if(e.target.closest('#tabAdmin'))   switchTab('admin');
       if(e.target.closest('#adminSubmit')){
         const ok=$('#adminPassword').value===ADMIN_PASSWORD;
-        if(ok){ localStorage.setItem(UNLOCK_KEY,'1'); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
+        if(ok){
+          localStorage.setItem(UNLOCK_KEY,'1');
+          $('#adminError').style.display='none';
+          ensureAdminLoginVisible();
+        }
         else { $('#adminError').style.display='block'; }
       }
       const sub=e.target.closest('.subtab');
@@ -898,8 +1058,15 @@
     /* Init */
     updateGreeting(); buildPromos(); renderCart(); refreshBadge(); updateCartBar(); syncFavStars();
     renderOrders(); renderInventory(); renderAnalytics(); renderHeat(); renderHistory(); activateChip('');
-    (function(){ $('#settingsBtn')?.addEventListener('click',()=>{ $('#settingsOverlay')?.classList.add('show'); switchTab('general'); }); $('#settingsClose')?.addEventListener('click',()=>$('#settingsOverlay')?.classList.remove('show')); $('#cartBtn')?.addEventListener('click',()=>$('#cartOverlay')?.classList.add('show')); $('#cartBack')?.addEventListener('click',()=>$('#cartOverlay')?.classList.remove('show')); })();
+    (function(){
+      $('#settingsBtn')?.addEventListener('click',()=>{ $('#settingsOverlay')?.classList.add('show'); switchTab('general'); });
+      $('#settingsClose')?.addEventListener('click',()=>$('#settingsOverlay')?.classList.remove('show'));
+      $('#cartBtn')?.addEventListener('click',()=>$('#cartOverlay')?.classList.add('show'));
+      $('#cartBack')?.addEventListener('click',()=>$('#cartOverlay')?.classList.remove('show'));
+    })();
     </script>
   </div>
 </body>
 </html>
+    
+    
