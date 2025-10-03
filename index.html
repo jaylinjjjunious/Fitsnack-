@@ -16,109 +16,101 @@
 
   <style>
     :root{
-      --bg:#0b0b0d; --card:rgba(20,20,24,0.6); --text:#e9e9ec; --muted:#a9a9b1;
-      --accent:#6ea8fe; --good:#3cd27f; --warn:#ffb020; --badge:#ff3b30;
-      --radius:18px; --blur:18px; --snap-gap:12px;
+      --bg:#0b0b0d; --text:#e9e9ec; --muted:#a9a9b1; --accent:#2ee6a6;
+      --good:#2ee6a6; --warn:#ffb020; --badge:#ff3b30; --radius:18px;
+      --blur:18px; --snap-gap:12px; --heat-bg:#121216; --heat-cell:#1b1b21;
     }
-    html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:16px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif}
-    .app{max-width:393px;min-height:100svh;margin:0 auto;padding:12px 12px 64px;box-sizing:border-box}
+    html,body{ margin:0; height:100%; background:var(--bg); color:var(--text);
+      font:16px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }
+    .app{ max-width:393px; min-height:100svh; margin:0 auto; padding:12px 12px 64px; box-sizing:border-box; }
 
-    /* Glass */
+    /* Shared glass */
     .card,.sheet,.btn,.search,.chip,.tab,.ghost,.primary,.field{
-      -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));
-      background:var(--card);border:1px solid rgba(255,255,255,.08);
-      box-shadow:0 4px 24px rgba(0,0,0,.18);
+      -webkit-backdrop-filter:blur(var(--blur)); backdrop-filter:blur(var(--blur));
+      background:rgba(20,20,24,0.60); border:1px solid rgba(255,255,255,.08);
+      box-shadow:0 4px 24px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.04);
     }
+    .row{ display:flex; align-items:center; gap:12px; position:relative; }
+    .row-between{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
 
     /* Header */
-    .row{display:flex;align-items:center;gap:12px;position:relative}
-    .row-between{display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .search-wrap{flex:0 0 160px;min-width:0}
-    .search{width:100%;border-radius:999px;padding:12px 44px 12px 36px;color:var(--text);outline:0;border:1px solid #2a2a2e}
-    .search::placeholder{color:#6c6c70}
-    .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none}
-    .icon-rights{margin-left:auto;display:flex;gap:10px;flex-shrink:0;position:relative;z-index:10060}
-    .btn{border-radius:14px;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
-    #cartBtn,#settingsBtn{position:relative;z-index:10060!important}
-    #cartBtn .badge{position:absolute;top:-6px;right:-8px;background:var(--badge);color:#fff;border-radius:999px;padding:1px 6px;font-size:12px;font-weight:700;display:none}
+    .search-wrap{ flex:0 0 160px; min-width:0; position:relative; }
+    .search{ width:100%; border-radius:999px; padding:12px 44px 12px 36px; color:var(--text); outline:0; border:1px solid #2a2a2e; }
+    .icon-left{ position:absolute; left:12px; top:50%; transform:translateY(-50%); pointer-events:none; }
+    .icon-rights{ margin-left:auto; display:flex; gap:10px; flex-shrink:0; position:relative; z-index:10060; }
+    .btn{ border-radius:14px; width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; }
+    #cartBtn .badge{ position:absolute; top:-6px; right:-8px; background:var(--badge); color:#fff; border-radius:999px; padding:1px 6px; font-size:12px; font-weight:700; display:none; }
 
-    .greet{margin:8px 2px 2px;color:#c7c7cc;font-size:14px}
+    .greet{ margin:8px 2px 2px; color:#c7c7cc; font-size:14px; }
 
     /* Carousel */
-    .carousel{margin:10px 0 6px;position:relative;z-index:1}
-    .snapper{height:100px;display:flex;align-items:stretch;gap:var(--snap-gap);overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:0 var(--snap-gap)}
-    .snapper::-webkit-scrollbar{display:none}
-    .snap-spacer{flex:0 0 7.5%}
-    .snap-card{position:relative;flex:0 0 85%;scroll-snap-align:center;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center}
-    .banner{width:100%;height:100%;object-fit:cover}
-    .snap-meta{position:absolute;left:10px;bottom:8px;right:10px;display:flex;justify-content:space-between;gap:8px;pointer-events:none}
-    .snap-title{font-weight:800;text-shadow:0 1px 6px rgba(0,0,0,.6)}
-    .snap-cta{pointer-events:auto}
-    .snap-dots{display:flex;justify-content:center;gap:6px;margin-top:6px}
-    .snap-dot{width:6px;height:6px;border-radius:999px;background:#2c3447;border:1px solid rgba(255,255,255,.18)}
-    .snap-dot.active{background:#7fb1ff}
+    .carousel{ margin:10px 0 6px; position:relative; z-index:1; }
+    .snapper{ height:100px; display:flex; align-items:stretch; gap:var(--snap-gap); overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; padding:0 var(--snap-gap); }
+    .snapper::-webkit-scrollbar{display:none;}
+    .snap-spacer{flex:0 0 7.5%;}
+    .snap-card{ position:relative; flex:0 0 85%; scroll-snap-align:center; border-radius:14px; overflow:hidden; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.25); display:flex; align-items:center; justify-content:center; }
+    .banner{ width:100%; height:100%; object-fit:cover; }
+    .snap-meta{ position:absolute; left:10px; bottom:8px; right:10px; display:flex; justify-content:space-between; gap:8px; pointer-events:none; }
+    .snap-title{ font-weight:800; text-shadow:0 1px 6px rgba(0,0,0,.6); }
+    .snap-cta{ pointer-events:auto; }
+    .snap-dots{ display:flex; justify-content:center; gap:6px; margin-top:6px; }
+    .snap-dot{ width:6px; height:6px; border-radius:999px; background:#1a2521; border:1px solid rgba(46,230,166,.35); }
+    .snap-dot.active{ background:var(--accent); }
 
     /* Chips */
-    .chips{display:flex;gap:10px;margin:6px 0 12px;flex-wrap:wrap}
-    .chip{padding:6px 10px;border-radius:999px;font-size:13px;cursor:pointer}
-    .chip.active{outline:2px solid rgba(110,168,254,.5)}
+    .chips{ display:flex; gap:10px; margin:6px 0 12px; flex-wrap:wrap; }
+    .chip{ padding:6px 10px; border-radius:999px; font-size:13px; cursor:pointer; }
+    .chip.active{ outline:2px solid var(--accent); }
 
     /* Grid */
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    .card{border-radius:16px;padding:10px;position:relative;display:flex;flex-direction:column;min-height:190px}
-    .thumb{height:90px;border-radius:12px;overflow:hidden;margin-bottom:8px;display:flex;align-items:center;justify-content:center;background:#0e0e12}
-    .thumb img{width:100%;height:100%;object-fit:contain}
-    .title{font-weight:700;margin:4px 0 2px}
-    .price{color:#c7c7cc;font-weight:600;margin-top:auto}
-    .add{position:absolute;right:10px;bottom:10px;background:var(--accent);border:0;color:#001230;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer}
-    .fav{position:absolute;right:10px;top:10px;width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);cursor:pointer}
-    .fav.active{background:rgba(255,215,0,.15);box-shadow:0 0 0 1px rgba(255,215,0,.35) inset}
-    .card.oos{opacity:.55;filter:grayscale(.35)}
-    .card.oos::after{content:"Out of stock";position:absolute;top:10px;left:10px;font-size:11px;font-weight:800;letter-spacing:.2px;padding:4px 8px;border-radius:999px;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.1);color:#eee}
+    .grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .card{ border-radius:16px; padding:10px; position:relative; display:flex; flex-direction:column; min-height:190px; }
+    .thumb{ height:90px; border-radius:12px; overflow:hidden; margin-bottom:8px; display:flex; align-items:center; justify-content:center; background:#0e0e12; }
+    .thumb img{ width:100%; height:100%; object-fit:contain; }
+    .title{ font-weight:700; margin:4px 0 2px; }
+    .price{ color:#c7c7cc; font-weight:600; margin-top:auto; }
+    .add{ position:absolute; right:10px; bottom:10px; background:var(--accent); border:0; color:#001a12; border-radius:14px; width:42px; height:42px; font-size:22px; display:flex; align-items:center; justify-content:center; font-weight:800; cursor:pointer; }
+    .fav{ position:absolute; right:10px; top:10px; width:36px; height:36px; border-radius:12px; display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.25); cursor:pointer; }
+    .fav.active{ background:rgba(255,215,0,.15); box-shadow:0 0 0 1px rgba(255,215,0,.35) inset; }
+
+    /* OOS */
+    .card.oos{ opacity:.55; filter:grayscale(.35); }
+    .card.oos::after{ content:"Out of stock"; position:absolute; top:10px; left:10px; font-size:11px; font-weight:800; letter-spacing:.2px; padding:4px 8px; border-radius:999px; background:rgba(0,0,0,.6); border:1px solid rgba(255,255,255,.1); color:#eee; }
 
     /* Overlays */
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:9990}
-    .overlay.show{display:flex}
-    .sheet{width:92%;max-width:480px;border-radius:20px;padding:16px}
-    #cartOverlay,#checkoutOverlay,#settingsOverlay,#orderSheet,#productSheet{align-items:flex-end}
-    #cartOverlay .sheet,#checkoutOverlay .sheet,#settingsOverlay .sheet,#orderSheet .sheet,#productSheet .sheet{
-      width:100%;border-top-left-radius:24px;border-top-right-radius:24px;border-bottom-left-radius:0;border-bottom-right-radius:0;
-      padding-bottom:calc(16px + env(safe-area-inset-bottom));
-      transform:translateY(100%);animation:slideUp 220ms ease-out forwards;
-      -webkit-transform:translateY(100%);-webkit-animation:slideUp 220ms ease-out forwards;
-      will-change: transform;
+    .overlay{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; padding:20px; z-index:9990; }
+    .overlay.show{ display:flex; }
+    .sheet{ width:92%; max-width:480px; border-radius:20px; padding:16px; }
+    #cartOverlay,#checkoutOverlay,#settingsOverlay,#orderSheet,#productSheet,#adminPrompt{ align-items:flex-end; }
+    #cartOverlay .sheet,#checkoutOverlay .sheet,#settingsOverlay .sheet,#orderSheet .sheet,#productSheet .sheet,#adminPrompt .sheet{
+      width:100%; border-top-left-radius:24px; border-top-right-radius:24px; border-bottom-left-radius:0; border-bottom-right-radius:0;
+      padding-bottom:calc(16px + env(safe-area-inset-bottom)); transform:translateY(100%); -webkit-transform:translateY(100%);
+      animation:slideUp 220ms ease-out forwards; -webkit-animation:slideUp 220ms ease-out forwards;
     }
-    @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-    .overlay.show .sheet { transform: translateY(0) !important; -webkit-transform: translateY(0) !important; }
-    @-webkit-keyframes slideUp { from { -webkit-transform: translateY(100%); } to { -webkit-transform: translateY(0); } }
+    @keyframes slideUp{ from{ transform:translateY(100%);} to{ transform:translateY(0);} }
+    .overlay.show .sheet{ transform:translateY(0)!important; -webkit-transform:translateY(0)!important; }
 
-    .qty{display:flex;align-items:center;gap:10px}
-    .qty button{width:36px;height:36px;border-radius:10px;border:1px solid #2a2a30;background:#1c1c22;color:var(--text);font-size:20px;font-weight:700}
-    .primary{background:var(--accent);border:0;color:#081425;font-weight:800;border-radius:12px;padding:12px 14px}
-    .ghost{border:1px solid #2a2a30;color:#e7e7eb;border-radius:12px;padding:10px 12px;background:#1b1b20}
-    .actions{display:flex;gap:10px;margin-top:12px}
+    /* Settings/Admin */
+    .tabs{ display:flex; gap:8px; margin:6px 0 12px; }
+    .tab{ padding:8px 10px; border-radius:10px; cursor:pointer; border:1px solid #2a2a30; background:#18181d; }
+    .tab.active{ background:#24242a; }
+    .sheet-body{ max-height:70svh; overflow:auto; padding-right:4px; }
+    .admin-subtabs{ display:flex; gap:6px; margin:10px 0; flex-wrap:wrap; }
+    .subtab{ padding:6px 10px; border-radius:10px; cursor:pointer; border:1px solid #2a2a30; background:#18181d; font-size:13px; }
+    .subtab.active{ background:#24242a; }
+    .admin-list{ border:1px solid #2a2a30; border-radius:12px; padding:8px; margin-top:8px; }
 
-    /* Admin */
-    .tabs{display:flex;gap:8px;margin:6px 0 12px}
-    .tab{padding:8px 10px;border-radius:10px;cursor:pointer;border:1px solid #2a2a30;background:#18181d}
-    .tab.active{background:#24242a}
-    .sheet-body{max-height:70svh;overflow:auto;padding-right:4px}
-    .admin-subtabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
-    .subtab{padding:6px 10px;border-radius:10px;cursor:pointer;border:1px solid #2a2a30;background:#18181d;font-size:13px}
-    .subtab.active{background:#24242a}
-    .admin-list{border:1px solid #2a2a30;border-radius:12px;padding:8px;margin-top:8px}
+    .kpis{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .kpi{ padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,.1); }
+    .kpi .label{ color:#c7c7cc; font-size:12px; }
+    .kpi .value{ font-weight:800; font-size:18px; margin-top:4px; }
 
-    .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .kpi{padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,.1)}
-    .kpi .label{color:#c7c7cc;font-size:12px}
-    .kpi .value{font-weight:800;font-size:18px;margin-top:4px}
-    .table{margin-top:8px;border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden}
-    .rowh,.rowd{display:grid;grid-template-columns:1fr 70px 70px 70px;gap:8px;padding:8px}
-    .rowh{background:rgba(255,255,255,.05);font-weight:700}
-    .rowd{border-top:1px solid rgba(255,255,255,.06)}
-
-    /* Heat map cells */
-    #heatGridHM .heat-cell{width:12px;height:12px;display:inline-block;margin:1px;border-radius:3px}
+    /* Heat map */
+    .heat{ background:var(--heat-bg); border:1px solid #23232a; border-radius:12px; padding:8px; }
+    .heat-grid{ display:grid; grid-template-columns: 20px repeat(24, 1fr); gap:4px; align-items:center; }
+    .heat-cell{ height:16px; border-radius:4px; background:var(--heat-cell); }
+    .heat-legend{ display:flex; gap:6px; align-items:center; margin-top:8px; font-size:12px; color:#c7c7cc; }
+    .legend-swatch{ width:20px; height:10px; border-radius:4px; background:var(--heat-cell); }
 
     /* Sticky cart bar */
     #cartBar{
@@ -135,12 +127,34 @@
     .toast{pointer-events:auto;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(24,24,32,.9);font-weight:600;opacity:0;transform:translateY(8px);transition:opacity .22s ease,transform .22s ease}
     .toast.show{opacity:1;transform:translateY(0)}
 
-    /* Z fix */
-    #settingsOverlay{ z-index: 10000 }
-    #orderSheet{ z-index: 10050 }
+    /* Z-order */
+    #settingsOverlay{ z-index: 10000; }
+    #orderSheet{ z-index: 10050; }
+
+    /* --- Stock save pop on product card --- */
+    .card-pop{
+      position:absolute; right:10px; top:10px;
+      background:rgba(46,230,166,.95); color:#001a12;
+      border-radius:10px; padding:6px 8px; font-weight:800; font-size:12px;
+      border:1px solid rgba(255,255,255,.15);
+      pointer-events:none;
+      transform:translateY(-6px) scale(.95); opacity:0;
+      animation:popfade .9s ease-out forwards;
+    }
+    @keyframes popfade{
+      0%  {opacity:0; transform:translateY(-6px) scale(.95)}
+      12% {opacity:1; transform:translateY(0)    scale(1)}
+      80% {opacity:1}
+      100%{opacity:0; transform:translateY(-4px) scale(.98)}
+    }
+    .card.pulse{
+      box-shadow:0 0 0 2px rgba(46,230,166,.45), 0 8px 24px rgba(0,0,0,.25);
+      transition:box-shadow .35s ease;
+    }
 
     @media (prefers-reduced-motion: reduce) {
-      .overlay .sheet { animation:none !important;-webkit-animation:none !important;transform:translateY(0) !important;-webkit-transform:translateY(0) !important; }
+      .overlay .sheet { animation:none!important; -webkit-animation:none!important; transform:translateY(0)!important; -webkit-transform:translateY(0)!important; }
+      .card-pop{ animation:none!important; opacity:1!important; }
     }
   </style>
 </head>
@@ -162,11 +176,11 @@
 
     <div id="greet" class="greet">Welcome 👋</div>
 
-    <!-- Carousel -->
+    <!-- Promo carousel -->
     <div class="carousel" aria-label="Promotions">
       <div id="snapper" class="snapper" aria-roledescription="carousel">
         <div class="snap-spacer" aria-hidden="true"></div>
-        <!-- JS injects cards -->
+        <!-- JS inserts promo cards -->
         <div class="snap-spacer" aria-hidden="true"></div>
       </div>
       <div id="snapDots" class="snap-dots" aria-hidden="true"></div>
@@ -182,69 +196,80 @@
       <div class="chip" data-filter="stock">stock</div>
     </div>
 
-    <!-- Products -->
+    <!-- Product grid -->
     <div id="grid" class="grid" role="list">
       <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50" data-img="assets/product-funyuns.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Potato Chips" loading="lazy"></div>
-        <div class="title">Potato Chips</div><div class="price">$2.50</div><button class="add" aria-label="Add Potato Chips">+</button>
+        <div class="title">Potato Chips</div>
+        <div class="price">$2.50</div>
+        <button class="add" aria-label="Add Potato Chips">+</button>
       </div>
-
       <div class="card" role="listitem" data-name="Protein Bar" data-price="2.99" data-img="assets/product-chesters.jpg" data-tags="protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-chesters.jpg" alt="Protein Bar" loading="lazy"></div>
-        <div class="title">Protein Bar</div><div class="price">$2.99</div><button class="add" aria-label="Add Protein Bar">+</button>
+        <div class="title">Protein Bar</div>
+        <div class="price">$2.99</div>
+        <button class="add" aria-label="Add Protein Bar">+</button>
       </div>
-
       <div class="card" role="listitem" data-name="Trail Mix" data-price="3.49" data-img="assets/product-cheetos.jpg" data-tags="vegan,gluten-free">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-cheetos.jpg" alt="Trail Mix" loading="lazy"></div>
-        <div class="title">Trail Mix</div><div class="price">$3.49</div><button class="add" aria-label="Add Trail Mix">+</button>
+        <div class="title">Trail Mix</div>
+        <div class="price">$3.49</div>
+        <button class="add" aria-label="Add Trail Mix">+</button>
       </div>
-
       <div class="card" role="listitem" data-name="Granola Bar" data-price="1.99" data-img="assets/product-granola.jpg" data-tags="vegan,protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-granola.jpg" alt="Granola Bar" loading="lazy"></div>
-        <div class="title">Granola Bar</div><div class="price">$1.99</div><button class="add" aria-label="Add Granola Bar">+</button>
+        <div class="title">Granola Bar</div>
+        <div class="price">$1.99</div>
+        <button class="add" aria-label="Add Granola Bar">+</button>
       </div>
-
       <div class="card" role="listitem" data-name="Doritos Flamin’ Hot Nacho" data-price="2.00" data-img="assets/product-doritos.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-doritos.jpg" alt="Doritos Flamin’ Hot Nacho" loading="lazy"></div>
-        <div class="title">Doritos Flamin’ Hot Nacho</div><div class="price">$2.00</div><button class="add" aria-label="Add Doritos Flamin’ Hot Nacho">+</button>
+        <div class="title">Doritos Flamin’ Hot Nacho</div>
+        <div class="price">$2.00</div>
+        <button class="add" aria-label="Add Doritos Flamin’ Hot Nacho">+</button>
       </div>
-
-      <div class="card" role="listitem" data-name="Greek Yogurt" data-price="2.00" data-img="assets/greek-yogurt.jpeg" data-tags="protein">
+      <div class="card" role="listitem" data-name="Greek Yogurt" data-price="2.00" data-img="assets/greek-yogurt.jpeg?v=3" data-tags="protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb">
           <img src="assets/greek-yogurt.jpeg?v=3" alt="Greek Yogurt" loading="lazy"
                onerror="if(!this.__triedJPG){this.__triedJPG=1;this.src='assets/greek-yogurt.jpg?v=3';}else{this.src='assets/product-yogurt.jpg';}">
         </div>
-        <div class="title">Greek Yogurt</div><div class="price">$2.00</div><button class="add" aria-label="Add Greek Yogurt">+</button>
+        <div class="title">Greek Yogurt</div>
+        <div class="price">$2.00</div>
+        <button class="add" aria-label="Add Greek Yogurt">+</button>
       </div>
-
       <div class="card" role="listitem" data-name="Mixed Nuts" data-price="3.20" data-img="assets/product-nuts.jpg" data-tags="vegan,protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-nuts.jpg" alt="Mixed Nuts" loading="lazy"></div>
-        <div class="title">Mixed Nuts</div><div class="price">$3.20</div><button class="add" aria-label="Add Mixed Nuts">+</button>
+        <div class="title">Mixed Nuts</div>
+        <div class="price">$3.20</div>
+        <button class="add" aria-label="Add Mixed Nuts">+</button>
       </div>
-
       <div class="card" role="listitem" data-name="Fruit Cup" data-price="2.19" data-img="assets/product-fruit.jpg" data-tags="vegan,gluten-free">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-fruit.jpg" alt="Fruit Cup" loading="lazy"></div>
-        <div class="title">Fruit Cup</div><div class="price">$2.19</div><button class="add" aria-label="Add Fruit Cup">+</button>
+        <div class="title">Fruit Cup</div>
+        <div class="price">$2.19</div>
+        <button class="add" aria-label="Add Fruit Cup">+</button>
       </div>
-
       <div class="card" role="listitem" data-name="Energy Drink" data-price="2.99" data-img="assets/product-energy.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-energy.jpg" alt="Energy Drink" loading="lazy"></div>
-        <div class="title">Energy Drink</div><div class="price">$2.99</div><button class="add" aria-label="Add Energy Drink">+</button>
+        <div class="title">Energy Drink</div>
+        <div class="price">$2.99</div>
+        <button class="add" aria-label="Add Energy Drink">+</button>
       </div>
-
       <div class="card" role="listitem" data-name="Chocolate Bar" data-price="1.75" data-img="assets/product-chocolate.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-chocolate.jpg" alt="Chocolate Bar" loading="lazy"></div>
-        <div class="title">Chocolate Bar</div><div class="price">$1.75</div><button class="add" aria-label="Add Chocolate Bar">+</button>
+        <div class="title">Chocolate Bar</div>
+        <div class="price">$1.75</div>
+        <button class="add" aria-label="Add Chocolate Bar">+</button>
       </div>
     </div>
 
@@ -266,10 +291,10 @@
           </div>
         </div>
         <div class="row-between" style="margin-top:10px;">
-          <div class="qty">
-            <button id="qtyMinus" type="button">−</button>
-            <div id="qtyVal" aria-live="polite">1</div>
-            <button id="qtyPlus" type="button">+</button>
+          <div class="qty" style="display:flex;align-items:center;gap:8px;">
+            <button id="qtyMinus" class="ghost" type="button" aria-label="Decrease">−</button>
+            <div id="qtyVal" aria-live="polite" style="min-width:24px;text-align:center;">1</div>
+            <button id="qtyPlus" class="ghost" type="button" aria-label="Increase">+</button>
           </div>
           <button class="primary" id="sheetAdd" type="button">Add</button>
         </div>
@@ -306,7 +331,7 @@
         <div class="row-between" style="margin-top:10px;">
           <strong>Total</strong><strong id="cartTotal">$0.00</strong>
         </div>
-        <div class="actions">
+        <div class="actions" style="margin-top:12px;">
           <button class="ghost" id="reorderLast" type="button">Re-order last</button>
           <button class="primary" id="cartCheckout" type="button">Checkout</button>
         </div>
@@ -320,6 +345,7 @@
           <h3>Checkout</h3>
           <button class="ghost" id="checkoutClose" type="button">Close</button>
         </div>
+
         <div class="sheet-body">
           <div style="margin-top:6px;">Your name:</div>
           <input id="checkoutName" class="field" style="width:100%;padding:10px;border-radius:10px" autocomplete="name">
@@ -327,15 +353,16 @@
           <input id="checkoutLocation" class="field" style="width:100%;padding:10px;border-radius:10px" autocomplete="organization-title">
 
           <div style="margin-top:12px;">Promo code</div>
-          <input id="checkoutPromo" class="field" style="width:100%;padding:10px;border-radius:10px" placeholder="e.g. SAVE10 or OFF2">
+          <input id="checkoutPromo" class="field" style="width:100%;padding:10px;border-radius:10px">
           <div id="promoStatus" style="margin-top:6px;color:#aaa;font-size:13px"></div>
 
           <div style="margin-top:12px;">Tip (optional)</div>
-          <div id="tipGroup">
+          <div id="tipGroup" style="display:flex;gap:8px;flex-wrap:wrap;">
             <button class="ghost tip-btn" data-tip="none" type="button">No tip</button>
             <button class="ghost tip-btn" data-tip="amount:1" type="button">$1</button>
             <button class="ghost tip-btn" data-tip="amount:2" type="button">$2</button>
             <button class="ghost tip-btn" data-tip="percent:10" type="button">10%</button>
+            <button class="ghost tip-btn" data-tip="percent:15" type="button">15%</button>
           </div>
 
           <div class="admin-list" style="margin-top:12px;">
@@ -344,11 +371,11 @@
             <div class="row-between"><span>Tip</span><strong id="ckTip">$0.00</strong></div>
             <div class="row-between" style="margin-top:6px;"><strong>Total</strong><strong id="ckTotal">$0.00</strong></div>
           </div>
-
-          <div id="checkoutError" style="display:none;color:#ff6b6b;margin-top:10px;">Please fill both fields.</div>
         </div>
+
         <div class="actions" style="margin-top:12px;">
-          <button class="primary" id="checkoutSubmit" type="button">Place Order</button>
+          <button class="ghost" id="checkoutBack" type="button">Back</button>
+          <button class="primary" id="checkoutPlace" type="button">Place order</button>
         </div>
       </div>
     </div>
@@ -360,54 +387,60 @@
           <h3>Settings</h3>
           <button class="ghost" id="settingsClose" type="button">Close</button>
         </div>
-        <div class="tabs" role="tablist" aria-label="Settings Tabs">
-          <button id="tabGeneral" class="tab active" role="tab" aria-selected="true" aria-controls="panelGeneral" type="button">General</button>
-          <button id="tabAdmin" class="tab" role="tab" aria-selected="false" aria-controls="panelAdmin" type="button">Admin</button>
+
+        <div class="tabs" role="tablist" aria-label="Settings tabs">
+          <button id="tabGeneral" class="tab active" role="tab" aria-selected="true">General</button>
+          <button id="tabAdmin" class="tab" role="tab" aria-selected="false">Admin</button>
         </div>
-        <div class="sheet-body">
-          <!-- General -->
-          <div id="panelGeneral" role="tabpanel" aria-labelledby="tabGeneral">
-            <div class="ghost" aria-disabled="true">Dark Mode (disabled)</div>
-            <div class="ghost" aria-disabled="true">Notifications (disabled)</div>
+
+        <div id="settingsGeneral" class="sheet-body" role="tabpanel" aria-labelledby="tabGeneral">
+          <div style="margin-top:6px;">Your name</div>
+          <input id="profileName" class="field" style="width:100%;padding:10px;border-radius:10px">
+          <div style="margin-top:10px;">Default location</div>
+          <input id="profileLoc" class="field" style="width:100%;padding:10px;border-radius:10px">
+          <div class="actions" style="margin-top:12px;">
+            <button class="primary" id="profileSave" type="button">Save</button>
+          </div>
+        </div>
+
+        <div id="settingsAdmin" class="sheet-body" role="tabpanel" aria-labelledby="tabAdmin" style="display:none;">
+          <div style="margin-top:6px;">Admin password</div>
+          <input id="adminPass" class="field" style="width:100%;padding:10px;border-radius:10px" type="password">
+          <div class="actions" style="margin-top:12px;">
+            <button class="primary" id="adminUnlock" type="button">Unlock</button>
           </div>
 
-          <!-- Admin -->
-          <div id="panelAdmin" role="tabpanel" aria-labelledby="tabAdmin" style="display:none">
-            <div id="adminLogin">
-              <div style="margin-top:6px;">Admin password:</div>
-              <input id="adminPassword" type="password" class="field" style="width:100%;padding:10px;border-radius:10px">
-              <div id="adminError" style="display:none;color:#ff6b6b;margin-top:6px;">Wrong password.</div>
-              <div class="actions" style="margin-top:12px;">
-                <button class="primary" id="adminSubmit" type="button">Unlock</button>
-              </div>
+          <!-- Admin area appears after unlock -->
+          <div id="adminArea" style="display:none; margin-top:16px;">
+            <div class="kpis">
+              <div class="kpi"><div class="label">Open orders</div><div class="value" id="kpiOpen">0</div></div>
+              <div class="kpi"><div class="label">Revenue (local)</div><div class="value" id="kpiRev">$0.00</div></div>
             </div>
 
-            <div id="adminContent" style="display:none">
-              <div class="kpis" style="margin-top:8px">
-                <div class="kpi"><div class="label">Revenue</div><div id="kpiRevenue" class="value">$0.00</div></div>
-                <div class="kpi"><div class="label">Orders</div><div id="kpiOrders" class="value">0</div></div>
-                <div class="kpi"><div class="label">AOV</div><div id="kpiAOV" class="value">$0.00</div></div>
-                <div class="kpi"><div class="label">Items</div><div id="kpiItems" class="value">0</div></div>
-              </div>
+            <!-- Subtabs -->
+            <div class="admin-subtabs" id="adminSubtabs"></div>
 
-              <div class="admin-subtabs">
-                <button class="subtab active" data-subtab="orders" type="button">Orders</button>
-                <button class="subtab" data-subtab="inventory" type="button">Inventory</button>
-                <button class="subtab" data-subtab="analytics" type="button">Analytics</button>
-                <button class="subtab" data-subtab="heat" type="button">Heat Map</button>
-                <button class="subtab" data-subtab="history" type="button">History</button>
+            <!-- Panels -->
+            <div id="adminPanels">
+              <div id="adminStock"   class="admin-list" style="display:none;"></div>
+              <div id="adminOrders"  class="admin-list" style="display:none;"></div>
+              <div id="adminHeat"    class="admin-list" style="display:none;">
+                <div class="heat">
+                  <div style="font-weight:700;margin-bottom:6px;">Orders Heat Map (7×24)</div>
+                  <div class="heat-grid" id="heatGrid"></div>
+                  <div class="heat-legend">
+                    <span>Low</span>
+                    <div class="legend-swatch" id="legendLow"></div>
+                    <div class="legend-swatch" id="legendMid"></div>
+                    <div class="legend-swatch" id="legendHigh"></div>
+                    <span>High</span>
+                  </div>
+                </div>
               </div>
-
-              <div id="subtab-orders"><div id="ordersList" class="admin-list">No orders yet</div></div>
-              <div id="subtab-inventory" style="display:none"><div id="inventoryList" class="admin-list">Loading…</div></div>
-              <div id="subtab-analytics" style="display:none">
-                <svg id="revSpark" class="spark" viewBox="0 0 100 40" preserveAspectRatio="none"></svg>
-                <div id="topProducts" class="admin-list" style="margin-top:8px">No sales yet</div>
-              </div>
-              <div id="subtab-heat" style="display:none"><div id="heatGridHM" class="admin-list"></div></div>
-              <div id="subtab-history" style="display:none">
-                <div id="historyList" class="admin-list">No history yet</div>
-                <button class="ghost" id="historyClear" type="button">Clear history</button>
+              <div id="adminHistory" class="admin-list" style="display:none;"></div>
+              <div id="adminPromos"  class="admin-list" style="display:none;">
+                <div style="margin-bottom:8px;">Active promo pattern examples: <code>SAVE10</code>, <code>$3</code></div>
+                <div style="color:#c7c7cc;">(This simple demo reads codes at checkout; extend here to manage scheduled promos.)</div>
               </div>
             </div>
           </div>
@@ -415,18 +448,25 @@
       </div>
     </div>
 
-    <!-- Sticky Cart Bar -->
-    <div id="cartBar">
-      <div id="cartBarTotal">$0.00</div>
-      <button class="ghost" id="cartBarView" type="button">View</button>
-      <button class="primary" id="cartBarCheckout" type="button">Checkout</button>
+    <!-- Optional admin prompt overlay -->
+    <div id="adminPrompt" class="overlay" role="dialog" aria-modal="true" aria-label="Admin prompt">
+      <div class="sheet" role="document">
+        <div class="row-between">
+          <h3>Admin required</h3>
+          <button class="ghost" id="adminPromptClose" type="button">Close</button>
+        </div>
+        <div style="margin-top:8px;">Please unlock Admin in Settings first.</div>
+        <div class="actions" style="margin-top:12px;">
+          <button class="primary" id="openSettingsFromPrompt" type="button">Open Settings</button>
+        </div>
+      </div>
     </div>
+  </div><!-- /.app -->
 
-    <!-- Toast Host -->
-    <div id="toastHost"></div>
-  </div>
+  <!-- Toast Host -->
+  <div id="toastHost"></div>
 
-  <!-- Firebase + Firestore (always on) -->
+  <!-- Firebase + Firestore -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
     import {
@@ -444,7 +484,7 @@
     };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    window.__fs = { db }; // exposed for app code
+    window.__fs = { db };
   </script>
 
   <script>
@@ -454,207 +494,179 @@
     const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY)||'0')||0;
     if(cur < APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
   }catch{ localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION)); }
-
   if('serviceWorker' in navigator){ window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js')); }
 
+  /* ---------- Helpers ---------- */
   const $  = s => document.querySelector(s);
   const $$ = s => Array.from(document.querySelectorAll(s));
+  const fmt = n => '$' + (Number(n)||0).toFixed(2);
 
-  /* Keys & constants */
-  const CART_KEY='fitsnacks.cart.v1';
-  const ORDERS_KEY='fitsnacks.orders';
-  const UNLOCK_KEY='fitsnacks.admin.unlocked';
-  const FAVORITES_KEY='fitsnacks.favorites';
-  const PROMOS_KEY='fitsnacks.promos';
-  const DELIVERED_KEY='fitsnacks.orders.delivered';
-  const PROFILE_NAME_KEY='fitsnacks.profile.name';
-  const PROFILE_LOC_KEY='fitsnacks.profile.location';
-  const STOCK_KEY='fitsnacks.stock.v1';
+  /* ---------- Storage Keys ---------- */
+  const CART_KEY        = 'fitsnacks.cart.v1';
+  const FAVORITES_KEY   = 'fitsnacks.favorites.v1';
+  const PROMOS_KEY      = 'fitsnacks.promos.v1';
+  const PROFILE_NAME_KEY= 'fitsnacks.profile.name';
+  const PROFILE_LOC_KEY = 'fitsnacks.profile.location';
+  const UNLOCK_KEY      = 'fitsnacks.admin.unlocked';
+  const STOCK_KEY       = 'fitsnacks.stock.v1';
+  const ORDERS_KEY      = 'fitsnacks.orders.v1';
+  const LAST_ORDER_KEY  = 'fitsnacks.lastorder.v1';
+  const DELIVERED_KEY   = 'fitsnacks.orders.delivered';
 
-  const IFTTT_EVENT='Fitsnack_order';
-  const IFTTT_KEY='fI-MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA'; // you provided this
-  const IFTTT_URL=`https://maker.ifttt.com/trigger/${IFTTT_EVENT}/with/key/${IFTTT_KEY}`;
+  /* ---------- External (optional) ---------- */
+  const IFTTT_EVENT = 'Fitsnack_order';
+  const IFTTT_KEY   = 'REPLACE_WITH_IFTTT_KEY';
+  const IFTTT_URL   = `https://maker.ifttt.com/trigger/${IFTTT_EVENT}/with/key/${IFTTT_KEY}`;
+  const ADMIN_PASSWORD = '8TSB077';
 
-  const ADMIN_PASSWORD='8TSB077';
-  const fmt=n=>'$'+Number(n||0).toFixed(2);
+  /* ---------- Toasts ---------- */
+  function showToast(msg, ms = 1800){
+    const host = $('#toastHost'); if(!host) return;
+    const el = document.createElement('div');
+    el.className = 'toast'; el.textContent = msg;
+    host.appendChild(el);
+    requestAnimationFrame(() => el.classList.add('show'));
+    setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 250); }, ms);
+  }
 
-  /* State */
-  let cart=new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]'));
-  let favorites=new Set(JSON.parse(localStorage.getItem(FAVORITES_KEY)||'[]'));
-  let stock=JSON.parse(localStorage.getItem(STOCK_KEY)||'{}');
-  let promo=null; // {type:'percent'|'amount', value:number}
-  let tip={type:'none', value:0};
+  /* ---------- Persistent state ---------- */
+  let cart      = new Map(JSON.parse(localStorage.getItem(CART_KEY) || '[]'));
+  let favorites = new Set(JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]'));
+  let promo     = null;
+  let tip       = { type:'none', value:0 };
+  let stock     = {};
+  let orders    = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
 
-  // Default stock if empty
-  if(!Object.keys(stock).length){
-    stock={
-      'Potato Chips': 20,'Protein Bar': 18,'Trail Mix': 15,'Granola Bar': 24,
-      'Doritos Flamin’ Hot Nacho': 30,'Greek Yogurt': 12,'Mixed Nuts': 14,
-      'Fruit Cup': 10,'Energy Drink': 16,'Chocolate Bar': 22
-    };
+  /* ---------- Stock ---------- */
+  const DEFAULT_STOCK = {
+    'Potato Chips': 20,'Protein Bar': 18,'Trail Mix': 15,'Granola Bar': 24,
+    'Doritos Flamin’ Hot Nacho': 30,'Greek Yogurt': 12,'Mixed Nuts': 14,
+    'Fruit Cup': 10,'Energy Drink': 16,'Chocolate Bar': 22
+  };
+  (function seedStock(){
+    try{
+      const cur = JSON.parse(localStorage.getItem(STOCK_KEY) || 'null');
+      stock = cur && typeof cur === 'object' ? cur : {...DEFAULT_STOCK};
+    }catch{ stock = {...DEFAULT_STOCK}; }
     localStorage.setItem(STOCK_KEY, JSON.stringify(stock));
-  }
-
-  /* Helpers */
-  function saveCart(){ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(cart.entries()))); }
-  function saveFavs(){ localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(favorites))); }
-  function getStock(name){ return stock[name] ?? 0; }
+  })();
   function saveStock(){ localStorage.setItem(STOCK_KEY, JSON.stringify(stock)); }
-  function showToast(msg, ms=1800){
-    const host=$('#toastHost'); const el=document.createElement('div');
-    el.className='toast'; el.textContent=msg; host.appendChild(el);
-    requestAnimationFrame(()=>el.classList.add('show'));
-    setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),250); }, ms);
-  }
-  function updateGreeting(){
-    const name=localStorage.getItem(PROFILE_NAME_KEY)||'';
-    $('#greet').textContent = name ? `Hi, ${name} 👋` : 'Welcome 👋';
+  function getStock(name){ return stock[name] ?? 0; }
+  function setStock(name, qty){ stock[name] = Math.max(0, qty|0); saveStock(); applyOOSClasses(); }
+
+  function applyOOSClasses(){
+    $$('.card').forEach(card => {
+      const s = getStock(card.dataset.name);
+      card.classList.toggle('oos', (s||0) <= 0);
+      const add = card.querySelector('.add'); if(add) add.disabled = (s||0) <= 0;
+    });
   }
 
-  /* Carousel */
+  /* ---------- Greeting & Profile ---------- */
+  function updateGreeting(){
+    const name = (localStorage.getItem(PROFILE_NAME_KEY) || '').trim();
+    $('#greet') && ($('#greet').textContent = name ? `Hi, ${name} 👋` : 'Welcome 👋');
+  }
+
+  /* ---------- Carousel ---------- */
   function buildPromos(){
-    const snapper=$('#snapper'); if(!snapper) return;
-    let data=[]; try{ data=JSON.parse(localStorage.getItem(PROMOS_KEY)||'[]'); }catch{}
+    const snapper = $('#snapper'); if(!snapper) return;
+    let data = [];
+    try{ data = JSON.parse(localStorage.getItem(PROMOS_KEY) || '[]'); }catch{}
     if(!data.length){
       data = [
         {img:'assets/carousel-1.jpg', title:'Fuel your study grind', cta:'Shop snacks', action:'scrollGrid'},
-        {img:'assets/carousel-2.jpg', title:'Protein picks', cta:'Filter: protein', action:'filter', value:'protein'},
-        {img:'assets/carousel-3.jpg', title:'Need help?', cta:'Open settings', action:'openSettings'}
+        {img:'assets/carousel-2.jpg', title:'Protein picks',       cta:'Filter: protein', action:'filter', value:'protein'},
+        {img:'assets/carousel-3.jpg', title:'Need help?',          cta:'Open settings', action:'openSettings'}
       ];
       localStorage.setItem(PROMOS_KEY, JSON.stringify(data));
     }
-    snapper.querySelectorAll('.snap-card').forEach(n=>n.remove());
-    const after=snapper.lastElementChild;
-    data.forEach(p=>{
-      const c=document.createElement('div');
-      c.className='snap-card';
-      c.innerHTML=`<img class="banner" src="${p.img}" alt="${p.title}">
+    snapper.querySelectorAll('.snap-card').forEach(n => n.remove());
+    const after = snapper.lastElementChild;
+    data.forEach(p => {
+      const c = document.createElement('div');
+      c.className = 'snap-card';
+      c.innerHTML = `<img class="banner" src="${p.img}" alt="${p.title}">
         <div class="snap-meta"><div class="snap-title">${p.title}</div>
-        ${p.cta?`<button class="ghost snap-cta" type="button">${p.cta}</button>`:''}</div>`;
+        ${p.cta ? `<button class="ghost snap-cta" type="button">${p.cta}</button>` : ''}</div>`;
       snapper.insertBefore(c, after);
-      c.addEventListener('click', e=>{
+      c.addEventListener('click', e => {
         if(e.target.closest('.snap-cta')) return;
-        if(p.action==='scrollGrid') $('#grid')?.scrollIntoView({behavior:'smooth'});
-        if(p.action==='filter') activateChip(p.value||'');
-        if(p.action==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
+        if(p.action === 'scrollGrid') $('#grid')?.scrollIntoView({behavior:'smooth'});
+        if(p.action === 'filter') activateChip(p.value || '');
+        if(p.action === 'openSettings'){ $('#settingsOverlay')?.classList.add('show'); switchTab('general'); }
       }, {passive:true});
-      c.querySelector('.snap-cta')?.addEventListener('click', e=>{
+      c.querySelector('.snap-cta')?.addEventListener('click', e => {
         e.stopPropagation();
-        if(p.action==='filter') activateChip(p.value||'');
-        if(p.action==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
-        if(p.action==='scrollGrid') $('#grid')?.scrollIntoView({behavior:'smooth'});
+        if(p.action === 'filter') activateChip(p.value || '');
+        if(p.action === 'openSettings'){ $('#settingsOverlay')?.classList.add('show'); switchTab('general'); }
+        if(p.action === 'scrollGrid') $('#grid')?.scrollIntoView({behavior:'smooth'});
       });
     });
 
-    const cards=$$('.snap-card'), dotsWrap=$('#snapDots');
-    dotsWrap.innerHTML=cards.map(()=>'<div class="snap-dot"></div>').join('');
-    const dots=$$('.snap-dot'); const setDot=i=>dots.forEach((d,k)=>d.classList.toggle('active',k===i)); setDot(0);
-
-    let idx=0, hold=5000, slide=3000, start=null, phase='hold', from=0, to=0;
-    let userInteracting=false,lastInteract=0,inView=true; const INTERACT_COOLDOWN=3500;
+    const cards = $$('.snap-card');
+    const dotsWrap = $('#snapDots'); if(!dotsWrap) return;
+    dotsWrap.innerHTML = cards.map(() => '<div class="snap-dot"></div>').join('');
+    const dots = $$('.snap-dot');
     const spacerLeft = snapper.firstElementChild;
+    function setDot(i){ dots.forEach((d, k) => d.classList.toggle('active', k === i)); }
+    function scrollToCard(i, smooth = true){
+      const targetLeft = cards[i].offsetLeft - spacerLeft.offsetLeft;
+      if(smooth) snapper.scrollTo({ left: targetLeft, behavior:'smooth' }); else snapper.scrollLeft = targetLeft;
+      setDot(i);
+    }
+    dots.forEach((d, i) => d.addEventListener('click', () => scrollToCard(i, true)));
+    setDot(0);
 
-    ['pointerdown','wheel','touchstart','mousedown','scroll'].forEach(ev=>snapper.addEventListener(ev,()=>{userInteracting=true;lastInteract=Date.now();},{passive:true}));
-    const obs=new IntersectionObserver((ents)=>{inView=ents.some(e=>e.isIntersecting);},{threshold:0.2}); obs.observe(snapper);
-
+    // autoplay with interaction guard
+    let idx = 0, hold = 5000, slide = 3000, start = null, phase = 'hold';
+    let userInteracting = false, lastInteract = 0, inView = true;
+    const INTERACT_COOLDOWN = 3500;
+    ['pointerdown','wheel','touchstart','mousedown','scroll'].forEach(ev =>
+      snapper.addEventListener(ev, () => { userInteracting = true; lastInteract = Date.now(); }, {passive:true})
+    );
+    const obs = new IntersectionObserver((ents) => { inView = ents.some(e => e.isIntersecting); }, { threshold:0.2 });
+    obs.observe(snapper);
+    let from = 0, to = 0;
     function step(ts){
       if(!cards.length || !inView) return requestAnimationFrame(step);
-      if(userInteracting && (Date.now()-lastInteract)<INTERACT_COOLDOWN) { start=ts; return requestAnimationFrame(step); }
-      if(!start) start=ts;
+      if(userInteracting && (Date.now() - lastInteract) < INTERACT_COOLDOWN){ start = ts; return requestAnimationFrame(step); }
+      if(!start) start = ts;
       const elapsed = ts - start;
-      if(phase==='hold'){
+      if(phase === 'hold'){
         if(elapsed >= hold){
-          phase='slide'; start=ts; from = snapper.scrollLeft; idx=(idx+1)%cards.length;
-          to = cards[idx].offsetLeft - spacerLeft.offsetLeft;
+          phase = 'slide'; start = ts; from = snapper.scrollLeft;
+          idx = (idx + 1) % cards.length; to = cards[idx].offsetLeft - spacerLeft.offsetLeft;
         }
       }else{
-        const t = Math.min(1, (ts-start)/slide);
-        const e = t<.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,8)/2;
+        const t = Math.min(1, (ts - start) / slide);
+        const e = t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 8) / 2;
         snapper.scrollLeft = from + (to - from) * e;
-        if(t>=1){ phase='hold'; start=ts; setDot(idx); }
+        if(t >= 1){ phase = 'hold'; start = ts; setDot(idx); }
       }
       requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
-
-    // sync dots after manual scroll
-    let dotTimer=null;
-    snapper.addEventListener('scroll', ()=>{
-      clearTimeout(dotTimer);
-      dotTimer=setTimeout(()=>{
-        let nearest=0, best=1e9;
-        cards.forEach((c,i)=>{
-          const center = snapper.scrollLeft + snapper.clientWidth/2;
-          const cc = c.offsetLeft + c.clientWidth/2;
-          const d = Math.abs(center-cc);
-          if(d<best){best=d; nearest=i;}
-        });
-        setDot(nearest);
-      },150);
-    }, {passive:true});
   }
 
-  /* Product Sheet & add-to-cart (stock aware) */
-  let currentProduct=null;
-  function reflectStockBadges(){
-    $$('.card').forEach(c=>{
-      const s = getStock(c.dataset.name);
-      const btn = c.querySelector('.add');
-      c.classList.toggle('oos', (s||0)<=0);
-      if(btn) btn.disabled = (s||0) <= 0;
-    });
-  }
-  function openProductSheet(card){
-    currentProduct={ name:card.dataset.name, price:+card.dataset.price, img:card.dataset.img };
-    $('#sheetTitle').textContent=currentProduct.name;
-    $('#sheetImg').src=currentProduct.img||'';
-    $('#sheetImg').alt=currentProduct.name||'';
-    $('#sheetPrice').textContent=fmt(currentProduct.price);
-    const s=getStock(currentProduct.name);
-    $('#sheetStock').textContent='Stock: '+s;
-    $('#sheetLowWarn').style.display = s>0 && s<=3 ? 'block':'none';
-    $('#qtyVal').textContent='1';
-    $('#sheetAdd').textContent='Add • '+fmt(currentProduct.price);
-    $('#productSheet').classList.add('show');
-  }
-  function closeProductSheet(){ $('#productSheet').classList.remove('show'); }
-  $('#sheetClose')?.addEventListener('click', closeProductSheet);
-  $('#qtyPlus')?.addEventListener('click', ()=>{ let n=(+$('#qtyVal').textContent)||1; n=Math.min(99,n+1); $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(n*(currentProduct?.price||0)); });
-  $('#qtyMinus')?.addEventListener('click', ()=>{ let n=(+$('#qtyVal').textContent)||1; n=Math.max(1,n-1); $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(n*(currentProduct?.price||0)); });
-  $('#sheetAdd')?.addEventListener('click', ()=>{
-    if(!currentProduct) return;
-    const n=(+$('#qtyVal').textContent)||1;
-    const s=getStock(currentProduct.name);
-    if(s<=0){ showToast('Out of stock'); return; }
-    if(n>s){ showToast('Not enough stock'); return; }
-    const entry=cart.get(currentProduct.name)||{price:currentProduct.price,qty:0};
-    entry.qty+=n; cart.set(currentProduct.name,entry); saveCart();
-    stock[currentProduct.name]=s-n; saveStock(); reflectStockBadges();
-    renderCart(); refreshBadge(); closeProductSheet(); openCart();
-    showToast(`Added ${n} × ${currentProduct.name}`);
-  });
-
-  document.addEventListener('click', e=>{
-    const plus = e.target.closest('.card .add'); if(plus){ e.stopPropagation(); openProductSheet(plus.closest('.card')); return; }
-    const card = e.target.closest('.card'); if(card && !e.target.closest('.fav')) openProductSheet(card);
-  }, {passive:true});
-
-  /* Cart */
+  /* ---------- Cart ---------- */
+  function saveCart(){ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(cart.entries()))); }
   function refreshBadge(){
-    let n=0; for(const v of cart.values()) n+=v.qty;
-    const b=$('#cartBadge'); if(!b) return;
-    if(n>0){ b.textContent=String(n); b.style.display='inline-flex'; }
-    else { b.style.display='none'; }
+    let n = 0; for(const v of cart.values()) n += (v?.qty || 0);
+    const badge = $('#cartBadge'); if(!badge) return;
+    if(n > 0){ badge.textContent = String(n); badge.style.display = 'inline-flex'; }
+    else { badge.style.display = 'none'; }
   }
   function renderCart(){
-    let total=0, html='';
-    for(const [name,info] of cart){
-      const line=info.price*info.qty; total+=line;
+    let total = 0, html = '';
+    for(const [name, info] of cart){
+      const line = (info.price || 0) * (info.qty || 0);
+      total += line;
       html += `<div class="row-between" style="margin-top:6px">
         <div style="display:flex;gap:10px;align-items:center">
-          <button data-act="-" data-name="${name}" class="ghost" type="button">−</button>
+          <button data-act="-" data-name="${name}" class="ghost" type="button" aria-label="Decrease">−</button>
           <div style="min-width:24px;text-align:center">${info.qty}</div>
-          <button data-act="+" data-name="${name}" class="ghost" type="button">+</button>
+          <button data-act="+" data-name="${name}" class="ghost" type="button" aria-label="Increase">+</button>
           <div style="font-weight:700;margin-left:8px">${name}</div>
         </div>
         <div style="display:flex;gap:6px;align-items:center">
@@ -663,141 +675,202 @@
         </div>
       </div>`;
     }
-    $('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
-    $('#cartTotal').textContent = fmt(total);
-    updateCartBar();
+    $('#cartContent') && ($('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>');
+    $('#cartTotal') && ($('#cartTotal').textContent = fmt(total));
   }
-  document.addEventListener('click', (e)=>{
-    const b=e.target.closest('button[data-act][data-name]');
+
+  /* Delegate +/− and remove in cart */
+  document.addEventListener('click', e => {
+    const b = e.target.closest('button[data-act][data-name]');
     if(b){
-      const name=b.getAttribute('data-name'); const act=b.getAttribute('data-act');
-      const entry=cart.get(name); if(!entry) return;
-      entry.qty=Math.max( (act==='+')?entry.qty+1:entry.qty-1 ,0);
-      if(entry.qty===0) cart.delete(name);
-      saveCart(); renderCart(); refreshBadge(); return;
+      const name = b.getAttribute('data-name');
+      const act  = b.getAttribute('data-act');
+      const entry = cart.get(name);
+      if(entry){
+        entry.qty = Math.max( (act === '+') ? entry.qty + 1 : entry.qty - 1, 0 );
+        if(entry.qty === 0) cart.delete(name);
+        saveCart(); renderCart(); refreshBadge();
+      }
+      return;
     }
-    const rm=e.target.closest('button[data-remove]');
-    if(rm){ const name=rm.getAttribute('data-remove'); cart.delete(name); saveCart(); renderCart(); refreshBadge(); return; }
+    const rm = e.target.closest('button[data-remove]');
+    if(rm){
+      const name = rm.getAttribute('data-remove');
+      if(cart.has(name)){ cart.delete(name); saveCart(); renderCart(); refreshBadge(); }
+      return;
+    }
   }, {passive:true});
+
   function openCart(){ $('#cartOverlay')?.classList.add('show'); }
   function closeCart(){ $('#cartOverlay')?.classList.remove('show'); }
   $('#cartBtn')?.addEventListener('click', openCart);
   $('#cartBack')?.addEventListener('click', closeCart);
 
-  /* Sticky cart bar */
-  function updateCartBar(){
-    const bar=$('#cartBar'); if(!bar) return;
-    let total=0, count=0; for(const [,info] of cart){ total+=info.price*info.qty; count+=info.qty; }
-    if(count>0){ $('#cartBarTotal').textContent=fmt(total); bar.classList.add('show'); }
-    else { bar.classList.remove('show'); }
+  /* ---------- Favorites ---------- */
+  function saveFavs(){ localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(favorites))); }
+  function syncFavStars(){
+    $$('.card').forEach(card => card.querySelector('.fav')?.classList.toggle('active', favorites.has(card.dataset.name)));
   }
-  $('#cartBarView')?.addEventListener('click', openCart);
-  $('#cartBarCheckout')?.addEventListener('click', ()=>{
-    let count=0; for(const v of cart.values()) count+=v.qty;
-    if(count===0){ showToast('Your cart is empty'); return; }
-    $('#checkoutError').style.display='none'; updateCheckoutBreakdown();
-    $('#checkoutOverlay').classList.add('show');
-  });
+  document.addEventListener('click', e => {
+    const fav = e.target.closest('.fav'); if(!fav) return;
+    e.stopPropagation();
+    const card = fav.closest('.card'); if(!card) return;
+    const name = card.dataset.name;
+    if(favorites.has(name)) favorites.delete(name); else favorites.add(name);
+    saveFavs(); syncFavStars();
+    const activeFilter = $('#chips .chip.active')?.dataset.filter;
+    if(activeFilter === 'favorites' && !favorites.has(name)){
+      card.classList.add('hidden-by-filter'); searchAndFilter();
+    }
+  }, {passive:true});
 
-  /* Search + Filters + Favorites */
+  /* ---------- Search & Filter ---------- */
   function shouldShowForChip(val, card){
     if(!val) return true;
-    if(val==='favorites') return favorites.has(card.dataset.name);
-    if(val==='stock') return getStock(card.dataset.name) > 0;
-    const tags=(card.dataset.tags||'').toLowerCase();
+    if(val === 'favorites') return favorites.has(card.dataset.name);
+    if(val === 'stock') return (getStock(card.dataset.name) || 0) > 0;
+    const tags = (card.dataset.tags || '').toLowerCase();
     return tags.includes(val);
   }
   function activateChip(val){
-    $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch.dataset.filter===val));
-    $$('.card').forEach(c=>{
-      const show = shouldShowForChip(val,c);
-      if(show) c.style.removeProperty('display');
-      else c.style.display='none';
-    });
+    $$('#chips .chip').forEach(ch => ch.classList.toggle('active', ch.dataset.filter === val));
+    $$('.card').forEach(c => c.classList.toggle('hidden-by-filter', !shouldShowForChip(val, c)));
     searchAndFilter();
   }
   function searchAndFilter(){
-    const q = ($('#search').value||'').toLowerCase();
-    $$('.card').forEach(c=>{
-      const hitsName=c.dataset.name.toLowerCase().includes(q);
-      const hidden = c.style.display==='none';
-      c.style.display = (!hidden && hitsName) ? '' : (hidden ? 'none' : 'none');
-      if(!hidden && hitsName) c.style.display='';
+    const q = ($('#search')?.value || '').toLowerCase();
+    $$('.card').forEach(c => {
+      const hitsName = c.dataset.name.toLowerCase().includes(q);
+      const visible = !c.classList.contains('hidden-by-filter') && hitsName;
+      c.style.display = visible ? '' : 'none';
     });
   }
-  $('#chips')?.addEventListener('click', e=>{
-    const chip=e.target.closest('.chip'); if(!chip) return;
-    activateChip(chip.dataset.filter||'');
+  $('#chips')?.addEventListener('click', e => {
+    const chip = e.target.closest('.chip'); if(!chip) return;
+    activateChip(chip.dataset.filter || '');
   });
   $('#search')?.addEventListener('input', searchAndFilter);
 
-  function syncFavStars(){ $$('.card').forEach(card=>card.querySelector('.fav')?.classList.toggle('active', favorites.has(card.dataset.name))); }
-  document.addEventListener('click', e=>{
-    const fav=e.target.closest('.fav'); if(!fav) return;
-    e.stopPropagation();
-    const card=fav.closest('.card'); const name=card.dataset.name;
-    if(favorites.has(name)) favorites.delete(name); else favorites.add(name);
-    saveFavs(); syncFavStars();
-    const favChipActive = $('#chips .chip.active')?.dataset.filter === 'favorites';
-    if(favChipActive && !favorites.has(name)){ card.style.display='none'; searchAndFilter(); }
+  /* ---------- Product Sheet ---------- */
+  let currentProduct = null;
+  function openProductSheet(card){
+    currentProduct = { name: card.dataset.name, price: parseFloat(card.dataset.price), img: card.dataset.img };
+    $('#sheetTitle') && ($('#sheetTitle').textContent = currentProduct.name);
+    if($('#sheetImg')){ $('#sheetImg').src = currentProduct.img || ''; $('#sheetImg').alt = currentProduct.name || ''; }
+    $('#sheetPrice') && ($('#sheetPrice').textContent = fmt(currentProduct.price));
+    const s = getStock(currentProduct.name);
+    $('#sheetStock') && ($('#sheetStock').textContent = 'Stock: ' + s);
+    $('#sheetLowWarn') && ($('#sheetLowWarn').style.display = s > 0 && s <= 3 ? 'block' : 'none');
+    $('#qtyVal') && ($('#qtyVal').textContent = '1');
+    $('#sheetAdd') && ($('#sheetAdd').textContent = 'Add • ' + fmt(currentProduct.price));
+    $('#productSheet')?.classList.add('show');
+  }
+  function closeProductSheet(){ $('#productSheet')?.classList.remove('show'); }
+  $('#sheetClose')?.addEventListener('click', closeProductSheet);
+  $('#qtyPlus')?.addEventListener('click', () => {
+    let n = parseInt($('#qtyVal')?.textContent || '1', 10);
+    n = Math.min(99, n + 1);
+    $('#qtyVal') && ($('#qtyVal').textContent = n);
+    $('#sheetAdd') && ($('#sheetAdd').textContent = 'Add • ' + fmt(n * (currentProduct?.price || 0)));
+  });
+  $('#qtyMinus')?.addEventListener('click', () => {
+    let n = parseInt($('#qtyVal')?.textContent || '1', 10);
+    n = Math.max(1, n - 1);
+    $('#qtyVal') && ($('#qtyVal').textContent = n);
+    $('#sheetAdd') && ($('#sheetAdd').textContent = 'Add • ' + fmt(n * (currentProduct?.price || 0)));
+  });
+  $('#sheetAdd')?.addEventListener('click', () => {
+    if(!currentProduct) return;
+    const qty = parseInt($('#qtyVal')?.textContent || '1', 10);
+    const s = getStock(currentProduct.name);
+    if(s <= 0){ showToast('Out of stock'); return; }
+    if(qty > s){ showToast('Not enough stock'); return; }
+    const entry = cart.get(currentProduct.name) || { price: currentProduct.price, qty:0 };
+    entry.qty += qty; cart.set(currentProduct.name, entry);
+    setStock(currentProduct.name, s - qty); // decrement
+    saveCart(); renderCart(); refreshBadge();
+    closeProductSheet(); openCart();
+    showToast(`Added ${qty} × ${currentProduct.name}`);
+  });
+  /* Open product sheet from card or + button */
+  document.addEventListener('click', e => {
+    const plus = e.target.closest('.card .add');
+    if(plus){ e.stopPropagation(); const card = plus.closest('.card'); if(card && !card.classList.contains('oos')) openProductSheet(card); return; }
+    const card = e.target.closest('.card');
+    if(card && !e.target.closest('.fav') && !e.target.closest('.add') && !card.classList.contains('oos')){
+      openProductSheet(card);
+    }
   }, {passive:true});
 
-  /* Promo + Tip + Checkout math */
+  /* ---------- Promo & Tip ---------- */
   function parsePromo(code){
-    code=(code||'').trim().toUpperCase();
+    code = (code || '').trim().toUpperCase();
     if(!code) return null;
     const mPct = code.match(/(SAVE|PCT)(\d{1,2})/);
-    if(mPct) return {type:'percent', value:Math.min(50, parseInt(mPct[2],10))};
+    if(mPct) return { type:'percent', value: Math.min(50, parseInt(mPct[2],10)) };
     const mAmt = code.match(/(OFF|\$)(\d{1,3})/);
-    if(mAmt) return {type:'amount', value:Math.min(50, parseInt(mAmt[2],10))};
+    if(mAmt) return { type:'amount', value: Math.min(50, parseInt(mAmt[2],10)) };
     return null;
   }
   function computeTotals(){
-    let subtotal=0; for(const[,i] of cart) subtotal+=i.price*i.qty;
-    let disc=0;
+    let subtotal = 0;
+    for(const [, i] of cart) subtotal += i.price * i.qty;
+    let disc = 0;
     if(promo){
-      if(promo.type==='percent') disc = subtotal * (promo.value/100);
-      else if(promo.type==='amount') disc = Math.min(subtotal, promo.value);
+      if(promo.type === 'percent') disc = subtotal * (promo.value / 100);
+      else if(promo.type === 'amount') disc = Math.min(subtotal, promo.value);
     }
-    let tipVal=0;
-    if(tip.type==='amount') tipVal = tip.value;
-    else if(tip.type==='percent') tipVal = (subtotal - disc) * (tip.value/100);
+    let tipVal = 0;
+    if(tip.type === 'amount') tipVal = tip.value;
+    else if(tip.type === 'percent') tipVal = (subtotal - disc) * (tip.value / 100);
     const total = Math.max(0, subtotal - disc) + tipVal;
-    return {subtotal,disc,tip:tipVal,total};
+    return { subtotal, disc, tip: tipVal, total };
   }
   function updateCheckoutBreakdown(){
-    const {subtotal,disc,tip:tipVal,total}=computeTotals();
-    $('#ckSub').textContent=fmt(subtotal);
-    $('#ckDisc').textContent=`-${fmt(disc)}`;
-    $('#ckTip').textContent=fmt(tipVal);
-    $('#ckTotal').textContent=fmt(total);
+    const { subtotal, disc, tip: tipVal, total } = computeTotals();
+    $('#ckSub')  && ($('#ckSub').textContent  = fmt(subtotal));
+    $('#ckDisc') && ($('#ckDisc').textContent = `-${fmt(disc)}`);
+    $('#ckTip')  && ($('#ckTip').textContent  = fmt(tipVal));
+    $('#ckTotal')&& ($('#ckTotal').textContent= fmt(total));
   }
-  $('#checkoutPromo')?.addEventListener('input', (e)=>{
+  $('#checkoutPromo')?.addEventListener('input', e => {
     promo = parsePromo(e.target.value);
-    $('#promoStatus').textContent = promo ? (promo.type==='percent' ? `Applying ${promo.value}% off` : `Applying $${promo.value} off`) : '';
+    $('#promoStatus') && ($('#promoStatus').textContent = promo ? (promo.type === 'percent' ? `Applying ${promo.value}% off` : `Applying $${promo.value} off`) : '');
     updateCheckoutBreakdown();
   });
-  document.querySelectorAll('.tip-btn').forEach(b=>b.addEventListener('click', ()=>{
-    const v=b.getAttribute('data-tip');
-    if(v==='none') tip={type:'none',value:0};
-    else if(v.startsWith('amount')) tip={type:'amount', value:parseFloat(v.split(':')[1])||0};
-    else if(v.startsWith('percent')) tip={type:'percent', value:parseFloat(v.split(':')[1])||0};
+  $$('.tip-btn').forEach(btn => btn.addEventListener('click', () => {
+    const spec = btn.getAttribute('data-tip') || 'none';
+    if(spec === 'none') tip = { type:'none', value:0 };
+    else if(spec.startsWith('amount'))  tip = { type:'amount',  value: parseFloat(spec.split(':')[1]) || 0 };
+    else if(spec.startsWith('percent')) tip = { type:'percent', value: parseFloat(spec.split(':')[1]) || 0 };
     updateCheckoutBreakdown(); showToast('Tip updated');
   }));
 
-  /* Checkout */
-  $('#cartCheckout')?.addEventListener('click', ()=>{ $('#checkoutError').style.display='none'; updateCheckoutBreakdown(); closeCart(); $('#checkoutOverlay').classList.add('show'); });
-  $('#checkoutClose')?.addEventListener('click', ()=>$('#checkoutOverlay')?.classList.remove('show'));
+  /* ---------- Checkout Flow ---------- */
+  function openCheckout(){
+    const name = localStorage.getItem(PROFILE_NAME_KEY) || '';
+    const loc  = localStorage.getItem(PROFILE_LOC_KEY) || '';
+    $('#checkoutName') && ($('#checkoutName').value = name);
+    $('#checkoutLocation') && ($('#checkoutLocation').value = loc);
+    updateCheckoutBreakdown();
+    $('#checkoutOverlay')?.classList.add('show');
+  }
+  function closeCheckout(){ $('#checkoutOverlay')?.classList.remove('show'); }
+  $('#cartCheckout')?.addEventListener('click', () => {
+    if(cart.size === 0){ showToast('Cart is empty'); return; }
+    closeCart(); openCheckout();
+  });
+  $('#checkoutBack')?.addEventListener('click', () => { closeCheckout(); openCart(); });
+  $('#checkoutClose')?.addEventListener('click', closeCheckout);
 
   async function writeOrderToFirestore(order){
     try{
-      if(!window.__fs || !window.__fs.db) return null;
-      const { db } = window.__fs;
+      const { db } = window.__fs || {};
+      if(!db) return null;
       const ref = await addDoc(collection(db, 'orders'), {
         when: serverTimestamp(),
         name: order.name,
-        location: order.location,
-        notes: '',
+        location: order.loc,
         lines: order.lines,
         total: order.total,
         status: 'active'
@@ -806,86 +879,265 @@
     }catch(e){ console.warn('Firestore write failed', e); return null; }
   }
 
-  function subscribeOrdersRealtime(){
-    try{
-      if(!window.__fs || !window.__fs.db) return;
-      const { db } = window.__fs;
-      const q = query(collection(db, 'orders'), orderBy('when','desc'));
-      onSnapshot(q, (snap)=>{
-        const list = [];
-        snap.forEach(docSnap=>{
-          const o = docSnap.data();
-          list.push({ id: docSnap.id, when: (o.when?.toDate?.()||new Date()), name:o.name, location:o.location, lines:o.lines||[], total:o.total||0, status:o.status||'active' });
+  async function placeOrder(){
+    if(cart.size === 0){ showToast('Cart is empty'); return; }
+    const name = ($('#checkoutName')?.value || '').trim();
+    const loc  = ($('#checkoutLocation')?.value || '').trim();
+    if(!name || !loc){ showToast('Add your name and location'); return; }
+
+    localStorage.setItem(PROFILE_NAME_KEY, name);
+    localStorage.setItem(PROFILE_LOC_KEY, loc);
+    updateGreeting();
+
+    const lines = Array.from(cart.entries()).map(([k,v]) => ({ name:k, qty:v.qty, price:v.price, line: v.qty*v.price }));
+    const { subtotal, disc, tip: tipVal, total } = computeTotals();
+    const order = {
+      id: 'FS-' + Date.now(),
+      at: new Date().toISOString(),
+      name, loc, promo, tip, subtotal, discount: disc, total,
+      lines
+    };
+
+    orders.push(order);
+    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+    localStorage.setItem(LAST_ORDER_KEY, JSON.stringify(order));
+
+    // Optional IFTTT webhook (only if key is set)
+    if(IFTTT_KEY && IFTTT_KEY !== 'REPLACE_WITH_IFTTT_KEY'){
+      try{
+        await fetch(IFTTT_URL, {
+          method:'POST',
+          headers:{ 'Content-Type':'application/json' },
+          body: JSON.stringify({
+            value1: `${order.id} | ${name} @ ${loc} | ${fmt(total)}`,
+            value2: lines.map(l => `${l.qty}× ${l.name}`).join(', '),
+            value3: promo ? (promo.type==='percent' ? `${promo.value}% off` : `$${promo.value} off`) : ''
+          })
         });
-        renderOrders(list);
-      });
-    }catch(e){ console.warn('Realtime subscribe failed', e); }
+      }catch(err){ console.warn('IFTTT post failed', err); }
+    }
+
+    cart.clear(); saveCart(); renderCart(); refreshBadge();
+    closeCheckout(); showToast('Order placed 🎉');
+
+    if(isAdminUnlocked()){
+      renderAdminOrders(); updateKpis(); buildHeatMap(); appendHistoryEvent(order);
+    }
   }
+  $('#checkoutPlace')?.addEventListener('click', placeOrder);
 
-  function checkoutClearUI(){
-    cart.clear(); saveCart(); renderCart(); refreshBadge(); updateGreeting(); showToast('Order placed 🎉');
-    $('#checkoutOverlay').classList.remove('show');
-    updateCartBar();
-  }
-
-  $('#checkoutSubmit')?.addEventListener('click', async ()=>{
-    const name=$('#checkoutName').value.trim();
-    const loc=$('#checkoutLocation').value.trim();
-    if(!name||!loc){ $('#checkoutError').style.display='block'; return; }
-    localStorage.setItem(PROFILE_NAME_KEY,name);
-    localStorage.setItem(PROFILE_LOC_KEY,loc);
-
-    const {total}=computeTotals();
-    const lines=[...cart].map(([n,i])=>({name:n,qty:i.qty,price:i.price,line:i.price*i.qty}));
-    const order={when:new Date().toISOString(),name,location:loc,lines,total,status:'active'};
-
-    // Local mirror
-    const list=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]'); list.unshift(order);
-    localStorage.setItem(ORDERS_KEY, JSON.stringify(list));
-
-    // Decrement stock
-    lines.forEach(l=>{ stock[l.name]=(stock[l.name]||0)-l.qty; if(stock[l.name]<0) stock[l.name]=0; });
-    saveStock(); reflectStockBadges();
-
-    // IFTTT GET trigger
-    try{
-      const summary = `${order.name} @ ${order.location} • ${fmt(order.total)}`;
-      const lineItems = order.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('\n');
-      fetch(`${IFTTT_URL}?value1=${encodeURIComponent(summary)}&value2=${encodeURIComponent(lineItems)}&value3=`, {method:'GET', mode:'no-cors'});
-    }catch{}
-
-    // Firestore write
-    const fsId = await writeOrderToFirestore(order);
-    if(fsId) order.id = fsId;
-
-    checkoutClearUI();
-    renderOrders(); renderInventory(); renderAnalytics();
+  /* Re-order last */
+  $('#reorderLast')?.addEventListener('click', () => {
+    const last = JSON.parse(localStorage.getItem(LAST_ORDER_KEY) || 'null');
+    if(!last || !Array.isArray(last.lines) || !last.lines.length){ showToast('No previous order'); return; }
+    for(const l of last.lines){
+      const s = getStock(l.name);
+      const qty = Math.min(l.qty, s);
+      if(qty <= 0) continue;
+      const entry = cart.get(l.name) || { price: l.price, qty:0 };
+      entry.qty += qty; cart.set(l.name, entry);
+      setStock(l.name, s - qty);
+    }
+    saveCart(); renderCart(); refreshBadge(); openCart(); showToast('Added last order items');
   });
 
-  /* Orders (tappable rows → mini sheet) */
-  function renderOrders(externalList){
-    const list = externalList || JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
-    const box=$('#ordersList'); if(!box) return;
-    if(!list.length){ box.textContent='No orders yet'; return; }
-    box.innerHTML=list.map((o,i)=>`
+  /* ---------- Settings & Admin ---------- */
+  function switchTab(which){
+    const gen = $('#settingsGeneral'), adm = $('#settingsAdmin');
+    const tg = $('#tabGeneral'), ta = $('#tabAdmin');
+    const isGen = which !== 'admin';
+    gen && (gen.style.display = isGen ? '' : 'none');
+    adm && (adm.style.display = isGen ? 'none' : '');
+    tg && tg.classList.toggle('active', isGen);
+    ta && ta.classList.toggle('active', !isGen);
+  }
+  $('#settingsBtn')?.addEventListener('click',()=>{ $('#settingsOverlay')?.classList.add('show'); switchTab('general'); });
+  $('#settingsClose')?.addEventListener('click',()=>$('#settingsOverlay')?.classList.remove('show'));
+  $('#tabGeneral')?.addEventListener('click', ()=> switchTab('general'));
+  $('#tabAdmin')?.addEventListener('click',   ()=> switchTab('admin'));
+  $('#profileSave')?.addEventListener('click', ()=>{
+    const n = ($('#profileName')?.value || '').trim();
+    const l = ($('#profileLoc')?.value || '').trim();
+    if(n) localStorage.setItem(PROFILE_NAME_KEY, n);
+    if(l) localStorage.setItem(PROFILE_LOC_KEY, l);
+    updateGreeting(); showToast('Saved');
+  });
+
+  function isAdminUnlocked(){ return localStorage.getItem(UNLOCK_KEY) === '1'; }
+  function ensureAdminLoginVisible(){
+    const area = $('#adminArea'); if(!area) return;
+    area.style.display = isAdminUnlocked() ? '' : 'none';
+  }
+  $('#adminUnlock')?.addEventListener('click', ()=>{
+    const pass = $('#adminPass')?.value || '';
+    if(pass === ADMIN_PASSWORD){
+      localStorage.setItem(UNLOCK_KEY,'1');
+      ensureAdminLoginVisible(); buildAdminSubtabs(); buildAdminStockTable(); renderAdminOrders(); updateKpis(); buildHeatMap(); renderHistory();
+      showToast('Admin unlocked');
+    } else showToast('Wrong password');
+  });
+  $('#openSettingsFromPrompt')?.addEventListener('click', ()=>{
+    $('#adminPrompt')?.classList.remove('show');
+    $('#settingsOverlay')?.classList.add('show'); switchTab('admin');
+  });
+
+  /* ---- Admin Subtabs (fallbacks OK) ---- */
+  const DEFAULT_SUBTABS = [
+    { id:'stock',   label:'Stock',    panel:'adminStock'   },
+    { id:'orders',  label:'Orders',   panel:'adminOrders'  },
+    { id:'heat',    label:'Analytics (Heat Map)', panel:'adminHeat' },
+    { id:'history', label:'History',  panel:'adminHistory' },
+    { id:'promos',  label:'Promos',   panel:'adminPromos'  },
+  ];
+  async function loadSubtabsJSON(urls=[
+    'assets/settings-tabs.json',
+    'assets/admin.json',
+    'assets/settings.json',
+    'assets/ui.json'
+  ]){
+    for(const url of urls){
+      try{
+        const r = await fetch(url, {cache:'no-store'});
+        if(!r.ok) continue;
+        const j = await r.json();
+        if(j?.admin?.subtabs?.length){
+          return j.admin.subtabs.map(x => ({ id:x.id||x.panelId||x.label, label:x.label||x.id, panel:x.panelId||x.id }));
+        }
+        if(Array.isArray(j?.tabs)){
+          const admin = j.tabs.find(t => String(t.id||t.label).toLowerCase().startsWith('admin'));
+          if(admin?.subtabs?.length){
+            return admin.subtabs.map(x => ({ id:x.id||x.panelId||x.label, label:x.label||x.id, panel:x.panelId||x.id }));
+          }
+        }
+        if(Array.isArray(j?.adminSubtabs)) {
+          return j.adminSubtabs.map(x => ({ id:x.id||x, label:x.label||x, panel:x.panelId||x.id||x }));
+        }
+      }catch{}
+    }
+    return DEFAULT_SUBTABS;
+  }
+  function setActiveSubtab(id){
+    $$('.subtab').forEach(b => b.classList.toggle('active', b.dataset.sub === id));
+    $('#adminStock')?.setAttribute('style','display:none;');
+    $('#adminOrders')?.setAttribute('style','display:none;');
+    $('#adminHeat')?.setAttribute('style','display:none;');
+    $('#adminHistory')?.setAttribute('style','display:none;');
+    $('#adminPromos')?.setAttribute('style','display:none;');
+    if(id==='stock')   $('#adminStock').style.display='';
+    if(id==='orders')  $('#adminOrders').style.display='';
+    if(id==='heat')    $('#adminHeat').style.display='';
+    if(id==='history') $('#adminHistory').style.display='';
+    if(id==='promos')  $('#adminPromos').style.display='';
+  }
+  async function buildAdminSubtabs(){
+    const bar = $('#adminSubtabs'); if(!bar) return;
+    const tabs = await loadSubtabsJSON();
+    bar.innerHTML = tabs.map((t,i)=>`<button class="subtab${i===0?' active':''}" data-sub="${t.id}" type="button">${t.label}</button>`).join('');
+    bar.addEventListener('click', e=>{
+      const b = e.target.closest('.subtab'); if(!b) return;
+      setActiveSubtab(b.dataset.sub);
+      if(b.dataset.sub==='orders') renderAdminOrders();
+      if(b.dataset.sub==='stock')  buildAdminStockTable();
+      if(b.dataset.sub==='heat')   buildHeatMap();
+      if(b.dataset.sub==='history')renderHistory();
+    }, {passive:true});
+    setActiveSubtab(tabs[0]?.id || 'stock');
+    showToast('Admin tabs: ' + tabs.map(t=>t.label).join(', '), 2200);
+  }
+
+  /* ---- Inventory helpers: pop-on-card ---- */
+  function getCardByName(name){
+    return [...document.querySelectorAll('.card')].find(c => c.dataset.name === name);
+  }
+  function flashCardNote(name, text = 'Saved'){
+    const card = getCardByName(name);
+    if(!card) return;
+    const note = document.createElement('div');
+    note.className = 'card-pop';
+    note.textContent = text;
+    card.appendChild(note);
+    setTimeout(()=> note.remove(), 1000);
+  }
+  function pulseCard(name){
+    const card = getCardByName(name);
+    if(!card) return;
+    card.classList.add('pulse');
+    setTimeout(()=> card.classList.remove('pulse'), 400);
+  }
+
+  /* ---- Admin: Stock editor (editable list of products) ---- */
+  function buildAdminStockTable(){
+    const host = $('#adminStock'); if(!host) return;
+    const names = Object.keys(stock).length ? Object.keys(stock) :
+      [...$$('.card')].map(c => c.dataset.name);
+    const rows = names.sort().map(n => `
+      <div class="rowd" style="display:grid;grid-template-columns:1fr 90px 70px 70px;gap:8px;">
+        <div>${n}</div>
+        <div><input type="number" min="0" value="${getStock(n)}" data-stock="${n}" style="width:100%;padding:6px;border-radius:8px;background:#111;border:1px solid #2a2a30;color:#fff;"></div>
+        <div><button class="ghost" data-stock-save="${n}" type="button">Save</button></div>
+        <div><button class="ghost" data-stock-zero="${n}" type="button">Zero</button></div>
+      </div>`).join('');
+    host.innerHTML = `
+      <div class="rowh" style="display:grid;grid-template-columns:1fr 90px 70px 70px;gap:8px;">
+        <div>Item</div><div>Stock</div><div></div><div></div>
+      </div>${rows}`;
+  }
+
+  /* Handle Save / Zero in Inventory and pop on card */
+  document.addEventListener('click', e => {
+    const s = e.target.closest('button[data-stock-save]');
+    if(s){
+      const name = s.getAttribute('data-stock-save');
+      const input = $('#adminStock')?.querySelector(`[data-stock="${CSS.escape(name)}"]`);
+      const val = parseInt(input?.value || '0', 10);
+      setStock(name, isFinite(val) ? val : 0);
+      showToast('Stock updated');
+
+      // Pop on product card
+      flashCardNote(name, `Stock: ${Math.max(0, val|0)}`);
+      pulseCard(name);
+
+      // Refresh other views
+      renderAdminOrders(); updateKpis(); buildHeatMap(); // if needed
+      return;
+    }
+    const z = e.target.closest('button[data-stock-zero]');
+    if(z){
+      const name = z.getAttribute('data-stock-zero');
+      setStock(name, 0);
+      showToast('Stock zeroed');
+
+      flashCardNote(name, 'Stock: 0');
+      pulseCard(name);
+
+      renderAdminOrders(); updateKpis(); buildHeatMap();
+      return;
+    }
+  }, {passive:true});
+
+  /* ---- Admin: Orders view (tap to detail) ---- */
+  function renderAdminOrders(){
+    const host = $('#adminOrders'); if(!host) return;
+    if(!orders.length){ host.innerHTML = '<div style="color:#c7c7cc;">No orders yet.</div>'; return; }
+    host.innerHTML = orders.slice().reverse().map((o,i) => `
       <div class="order-item" data-idx="${i}" data-id="${o.id||''}" style="padding:8px;border-bottom:1px solid #2a2a30;cursor:pointer">
-        <div style="font-weight:700">${new Date(o.when).toLocaleString()}</div>
-        <div>${o.name} @ ${o.location}</div>
+        <div style="font-weight:700">${new Date(o.at||o.when).toLocaleString()}</div>
+        <div>${o.name} @ ${o.loc||o.location}</div>
         <div style="font-weight:700">Total ${fmt(o.total)}</div>
         <div class="muted">Status: ${o.status||'active'}</div>
       </div>
     `).join('');
-    box.__list = list;
   }
   function openOrderSheetByIndex(idx){
-    const box=$('#ordersList'); const list=box?.__list || JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
-    const o=list[idx]; if(!o) return;
-    $('#orderMeta').textContent=`${new Date(o.when).toLocaleString()} • ${o.name} @ ${o.location}`;
-    $('#orderLines').innerHTML=o.lines.map(l=>`<div class="row-between" style="padding:6px 0">
-      <div>${l.name} × ${l.qty}</div><div style="font-weight:700">${fmt(l.line)}</div></div>`).join('');
-    $('#orderTotal').textContent=fmt(o.total);
+    const o = orders.slice().reverse()[idx]; if(!o) return;
+    $('#orderMeta').textContent=`${new Date(o.at||o.when).toLocaleString()} • ${o.name} @ ${o.loc||o.location}`;
+    $('#orderLines').innerHTML=(o.lines||[]).map(l=>`
+      <div class="row-between" style="padding:6px 0">
+        <div>${l.name} × ${l.qty}</div><div style="font-weight:700">${fmt(l.line || l.price*l.qty)}</div>
+      </div>`).join('');
+    $('#orderTotal').textContent=fmt(o.total||0);
     $('#orderSheet').dataset.id = o.id||'';
-    $('#orderSheet').dataset.idx = idx;
+    $('#orderSheet').dataset.idx = String(idx);
     document.body.appendChild($('#orderSheet'));
     $('#orderSheet').classList.add('show');
   }
@@ -896,177 +1148,133 @@
   $('#orderCancel')?.addEventListener('click', ()=>$('#orderSheet').classList.remove('show'));
   $('#orderDelivered')?.addEventListener('click', async ()=>{
     const idx = parseInt($('#orderSheet').dataset.idx||'-1',10);
-    const box=$('#ordersList'); const list=box?.__list || JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
-    const o=list[idx]; if(!o) return;
+    const list = orders.slice().reverse();
+    const o = list[idx]; if(!o) return;
     o.status='delivered';
-    const hist=JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]'); hist.unshift(o); localStorage.setItem(DELIVERED_KEY, JSON.stringify(hist));
-    if(!box?.__list){ localStorage.setItem(ORDERS_KEY, JSON.stringify(list)); }
+
+    const hist=JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]'); hist.unshift(o);
+    localStorage.setItem(DELIVERED_KEY, JSON.stringify(hist));
+    // write back to the original orders array (reverse mapping)
+    orders = list.slice().reverse();
+    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+
     try{
       if(o.id && window.__fs?.db){
         const { db } = window.__fs;
         await updateDoc(doc(db,'orders',o.id), { status:'delivered' });
       }
     }catch(e){ console.warn('Failed to update Firestore status', e); }
-    renderHistory();
-    renderOrders(box?.__list ? list : undefined);
+
+    renderHistory(); renderAdminOrders(); updateKpis();
     $('#orderSheet').classList.remove('show');
     showToast('Marked delivered');
   });
 
-  /* Analytics */
-  function renderAnalytics(){
-    const all = ($('#ordersList').__list) || JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
-    let rev=0, items=0; all.forEach(o=>{ rev+=o.total; o.lines.forEach(l=>items+=l.qty); });
-    const cnt=all.length, aov=cnt?rev/cnt:0;
-    $('#kpiRevenue').textContent=fmt(rev); $('#kpiOrders').textContent=cnt; $('#kpiAOV').textContent=fmt(aov); $('#kpiItems').textContent=items;
-
-    const days=Array(7).fill(0), now=Date.now();
-    all.forEach(o=>{ const d=new Date(o.when); const diff=Math.floor((now-d)/86400000); if(diff>=0 && diff<7) days[6-diff]+=o.total; });
-    const svg=$('#revSpark'); if(svg){ const max=Math.max(1,...days), step=100/(days.length-1||1); const pts=days.map((v,i)=>`${i*step},${40-(v/max)*36-2}`).join(' '); svg.innerHTML=`<polyline points="${pts}" fill="none" stroke="#6ea8fe" stroke-width="2"/>`; }
-
-    const agg={}; all.forEach(o=>o.lines.forEach(l=>{ agg[l.name]=agg[l.name]||{qty:0,rev:0}; agg[l.name].qty+=l.qty; agg[l.name].rev+=l.line; }));
-    const sorted=Object.entries(agg).sort((a,b)=>b[1].rev-a[1].rev).slice(0,8);
-    $('#topProducts').innerHTML = sorted.length
-      ? `<div class="table"><div class="rowh"><div>Product</div><div>Qty</div><div>Revenue</div><div>-</div></div>${
-          sorted.map(([n,v])=>`<div class="rowd"><div>${n}</div><div>${v.qty}</div><div>${fmt(v.rev)}</div><div>-</div></div>`).join('')
-        }</div>`
-      : '<div class="admin-list">No sales yet</div>';
+  /* ---- Admin: KPIs ---- */
+  function updateKpis(){
+    const openCount = orders.length;
+    const revenue = orders.reduce((a,b)=>a+(b.total||0),0);
+    $('#kpiOpen') && ($('#kpiOpen').textContent = String(openCount));
+    $('#kpiRev')  && ($('#kpiRev').textContent  = fmt(revenue));
   }
 
-  /* Inventory (editable) */
-  function renderInventory(){
-    const wrap = $('#inventoryList'); if(!wrap) return;
-    const items = $$('.card').map(c => ({ name:c.dataset.name, price:+c.dataset.price||0 }));
-    if(!items.length){ wrap.innerHTML = '<div class="admin-list">No products found.</div>'; return; }
-
-    let html = `
-      <div class="table">
-        <div class="rowh" style="grid-template-columns:1fr 90px 70px 70px">
-          <div>Item</div><div>Stock</div><div></div><div></div>
-        </div>
-    `;
-    html += items.map(i => `
-      <div class="rowd" style="grid-template-columns:1fr 90px 70px 70px">
-        <div>${i.name}</div>
-        <div><input type="number" min="0" inputmode="numeric"
-                    value="${getStock(i.name)}"
-                    data-stock="${i.name}"
-                    style="width:100%;padding:6px;border-radius:8px;background:#111;border:1px solid #2a2a30;color:#fff;"></div>
-        <div><button class="ghost" data-stock-save="${i.name}" type="button">Save</button></div>
-        <div><button class="ghost" data-stock-zero="${i.name}" type="button">Zero</button></div>
-      </div>
-    `).join('') + '</div>';
-
-    wrap.innerHTML = html;
-    reflectStockBadges();
-  }
-  // Save / Zero handlers + numeric guard
-  document.addEventListener('click', (e)=>{
-    const save = e.target.closest('button[data-stock-save]');
-    if(save){
-      const name = save.getAttribute('data-stock-save');
-      const input = document.querySelector(`[data-stock="${CSS.escape(name)}"]`);
-      const val = parseInt(input?.value || '0', 10);
-      stock[name] = Math.max(0, isFinite(val) ? val : 0);
-      saveStock(); renderInventory(); reflectStockBadges(); showToast('Stock updated'); return;
+  /* ---- Admin: Analytics (Heat Map) ---- */
+  function buildHeatMap(){
+    const grid = $('#heatGrid'); if(!grid) return;
+    const counts = Array.from({length:7}, ()=>Array(24).fill(0));
+    for(const o of orders){
+      const d = new Date(o.at||o.when); const dow = d.getDay(); const hr = d.getHours();
+      counts[dow][hr] += 1;
     }
-    const zero = e.target.closest('button[data-stock-zero]');
-    if(zero){
-      const name = zero.getAttribute('data-stock-zero');
-      stock[name] = 0; saveStock(); renderInventory(); reflectStockBadges(); showToast('Stock set to 0');
+    const max = counts.flat().reduce((m,v)=>Math.max(m,v),0) || 1;
+    grid.innerHTML = '';
+    grid.style.gridTemplateColumns = '20px repeat(24, 1fr)';
+    const days = ['S','M','T','W','T','F','S'];
+    for(let r=0;r<7;r++){
+      const label = document.createElement('div');
+      label.style.fontSize='12px'; label.style.color='#c7c7cc';
+      label.textContent = days[r];
+      grid.appendChild(label);
+      for(let c=0;c<24;c++){
+        const v = counts[r][c];
+        const cell = document.createElement('div');
+        cell.className='heat-cell';
+        const t = v/max;
+        const a = 0.15 + 0.65*t;
+        cell.style.background = `rgba(46,230,166,${a})`;
+        cell.title = `${days[r]} @ ${String(c).padStart(2,'0')}:00 -- ${v} orders`;
+        grid.appendChild(cell);
+      }
     }
-  }, {passive:true});
-  document.addEventListener('input', (e)=>{
-    if(e.target.matches('input[data-stock]')){ e.target.value = e.target.value.replace(/[^\d]/g,''); }
-  });
-
-  /* Heat (demo) */
-  function renderHeat(){
-    const grid=$('#heatGridHM'); if(!grid) return; grid.innerHTML='';
-    const total=7*24;
-    for(let i=0;i<total;i++){
-      const cell=document.createElement('div'); cell.className='heat-cell';
-      const a=0.15+0.65*Math.random(); cell.style.background=`rgba(110,168,254,${a})`;
-      grid.appendChild(cell); if((i%24)===23) grid.appendChild(document.createElement('br'));
-    }
+    $('#legendLow') && ($('#legendLow').style.background = 'rgba(46,230,166,0.15)');
+    $('#legendMid') && ($('#legendMid').style.background = 'rgba(46,230,166,0.45)');
+    $('#legendHigh')&& ($('#legendHigh').style.background= 'rgba(46,230,166,0.80)');
   }
 
-  /* History */
+  /* ---- Admin: History ---- */
+  function appendHistoryEvent(order){
+    const list = JSON.parse(localStorage.getItem('fitsnacks.history.v1') || '[]');
+    list.push({
+      id: order.id,
+      at: order.at,
+      who: order.name,
+      where: order.loc,
+      total: order.total,
+      lines: order.lines
+    });
+    localStorage.setItem('fitsnacks.history.v1', JSON.stringify(list));
+  }
   function renderHistory(){
-    const list=JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]');
-    const box=$('#historyList'); if(!box) return;
-    if(!list.length){ box.textContent='No delivered orders'; return; }
-    box.innerHTML=list.map(o=>`
-      <div style="padding:8px;border-bottom:1px solid #2a2a30">
-        <div style="font-weight:700">Delivered ${new Date(o.when).toLocaleString()}</div>
-        <div>${o.name} @ ${o.location}</div>
-        <div>Total ${fmt(o.total)}</div>
+    const host = $('#adminHistory'); if(!host) return;
+    const list = JSON.parse(localStorage.getItem(DELIVERED_KEY) || '[]').slice().reverse();
+    if(!list.length){ host.innerHTML = '<div style="color:#c7c7cc;">No delivered orders</div>'; return; }
+    host.innerHTML = list.map(ev => `
+      <div class="rowd" style="display:grid;grid-template-columns:1fr 100px;gap:8px;">
+        <div>
+          <div style="font-weight:700">${new Date(ev.at||ev.when).toLocaleString()}</div>
+          <div style="color:#c7c7cc;font-size:12px;">${ev.name} @ ${ev.loc||ev.location}</div>
+          <div style="color:#c7c7cc;font-size:12px;">${ev.lines.map(l => `${l.qty}× ${l.name}`).join(', ')}</div>
+        </div>
+        <div style="font-weight:700">${fmt(ev.total)}</div>
       </div>
     `).join('');
   }
-  $('#historyClear')?.addEventListener('click',()=>{ localStorage.setItem(DELIVERED_KEY,'[]'); renderHistory(); });
 
-  /* Overlays: backdrop/ESC close */
-  document.querySelectorAll('.overlay').forEach(ov=>{
-    ov.addEventListener('click', (e)=>{ if(e.target===ov) ov.classList.remove('show'); }, {passive:true});
-  });
-  document.addEventListener('keydown', e=>{
-    if(e.key==='Escape'){
-      document.querySelectorAll('.overlay.show').forEach(ov=>ov.classList.remove('show'));
-    }
-  });
-
-  /* Admin Tabs & Login */
-  function switchTab(which){
-    const g=$('#tabGeneral'), a=$('#tabAdmin'), pg=$('#panelGeneral'), pa=$('#panelAdmin');
-    if(which==='admin'){
-      g.classList.remove('active'); g.setAttribute('aria-selected','false');
-      a.classList.add('active');    a.setAttribute('aria-selected','true');
-      pg.style.display='none'; pa.style.display='block';
+  /* ---------- Bootstrap ---------- */
+  document.addEventListener('DOMContentLoaded', async () => {
+    try{
+      updateGreeting();
+      buildPromos();
+      renderCart(); refreshBadge();
+      applyOOSClasses();
+      activateChip('');
       ensureAdminLoginVisible();
-    }else{
-      a.classList.remove('active'); a.setAttribute('aria-selected','false');
-      g.classList.add('active');    g.setAttribute('aria-selected','true');
-      pa.style.display='none'; pg.style.display='block';
-    }
-  }
-  function ensureAdminLoginVisible(){
-    const logged=localStorage.getItem(UNLOCK_KEY)==='1';
-    $('#adminLogin').style.display=logged?'none':'block';
-    $('#adminContent').style.display=logged?'block':'none';
-    if(logged){
-      renderOrders(); renderInventory(); renderAnalytics(); renderHeat(); renderHistory();
-      subscribeOrdersRealtime();
-    }
-  }
-  document.addEventListener('click', e=>{
-    if(e.target.closest('#tabGeneral')) switchTab('general');
-    if(e.target.closest('#tabAdmin'))   switchTab('admin');
-    if(e.target.closest('#adminSubmit')){
-      const ok=$('#adminPassword').value===ADMIN_PASSWORD;
-      if(ok){ localStorage.setItem(UNLOCK_KEY,'1'); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
-      else { $('#adminError').style.display='block'; }
-    }
-    const sub=e.target.closest('.subtab');
-    if(sub){
-      $$('.subtab').forEach(s=>s.classList.remove('active'));
-      sub.classList.add('active');
-      const id=sub.dataset.subtab;
-      ['orders','inventory','analytics','heat','history'].forEach(k=>{
-        $('#subtab-'+k).style.display = (k===id)?'block':'none';
-      });
-    }
-  }, {passive:true});
+      if(isAdminUnlocked()){
+        await buildAdminSubtabs();
+        buildAdminStockTable();
+        renderAdminOrders();
+        updateKpis();
+        buildHeatMap();
+        renderHistory();
+      }
 
-  /* Init */
-  updateGreeting(); buildPromos(); renderCart(); refreshBadge(); updateCartBar(); syncFavStars(); reflectStockBadges();
-  renderOrders(); renderInventory(); renderAnalytics(); renderHeat(); renderHistory(); activateChip('');
-  (function(){
-    $('#settingsBtn')?.addEventListener('click',()=>{ $('#settingsOverlay')?.classList.add('show'); switchTab('general'); });
-    $('#settingsClose')?.addEventListener('click',()=>$('#settingsOverlay')?.classList.remove('show'));
-    $('#cartBtn')?.addEventListener('click',()=>$('#cartOverlay')?.classList.add('show'));
-    $('#cartBack')?.addEventListener('click',()=>$('#cartOverlay')?.classList.remove('show'));
-  })();
+      // overlay close on backdrop & ESC
+      document.querySelectorAll('.overlay').forEach(ov=>{
+        ov.addEventListener('click', (e)=>{ if(e.target===ov) ov.classList.remove('show'); }, {passive:true});
+      });
+      document.addEventListener('keydown', e=>{
+        if(e.key==='Escape'){
+          document.querySelectorAll('.overlay.show').forEach(ov=>ov.classList.remove('show'));
+        }
+      });
+
+      // Safe binds
+      $('#cartBtn')?.addEventListener('click',()=>$('#cartOverlay')?.classList.add('show'));
+      $('#cartBack')?.addEventListener('click',()=>$('#cartOverlay')?.classList.remove('show'));
+    }catch(e){
+      console.error('Bootstrap error', e);
+    }
+  });
   </script>
 </body>
 </html>
