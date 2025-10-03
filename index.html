@@ -4,10 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>FitSnacks</title>
+
+  <!-- PWA -->
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#0b0b0d">
 
-  <!-- Prefetch carousel images -->
+  <!-- Preload carousel images -->
   <link rel="preload" as="image" href="assets/carousel-1.jpg">
   <link rel="preload" as="image" href="assets/carousel-2.jpg">
   <link rel="preload" as="image" href="assets/carousel-3.jpg">
@@ -35,7 +37,7 @@
     .search{width:100%;border-radius:999px;padding:12px 44px 12px 36px;color:var(--text);outline:0;border:1px solid #2a2a2e}
     .search::placeholder{color:#6c6c70}
     .icon-left{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none}
-    .icon-rights{ margin-left:auto;display:flex;gap:10px;flex-shrink:0; position:relative;z-index:10060; }
+    .icon-rights{margin-left:auto;display:flex;gap:10px;flex-shrink:0;position:relative;z-index:10060}
     .btn{border-radius:14px;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
     #cartBtn,#settingsBtn{position:relative;z-index:10060!important}
     #cartBtn .badge{position:absolute;top:-6px;right:-8px;background:var(--badge);color:#fff;border-radius:999px;padding:1px 6px;font-size:12px;font-weight:700;display:none}
@@ -71,6 +73,8 @@
     .add{position:absolute;right:10px;bottom:10px;background:var(--accent);border:0;color:#001230;border-radius:14px;width:42px;height:42px;font-size:22px;display:flex;align-items:center;justify-content:center;font-weight:800;cursor:pointer}
     .fav{position:absolute;right:10px;top:10px;width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);cursor:pointer}
     .fav.active{background:rgba(255,215,0,.15);box-shadow:0 0 0 1px rgba(255,215,0,.35) inset}
+    .card.oos{opacity:.55;filter:grayscale(.35)}
+    .card.oos::after{content:"Out of stock";position:absolute;top:10px;left:10px;font-size:11px;font-weight:800;letter-spacing:.2px;padding:4px 8px;border-radius:999px;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.1);color:#eee}
 
     /* Overlays */
     .overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:20px;z-index:9990}
@@ -113,7 +117,7 @@
     .rowh{background:rgba(255,255,255,.05);font-weight:700}
     .rowd{border-top:1px solid rgba(255,255,255,.06)}
 
-    /* Heat map demo */
+    /* Heat map cells */
     #heatGridHM .heat-cell{width:12px;height:12px;display:inline-block;margin:1px;border-radius:3px}
 
     /* Sticky cart bar */
@@ -132,11 +136,11 @@
     .toast.show{opacity:1;transform:translateY(0)}
 
     /* Z fix */
-    #settingsOverlay{ z-index: 10000; }
-    #orderSheet{ z-index: 10050; }
+    #settingsOverlay{ z-index: 10000 }
+    #orderSheet{ z-index: 10050 }
 
     @media (prefers-reduced-motion: reduce) {
-      .overlay .sheet { animation: none !important; -webkit-animation: none !important; transform: translateY(0) !important; -webkit-transform: translateY(0) !important; }
+      .overlay .sheet { animation:none !important;-webkit-animation:none !important;transform:translateY(0) !important;-webkit-transform:translateY(0) !important; }
     }
   </style>
 </head>
@@ -156,20 +160,19 @@
       </div>
     </div>
 
-    <!-- Greeting -->
     <div id="greet" class="greet">Welcome 👋</div>
 
-    <!-- Promo carousel -->
+    <!-- Carousel -->
     <div class="carousel" aria-label="Promotions">
       <div id="snapper" class="snapper" aria-roledescription="carousel">
         <div class="snap-spacer" aria-hidden="true"></div>
-        <!-- JS injects promo cards here -->
+        <!-- JS injects cards -->
         <div class="snap-spacer" aria-hidden="true"></div>
       </div>
       <div id="snapDots" class="snap-dots" aria-hidden="true"></div>
     </div>
 
-    <!-- Chips -->
+    <!-- Filter chips -->
     <div class="chips" id="chips">
       <div class="chip" data-filter="">all</div>
       <div class="chip" data-filter="vegan">vegan</div>
@@ -179,97 +182,73 @@
       <div class="chip" data-filter="stock">stock</div>
     </div>
 
-    <!-- Products Grid -->
+    <!-- Products -->
     <div id="grid" class="grid" role="list">
-      <!-- Product 1 -->
       <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50" data-img="assets/product-funyuns.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Potato Chips" loading="lazy"></div>
-        <div class="title">Potato Chips</div>
-        <div class="price">$2.50</div>
-        <button class="add" aria-label="Add Potato Chips">+</button>
+        <div class="title">Potato Chips</div><div class="price">$2.50</div><button class="add" aria-label="Add Potato Chips">+</button>
       </div>
-      <!-- Product 2 -->
+
       <div class="card" role="listitem" data-name="Protein Bar" data-price="2.99" data-img="assets/product-chesters.jpg" data-tags="protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-chesters.jpg" alt="Protein Bar" loading="lazy"></div>
-        <div class="title">Protein Bar</div>
-        <div class="price">$2.99</div>
-        <button class="add" aria-label="Add Protein Bar">+</button>
+        <div class="title">Protein Bar</div><div class="price">$2.99</div><button class="add" aria-label="Add Protein Bar">+</button>
       </div>
-      <!-- Product 3 -->
+
       <div class="card" role="listitem" data-name="Trail Mix" data-price="3.49" data-img="assets/product-cheetos.jpg" data-tags="vegan,gluten-free">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-cheetos.jpg" alt="Trail Mix" loading="lazy"></div>
-        <div class="title">Trail Mix</div>
-        <div class="price">$3.49</div>
-        <button class="add" aria-label="Add Trail Mix">+</button>
+        <div class="title">Trail Mix</div><div class="price">$3.49</div><button class="add" aria-label="Add Trail Mix">+</button>
       </div>
-      <!-- Product 4 -->
+
       <div class="card" role="listitem" data-name="Granola Bar" data-price="1.99" data-img="assets/product-granola.jpg" data-tags="vegan,protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-granola.jpg" alt="Granola Bar" loading="lazy"></div>
-        <div class="title">Granola Bar</div>
-        <div class="price">$1.99</div>
-        <button class="add" aria-label="Add Granola Bar">+</button>
+        <div class="title">Granola Bar</div><div class="price">$1.99</div><button class="add" aria-label="Add Granola Bar">+</button>
       </div>
-      <!-- Product 5 -->
+
       <div class="card" role="listitem" data-name="Doritos Flamin’ Hot Nacho" data-price="2.00" data-img="assets/product-doritos.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-doritos.jpg" alt="Doritos Flamin’ Hot Nacho" loading="lazy"></div>
-        <div class="title">Doritos Flamin’ Hot Nacho</div>
-        <div class="price">$2.00</div>
-        <button class="add" aria-label="Add Doritos Flamin’ Hot Nacho">+</button>
+        <div class="title">Doritos Flamin’ Hot Nacho</div><div class="price">$2.00</div><button class="add" aria-label="Add Doritos Flamin’ Hot Nacho">+</button>
       </div>
-      <!-- Product 6 -->
-      <div class="card" role="listitem" data-name="Greek Yogurt" data-price="2.00" data-img="assets/greek-yogurt.jpeg?v=3" data-tags="protein">
+
+      <div class="card" role="listitem" data-name="Greek Yogurt" data-price="2.00" data-img="assets/greek-yogurt.jpeg" data-tags="protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb">
-          <img
-            src="assets/greek-yogurt.jpeg?v=3"
-            alt="Greek Yogurt"
-            loading="lazy"
-            onerror="if(!this.__triedJPG){this.__triedJPG=1;this.src='assets/greek-yogurt.jpg?v=3';}else{this.src='assets/product-yogurt.jpg';}"
-          >
+          <img src="assets/greek-yogurt.jpeg?v=3" alt="Greek Yogurt" loading="lazy"
+               onerror="if(!this.__triedJPG){this.__triedJPG=1;this.src='assets/greek-yogurt.jpg?v=3';}else{this.src='assets/product-yogurt.jpg';}">
         </div>
-        <div class="title">Greek Yogurt</div>
-        <div class="price">$2.00</div>
-        <button class="add" aria-label="Add Greek Yogurt">+</button>
+        <div class="title">Greek Yogurt</div><div class="price">$2.00</div><button class="add" aria-label="Add Greek Yogurt">+</button>
       </div>
-      <!-- Product 7 -->
+
       <div class="card" role="listitem" data-name="Mixed Nuts" data-price="3.20" data-img="assets/product-nuts.jpg" data-tags="vegan,protein">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-nuts.jpg" alt="Mixed Nuts" loading="lazy"></div>
-        <div class="title">Mixed Nuts</div>
-        <div class="price">$3.20</div>
-        <button class="add" aria-label="Add Mixed Nuts">+</button>
+        <div class="title">Mixed Nuts</div><div class="price">$3.20</div><button class="add" aria-label="Add Mixed Nuts">+</button>
       </div>
-      <!-- Product 8 -->
+
       <div class="card" role="listitem" data-name="Fruit Cup" data-price="2.19" data-img="assets/product-fruit.jpg" data-tags="vegan,gluten-free">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-fruit.jpg" alt="Fruit Cup" loading="lazy"></div>
-        <div class="title">Fruit Cup</div>
-        <div class="price">$2.19</div>
-        <button class="add" aria-label="Add Fruit Cup">+</button>
+        <div class="title">Fruit Cup</div><div class="price">$2.19</div><button class="add" aria-label="Add Fruit Cup">+</button>
       </div>
-      <!-- Product 9 -->
+
       <div class="card" role="listitem" data-name="Energy Drink" data-price="2.99" data-img="assets/product-energy.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-energy.jpg" alt="Energy Drink" loading="lazy"></div>
-        <div class="title">Energy Drink</div>
-        <div class="price">$2.99</div>
-        <button class="add" aria-label="Add Energy Drink">+</button>
+        <div class="title">Energy Drink</div><div class="price">$2.99</div><button class="add" aria-label="Add Energy Drink">+</button>
       </div>
-      <!-- Product 10 -->
+
       <div class="card" role="listitem" data-name="Chocolate Bar" data-price="1.75" data-img="assets/product-chocolate.jpg" data-tags="snack">
         <button class="fav" aria-label="Favorite"><span>⭐</span></button>
         <div class="thumb"><img src="assets/product-chocolate.jpg" alt="Chocolate Bar" loading="lazy"></div>
-        <div class="title">Chocolate Bar</div>
-        <div class="price">$1.75</div>
-        <button class="add" aria-label="Add Chocolate Bar">+</button>
+        <div class="title">Chocolate Bar</div><div class="price">$1.75</div><button class="add" aria-label="Add Chocolate Bar">+</button>
       </div>
     </div>
-        <!-- Product mini sheet -->
+
+    <!-- Product mini sheet -->
     <div id="productSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Add item">
       <div class="sheet" role="document">
         <div class="row-between">
@@ -343,9 +322,9 @@
         </div>
         <div class="sheet-body">
           <div style="margin-top:6px;">Your name:</div>
-          <input id="checkoutName" class="field" style="width:100%;padding:10px;border-radius:10px">
+          <input id="checkoutName" class="field" style="width:100%;padding:10px;border-radius:10px" autocomplete="name">
           <div style="margin-top:10px;">Where are you on campus?</div>
-          <input id="checkoutLocation" class="field" style="width:100%;padding:10px;border-radius:10px">
+          <input id="checkoutLocation" class="field" style="width:100%;padding:10px;border-radius:10px" autocomplete="organization-title">
 
           <div style="margin-top:12px;">Promo code</div>
           <input id="checkoutPromo" class="field" style="width:100%;padding:10px;border-radius:10px" placeholder="e.g. SAVE10 or OFF2">
@@ -359,11 +338,11 @@
             <button class="ghost tip-btn" data-tip="percent:10" type="button">10%</button>
           </div>
 
-          <div class="breakdown" style="margin-top:12px">
-            <div class="break-row"><div class="muted">Subtotal</div><div id="ckSub">$0.00</div></div>
-            <div class="break-row"><div class="muted">Discount</div><div id="ckDisc">-$0.00</div></div>
-            <div class="break-row"><div class="muted">Tip</div><div id="ckTip">$0.00</div></div>
-            <div class="break-row" style="font-weight:800"><div>Total</div><div id="ckTotal">$0.00</div></div>
+          <div class="admin-list" style="margin-top:12px;">
+            <div class="row-between"><span>Subtotal</span><strong id="ckSub">$0.00</strong></div>
+            <div class="row-between"><span>Discount</span><strong id="ckDisc">-$0.00</strong></div>
+            <div class="row-between"><span>Tip</span><strong id="ckTip">$0.00</strong></div>
+            <div class="row-between" style="margin-top:6px;"><strong>Total</strong><strong id="ckTotal">$0.00</strong></div>
           </div>
 
           <div id="checkoutError" style="display:none;color:#ff6b6b;margin-top:10px;">Please fill both fields.</div>
@@ -373,35 +352,27 @@
         </div>
       </div>
     </div>
-        <!-- Settings -->
+
+    <!-- Settings / Admin -->
     <div id="settingsOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Settings">
       <div class="sheet" role="document">
         <div class="row-between">
           <h3>Settings</h3>
           <button class="ghost" id="settingsClose" type="button">Close</button>
         </div>
-
-        <!-- Tabs -->
         <div class="tabs" role="tablist" aria-label="Settings Tabs">
           <button id="tabGeneral" class="tab active" role="tab" aria-selected="true" aria-controls="panelGeneral" type="button">General</button>
           <button id="tabAdmin" class="tab" role="tab" aria-selected="false" aria-controls="panelAdmin" type="button">Admin</button>
         </div>
-
         <div class="sheet-body">
           <!-- General -->
           <div id="panelGeneral" role="tabpanel" aria-labelledby="tabGeneral">
-            <div style="margin-top:6px;">Your name</div>
-            <input id="profileName" class="field" style="width:100%;padding:10px;border-radius:10px" autocomplete="name">
-            <div style="margin-top:10px;">Default location</div>
-            <input id="profileLoc" class="field" style="width:100%;padding:10px;border-radius:10px" autocomplete="organization-title">
-            <div class="actions" style="margin-top:12px;">
-              <button class="primary" id="profileSave" type="button">Save</button>
-            </div>
+            <div class="ghost" aria-disabled="true">Dark Mode (disabled)</div>
+            <div class="ghost" aria-disabled="true">Notifications (disabled)</div>
           </div>
 
           <!-- Admin -->
           <div id="panelAdmin" role="tabpanel" aria-labelledby="tabAdmin" style="display:none">
-            <!-- Admin login -->
             <div id="adminLogin">
               <div style="margin-top:6px;">Admin password:</div>
               <input id="adminPassword" type="password" class="field" style="width:100%;padding:10px;border-radius:10px">
@@ -411,9 +382,7 @@
               </div>
             </div>
 
-            <!-- Admin content (unlocks after password) -->
             <div id="adminContent" style="display:none">
-              <!-- KPI cards -->
               <div class="kpis" style="margin-top:8px">
                 <div class="kpi"><div class="label">Revenue</div><div id="kpiRevenue" class="value">$0.00</div></div>
                 <div class="kpi"><div class="label">Orders</div><div id="kpiOrders" class="value">0</div></div>
@@ -421,715 +390,683 @@
                 <div class="kpi"><div class="label">Items</div><div id="kpiItems" class="value">0</div></div>
               </div>
 
-              <!-- Subtabs -->
-              <div class="admin-subtabs" style="margin-top:10px">
-                <button class="subtab active"  data-subtab="orders"    type="button">Orders</button>
-                <button class="subtab"         data-subtab="inventory" type="button">Inventory</button>
-                <button class="subtab"         data-subtab="analytics" type="button">Analytics</button>
-                <button class="subtab"         data-subtab="heat"      type="button">Heat Map</button>
-                <button class="subtab"         data-subtab="history"   type="button">History</button>
+              <div class="admin-subtabs">
+                <button class="subtab active" data-subtab="orders" type="button">Orders</button>
+                <button class="subtab" data-subtab="inventory" type="button">Inventory</button>
+                <button class="subtab" data-subtab="analytics" type="button">Analytics</button>
+                <button class="subtab" data-subtab="heat" type="button">Heat Map</button>
+                <button class="subtab" data-subtab="history" type="button">History</button>
               </div>
 
-              <!-- Orders -->
-              <div id="subtab-orders">
-                <div id="ordersList" class="admin-list">No orders yet</div>
-              </div>
-
-              <!-- Inventory (with editable inputs) -->
-              <div id="subtab-inventory" style="display:none">
-                <div class="admin-list">
-                  <div class="rowh" style="display:grid;grid-template-columns:1fr 100px 90px 90px;gap:8px;">
-                    <div>Item</div><div>Stock</div><div></div><div></div>
-                  </div>
-                  <div id="inventoryRows"><!-- JS injects rows with <input type="number"> that are editable --></div>
-                </div>
-              </div>
-
-              <!-- Analytics -->
+              <div id="subtab-orders"><div id="ordersList" class="admin-list">No orders yet</div></div>
+              <div id="subtab-inventory" style="display:none"><div id="inventoryList" class="admin-list">Loading…</div></div>
               <div id="subtab-analytics" style="display:none">
                 <svg id="revSpark" class="spark" viewBox="0 0 100 40" preserveAspectRatio="none"></svg>
                 <div id="topProducts" class="admin-list" style="margin-top:8px">No sales yet</div>
               </div>
-
-              <!-- Heat Map -->
-              <div id="subtab-heat" style="display:none">
-                <div id="heatGridHM" class="admin-list" style="padding:8px">Loading…</div>
-              </div>
-
-              <!-- History -->
+              <div id="subtab-heat" style="display:none"><div id="heatGridHM" class="admin-list"></div></div>
               <div id="subtab-history" style="display:none">
                 <div id="historyList" class="admin-list">No history yet</div>
-                <div class="actions" style="margin-top:10px;">
-                  <button class="ghost" id="historyClear" type="button">Clear history</button>
-                </div>
+                <button class="ghost" id="historyClear" type="button">Clear history</button>
               </div>
-            </div><!-- /#adminContent -->
-          </div><!-- /#panelAdmin -->
-        </div><!-- /.sheet-body -->
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Sticky Cart Bar -->
     <div id="cartBar">
       <div id="cartBarTotal">$0.00</div>
-      <button class="ghost"   id="cartBarView"     type="button">View</button>
+      <button class="ghost" id="cartBarView" type="button">View</button>
       <button class="primary" id="cartBarCheckout" type="button">Checkout</button>
     </div>
 
     <!-- Toast Host -->
     <div id="toastHost"></div>
+  </div>
 
-    <!-- Firebase + Firestore (always on) -->
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-      import {
-        getFirestore, collection, addDoc, serverTimestamp,
-        onSnapshot, query, orderBy, updateDoc, doc
-      } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+  <!-- Firebase + Firestore (always on) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, serverTimestamp,
+      onSnapshot, query, orderBy, updateDoc, doc
+    } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
-      const firebaseConfig = {
-        apiKey: "AIzaSyAdjxpOK1ir5y-sHCh4PodIxe8TkEYBAsY",
-        authDomain: "fitsnack-bd51d.firebaseapp.com",
-        projectId: "fitsnack-bd51d",
-        storageBucket: "fitsnack-bd51d.firebasestorage.app",
-        messagingSenderId: "978231518137",
-        appId: "1:978231518137:web:528c32d35d5b4f22038c68"
-      };
+    const firebaseConfig = {
+      apiKey: "AIzaSyAdjxpOK1ir5y-sHCh4PodIxe8TkEYBAsY",
+      authDomain: "fitsnack-bd51d.firebaseapp.com",
+      projectId: "fitsnack-bd51d",
+      storageBucket: "fitsnack-bd51d.firebasestorage.app",
+      messagingSenderId: "978231518137",
+      appId: "1:978231518137:web:528c32d35d5b4f22038c68"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.__fs = { db }; // exposed for app code
+  </script>
 
-      const app = initializeApp(firebaseConfig);
-      const db  = getFirestore(app);
-      // Expose for the main script
-      window.__fs = { db, fns: { collection, addDoc, serverTimestamp, onSnapshot, query, orderBy, updateDoc, doc } };
-    </script>
-        <script>
-    /* ========= Boot ========= */
-    const APP_SCHEMA_VERSION = 4, SCHEMA_KEY = 'fitsnacks.schema';
-    try {
-      const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY) || '0') || 0;
-      if (cur < APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
-    } catch { localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION)); }
+  <script>
+  /* ========= Boot ========= */
+  const APP_SCHEMA_VERSION = 4, SCHEMA_KEY = 'fitsnacks.schema';
+  try{
+    const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY)||'0')||0;
+    if(cur < APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
+  }catch{ localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION)); }
 
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+  if('serviceWorker' in navigator){ window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js')); }
+
+  const $  = s => document.querySelector(s);
+  const $$ = s => Array.from(document.querySelectorAll(s));
+
+  /* Keys & constants */
+  const CART_KEY='fitsnacks.cart.v1';
+  const ORDERS_KEY='fitsnacks.orders';
+  const UNLOCK_KEY='fitsnacks.admin.unlocked';
+  const FAVORITES_KEY='fitsnacks.favorites';
+  const PROMOS_KEY='fitsnacks.promos';
+  const DELIVERED_KEY='fitsnacks.orders.delivered';
+  const PROFILE_NAME_KEY='fitsnacks.profile.name';
+  const PROFILE_LOC_KEY='fitsnacks.profile.location';
+  const STOCK_KEY='fitsnacks.stock.v1';
+
+  const IFTTT_EVENT='Fitsnack_order';
+  const IFTTT_KEY='fI-MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA'; // you provided this
+  const IFTTT_URL=`https://maker.ifttt.com/trigger/${IFTTT_EVENT}/with/key/${IFTTT_KEY}`;
+
+  const ADMIN_PASSWORD='8TSB077';
+  const fmt=n=>'$'+Number(n||0).toFixed(2);
+
+  /* State */
+  let cart=new Map(JSON.parse(localStorage.getItem(CART_KEY)||'[]'));
+  let favorites=new Set(JSON.parse(localStorage.getItem(FAVORITES_KEY)||'[]'));
+  let stock=JSON.parse(localStorage.getItem(STOCK_KEY)||'{}');
+  let promo=null; // {type:'percent'|'amount', value:number}
+  let tip={type:'none', value:0};
+
+  // Default stock if empty
+  if(!Object.keys(stock).length){
+    stock={
+      'Potato Chips': 20,'Protein Bar': 18,'Trail Mix': 15,'Granola Bar': 24,
+      'Doritos Flamin’ Hot Nacho': 30,'Greek Yogurt': 12,'Mixed Nuts': 14,
+      'Fruit Cup': 10,'Energy Drink': 16,'Chocolate Bar': 22
+    };
+    localStorage.setItem(STOCK_KEY, JSON.stringify(stock));
+  }
+
+  /* Helpers */
+  function saveCart(){ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(cart.entries()))); }
+  function saveFavs(){ localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(favorites))); }
+  function getStock(name){ return stock[name] ?? 0; }
+  function saveStock(){ localStorage.setItem(STOCK_KEY, JSON.stringify(stock)); }
+  function showToast(msg, ms=1800){
+    const host=$('#toastHost'); const el=document.createElement('div');
+    el.className='toast'; el.textContent=msg; host.appendChild(el);
+    requestAnimationFrame(()=>el.classList.add('show'));
+    setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),250); }, ms);
+  }
+  function updateGreeting(){
+    const name=localStorage.getItem(PROFILE_NAME_KEY)||'';
+    $('#greet').textContent = name ? `Hi, ${name} 👋` : 'Welcome 👋';
+  }
+
+  /* Carousel */
+  function buildPromos(){
+    const snapper=$('#snapper'); if(!snapper) return;
+    let data=[]; try{ data=JSON.parse(localStorage.getItem(PROMOS_KEY)||'[]'); }catch{}
+    if(!data.length){
+      data = [
+        {img:'assets/carousel-1.jpg', title:'Fuel your study grind', cta:'Shop snacks', action:'scrollGrid'},
+        {img:'assets/carousel-2.jpg', title:'Protein picks', cta:'Filter: protein', action:'filter', value:'protein'},
+        {img:'assets/carousel-3.jpg', title:'Need help?', cta:'Open settings', action:'openSettings'}
+      ];
+      localStorage.setItem(PROMOS_KEY, JSON.stringify(data));
     }
-
-    /* Shortcuts */
-    const $  = s => document.querySelector(s);
-    const $$ = s => Array.from(document.querySelectorAll(s));
-    const fmt = n => '$' + (Number(n) || 0).toFixed(2);
-
-    /* Keys */
-    const CART_KEY='fitsnacks.cart.v1';
-    const ORDERS_KEY='fitsnacks.orders';
-    const DELIVERED_KEY='fitsnacks.orders.delivered';
-    const FAVORITES_KEY='fitsnacks.favorites';
-    const PROMOS_KEY='fitsnacks.promos';
-    const STOCK_KEY='fitsnacks.stock.v1';
-    const PROFILE_NAME_KEY='fitsnacks.profile.name';
-    const PROFILE_LOC_KEY='fitsnacks.profile.location';
-    const UNLOCK_KEY='fitsnacks.admin.unlocked';
-    const IFTTT_EVENT='Fitsnack_order';
-    const IFTTT_KEY='fI-MGeBZrzbzW3CyUXlWVMpQkvI1bRVirGd0gkcYZiA';
-    const IFTTT_URL=`https://maker.ifttt.com/trigger/${IFTTT_EVENT}/with/key/${IFTTT_KEY}`;
-    const ADMIN_PASSWORD='8TSB077';
-
-    /* State */
-    let cart = new Map(JSON.parse(localStorage.getItem(CART_KEY) || '[]'));
-    let favorites = new Set(JSON.parse(localStorage.getItem(FAVORITES_KEY) || '[]'));
-    let stock = JSON.parse(localStorage.getItem(STOCK_KEY) || '{}');
-    let promo = null;
-    let tip   = {type:'none', value:0};
-
-    // Default stock
-    if (!Object.keys(stock).length) {
-      stock = {
-        'Potato Chips': 20, 'Protein Bar': 18, 'Trail Mix': 15, 'Granola Bar': 24,
-        'Doritos Flamin’ Hot Nacho': 30, 'Greek Yogurt': 12, 'Mixed Nuts': 14,
-        'Fruit Cup': 10, 'Energy Drink': 16, 'Chocolate Bar': 22
-      };
-      localStorage.setItem(STOCK_KEY, JSON.stringify(stock));
-    }
-
-    function saveCart(){ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(cart.entries()))); }
-    function saveFavs(){ localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(favorites))); }
-    function saveStock(){ localStorage.setItem(STOCK_KEY, JSON.stringify(stock)); }
-
-    /* Greeting */
-    function updateGreeting(){
-      const name = localStorage.getItem(PROFILE_NAME_KEY) || '';
-      $('#greet').textContent = name ? `Hi, ${name} 👋` : 'Welcome 👋';
-    }
-
-    /* Toast */
-    function showToast(msg, ms=1800){
-      const host = $('#toastHost'); const el = document.createElement('div');
-      el.className = 'toast'; el.textContent = msg; host.appendChild(el);
-      requestAnimationFrame(()=>el.classList.add('show'));
-      setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),250); }, ms);
-    }
-
-    /* Promo carousel (unchanged from your working main) */
-    function buildPromos(){ /* ... same as before ... */ }
-
-    /* Product sheet helpers */
-    let currentProduct=null;
-    function getStock(name){ return stock[name] ?? 0; }
-    function openProductSheet(card){
-      currentProduct={ name:card.dataset.name, price:+card.dataset.price, img:card.dataset.img };
-      $('#sheetTitle').textContent=currentProduct.name;
-      $('#sheetImg').src=currentProduct.img||''; $('#sheetImg').alt=currentProduct.name||'';
-      $('#sheetPrice').textContent=fmt(currentProduct.price);
-      const s=getStock(currentProduct.name);
-      $('#sheetStock').textContent='Stock: '+s;
-      $('#sheetLowWarn').style.display = s>0 && s<=3 ? 'block':'none';
-      $('#qtyVal').textContent='1';
-      $('#sheetAdd').textContent='Add • '+fmt(currentProduct.price);
-      $('#productSheet').classList.add('show');
-    }
-    function closeProductSheet(){ $('#productSheet').classList.remove('show'); }
-
-    $('#sheetClose')?.addEventListener('click', closeProductSheet);
-    $('#qtyPlus')?.addEventListener('click', ()=>{
-      let n=(+$('#qtyVal').textContent)||1; n=Math.min(99,n+1);
-      $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(n*(currentProduct?.price||0));
-    });
-    $('#qtyMinus')?.addEventListener('click', ()=>{
-      let n=(+$('#qtyVal').textContent)||1; n=Math.max(1,n-1);
-      $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(n*(currentProduct?.price||0));
-    });
-    $('#sheetAdd')?.addEventListener('click', ()=>{
-      if(!currentProduct) return;
-      const n=(+$('#qtyVal').textContent)||1;
-      const s=getStock(currentProduct.name);
-      if(s<=0){ showToast('Out of stock'); return; }
-      if(n>s){ showToast('Not enough stock'); return; }
-      const entry=cart.get(currentProduct.name)||{price:currentProduct.price,qty:0};
-      entry.qty+=n; cart.set(currentProduct.name,entry); saveCart();
-      stock[currentProduct.name]=s-n; saveStock();
-      renderCart(); refreshBadge(); closeProductSheet(); openCart();
-      showToast(`Added ${n} × ${currentProduct.name}`);
+    snapper.querySelectorAll('.snap-card').forEach(n=>n.remove());
+    const after=snapper.lastElementChild;
+    data.forEach(p=>{
+      const c=document.createElement('div');
+      c.className='snap-card';
+      c.innerHTML=`<img class="banner" src="${p.img}" alt="${p.title}">
+        <div class="snap-meta"><div class="snap-title">${p.title}</div>
+        ${p.cta?`<button class="ghost snap-cta" type="button">${p.cta}</button>`:''}</div>`;
+      snapper.insertBefore(c, after);
+      c.addEventListener('click', e=>{
+        if(e.target.closest('.snap-cta')) return;
+        if(p.action==='scrollGrid') $('#grid')?.scrollIntoView({behavior:'smooth'});
+        if(p.action==='filter') activateChip(p.value||'');
+        if(p.action==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
+      }, {passive:true});
+      c.querySelector('.snap-cta')?.addEventListener('click', e=>{
+        e.stopPropagation();
+        if(p.action==='filter') activateChip(p.value||'');
+        if(p.action==='openSettings'){ $('#settingsOverlay').classList.add('show'); switchTab('general'); }
+        if(p.action==='scrollGrid') $('#grid')?.scrollIntoView({behavior:'smooth'});
+      });
     });
 
-    // open product sheet on card/fab
-    document.addEventListener('click', e=>{
-      const btn=e.target.closest('.card .add'); if(btn){ e.stopPropagation(); return openProductSheet(btn.closest('.card')); }
-      const card=e.target.closest('.card'); if(card && !e.target.closest('.fav')) openProductSheet(card);
-    }, {passive:true});
+    const cards=$$('.snap-card'), dotsWrap=$('#snapDots');
+    dotsWrap.innerHTML=cards.map(()=>'<div class="snap-dot"></div>').join('');
+    const dots=$$('.snap-dot'); const setDot=i=>dots.forEach((d,k)=>d.classList.toggle('active',k===i)); setDot(0);
 
-    /* Cart functions */
-    function refreshBadge(){ let n=0; for(const v of cart.values()) n+=v.qty;
-      const b=$('#cartBadge'); if(!b) return;
-      if(n>0){ b.textContent=String(n); b.style.display='inline-flex'; }
-      else { b.style.display='none'; }
-    }
-    function renderCart(){ /* unchanged core rendering */ }
+    let idx=0, hold=5000, slide=3000, start=null, phase='hold', from=0, to=0;
+    let userInteracting=false,lastInteract=0,inView=true; const INTERACT_COOLDOWN=3500;
+    const spacerLeft = snapper.firstElementChild;
 
-    /* Search + Filters, Favorites, Promo, Tip -- unchanged, same as your working main file */
+    ['pointerdown','wheel','touchstart','mousedown','scroll'].forEach(ev=>snapper.addEventListener(ev,()=>{userInteracting=true;lastInteract=Date.now();},{passive:true}));
+    const obs=new IntersectionObserver((ents)=>{inView=ents.some(e=>e.isIntersecting);},{threshold:0.2}); obs.observe(snapper);
 
-    /* Checkout + Place order (with Firestore + IFTTT) */
-    async function writeOrderToFirestore(order){
-      try{
-        if(!window.__fs || !window.__fs.db) return null;
-        const { db, fns } = window.__fs;
-        const ref = await fns.addDoc(fns.collection(db, 'orders'), {
-          when: fns.serverTimestamp(),
-          name: order.name,
-          location: order.location,
-          lines: order.lines,
-          total: order.total,
-          status: 'active'
-        });
-        return ref.id;
-      }catch(e){ console.warn('Firestore write failed', e); return null; }
-    }
-
-    /* Admin: renderOrders + openOrderSheetByIndex + mark delivered -- unchanged from your working main */
-
-    /* === Editable Inventory === */
-    function renderInventory(){
-      const wrap = document.getElementById('inventoryList');
-      if(!wrap) return;
-
-      const cards = $$('.card');
-      if(!cards.length){
-        wrap.innerHTML = '<div class="admin-list">No products found.</div>';
-        return;
+    function step(ts){
+      if(!cards.length || !inView) return requestAnimationFrame(step);
+      if(userInteracting && (Date.now()-lastInteract)<INTERACT_COOLDOWN) { start=ts; return requestAnimationFrame(step); }
+      if(!start) start=ts;
+      const elapsed = ts - start;
+      if(phase==='hold'){
+        if(elapsed >= hold){
+          phase='slide'; start=ts; from = snapper.scrollLeft; idx=(idx+1)%cards.length;
+          to = cards[idx].offsetLeft - spacerLeft.offsetLeft;
+        }
+      }else{
+        const t = Math.min(1, (ts-start)/slide);
+        const e = t<.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,8)/2;
+        snapper.scrollLeft = from + (to - from) * e;
+        if(t>=1){ phase='hold'; start=ts; setDot(idx); }
       }
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
 
-      wrap.innerHTML = `
-        <div class="rowh" style="display:grid;grid-template-columns:1fr 90px 70px 70px;gap:8px;">
+    // sync dots after manual scroll
+    let dotTimer=null;
+    snapper.addEventListener('scroll', ()=>{
+      clearTimeout(dotTimer);
+      dotTimer=setTimeout(()=>{
+        let nearest=0, best=1e9;
+        cards.forEach((c,i)=>{
+          const center = snapper.scrollLeft + snapper.clientWidth/2;
+          const cc = c.offsetLeft + c.clientWidth/2;
+          const d = Math.abs(center-cc);
+          if(d<best){best=d; nearest=i;}
+        });
+        setDot(nearest);
+      },150);
+    }, {passive:true});
+  }
+
+  /* Product Sheet & add-to-cart (stock aware) */
+  let currentProduct=null;
+  function reflectStockBadges(){
+    $$('.card').forEach(c=>{
+      const s = getStock(c.dataset.name);
+      const btn = c.querySelector('.add');
+      c.classList.toggle('oos', (s||0)<=0);
+      if(btn) btn.disabled = (s||0) <= 0;
+    });
+  }
+  function openProductSheet(card){
+    currentProduct={ name:card.dataset.name, price:+card.dataset.price, img:card.dataset.img };
+    $('#sheetTitle').textContent=currentProduct.name;
+    $('#sheetImg').src=currentProduct.img||'';
+    $('#sheetImg').alt=currentProduct.name||'';
+    $('#sheetPrice').textContent=fmt(currentProduct.price);
+    const s=getStock(currentProduct.name);
+    $('#sheetStock').textContent='Stock: '+s;
+    $('#sheetLowWarn').style.display = s>0 && s<=3 ? 'block':'none';
+    $('#qtyVal').textContent='1';
+    $('#sheetAdd').textContent='Add • '+fmt(currentProduct.price);
+    $('#productSheet').classList.add('show');
+  }
+  function closeProductSheet(){ $('#productSheet').classList.remove('show'); }
+  $('#sheetClose')?.addEventListener('click', closeProductSheet);
+  $('#qtyPlus')?.addEventListener('click', ()=>{ let n=(+$('#qtyVal').textContent)||1; n=Math.min(99,n+1); $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(n*(currentProduct?.price||0)); });
+  $('#qtyMinus')?.addEventListener('click', ()=>{ let n=(+$('#qtyVal').textContent)||1; n=Math.max(1,n-1); $('#qtyVal').textContent=n; $('#sheetAdd').textContent='Add • '+fmt(n*(currentProduct?.price||0)); });
+  $('#sheetAdd')?.addEventListener('click', ()=>{
+    if(!currentProduct) return;
+    const n=(+$('#qtyVal').textContent)||1;
+    const s=getStock(currentProduct.name);
+    if(s<=0){ showToast('Out of stock'); return; }
+    if(n>s){ showToast('Not enough stock'); return; }
+    const entry=cart.get(currentProduct.name)||{price:currentProduct.price,qty:0};
+    entry.qty+=n; cart.set(currentProduct.name,entry); saveCart();
+    stock[currentProduct.name]=s-n; saveStock(); reflectStockBadges();
+    renderCart(); refreshBadge(); closeProductSheet(); openCart();
+    showToast(`Added ${n} × ${currentProduct.name}`);
+  });
+
+  document.addEventListener('click', e=>{
+    const plus = e.target.closest('.card .add'); if(plus){ e.stopPropagation(); openProductSheet(plus.closest('.card')); return; }
+    const card = e.target.closest('.card'); if(card && !e.target.closest('.fav')) openProductSheet(card);
+  }, {passive:true});
+
+  /* Cart */
+  function refreshBadge(){
+    let n=0; for(const v of cart.values()) n+=v.qty;
+    const b=$('#cartBadge'); if(!b) return;
+    if(n>0){ b.textContent=String(n); b.style.display='inline-flex'; }
+    else { b.style.display='none'; }
+  }
+  function renderCart(){
+    let total=0, html='';
+    for(const [name,info] of cart){
+      const line=info.price*info.qty; total+=line;
+      html += `<div class="row-between" style="margin-top:6px">
+        <div style="display:flex;gap:10px;align-items:center">
+          <button data-act="-" data-name="${name}" class="ghost" type="button">−</button>
+          <div style="min-width:24px;text-align:center">${info.qty}</div>
+          <button data-act="+" data-name="${name}" class="ghost" type="button">+</button>
+          <div style="font-weight:700;margin-left:8px">${name}</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <div style="font-weight:700">${fmt(line)}</div>
+          <button data-remove="${name}" class="ghost" type="button" style="padding:2px 6px;font-size:12px">x</button>
+        </div>
+      </div>`;
+    }
+    $('#cartContent').innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
+    $('#cartTotal').textContent = fmt(total);
+    updateCartBar();
+  }
+  document.addEventListener('click', (e)=>{
+    const b=e.target.closest('button[data-act][data-name]');
+    if(b){
+      const name=b.getAttribute('data-name'); const act=b.getAttribute('data-act');
+      const entry=cart.get(name); if(!entry) return;
+      entry.qty=Math.max( (act==='+')?entry.qty+1:entry.qty-1 ,0);
+      if(entry.qty===0) cart.delete(name);
+      saveCart(); renderCart(); refreshBadge(); return;
+    }
+    const rm=e.target.closest('button[data-remove]');
+    if(rm){ const name=rm.getAttribute('data-remove'); cart.delete(name); saveCart(); renderCart(); refreshBadge(); return; }
+  }, {passive:true});
+  function openCart(){ $('#cartOverlay')?.classList.add('show'); }
+  function closeCart(){ $('#cartOverlay')?.classList.remove('show'); }
+  $('#cartBtn')?.addEventListener('click', openCart);
+  $('#cartBack')?.addEventListener('click', closeCart);
+
+  /* Sticky cart bar */
+  function updateCartBar(){
+    const bar=$('#cartBar'); if(!bar) return;
+    let total=0, count=0; for(const [,info] of cart){ total+=info.price*info.qty; count+=info.qty; }
+    if(count>0){ $('#cartBarTotal').textContent=fmt(total); bar.classList.add('show'); }
+    else { bar.classList.remove('show'); }
+  }
+  $('#cartBarView')?.addEventListener('click', openCart);
+  $('#cartBarCheckout')?.addEventListener('click', ()=>{
+    let count=0; for(const v of cart.values()) count+=v.qty;
+    if(count===0){ showToast('Your cart is empty'); return; }
+    $('#checkoutError').style.display='none'; updateCheckoutBreakdown();
+    $('#checkoutOverlay').classList.add('show');
+  });
+
+  /* Search + Filters + Favorites */
+  function shouldShowForChip(val, card){
+    if(!val) return true;
+    if(val==='favorites') return favorites.has(card.dataset.name);
+    if(val==='stock') return getStock(card.dataset.name) > 0;
+    const tags=(card.dataset.tags||'').toLowerCase();
+    return tags.includes(val);
+  }
+  function activateChip(val){
+    $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch.dataset.filter===val));
+    $$('.card').forEach(c=>{
+      const show = shouldShowForChip(val,c);
+      if(show) c.style.removeProperty('display');
+      else c.style.display='none';
+    });
+    searchAndFilter();
+  }
+  function searchAndFilter(){
+    const q = ($('#search').value||'').toLowerCase();
+    $$('.card').forEach(c=>{
+      const hitsName=c.dataset.name.toLowerCase().includes(q);
+      const hidden = c.style.display==='none';
+      c.style.display = (!hidden && hitsName) ? '' : (hidden ? 'none' : 'none');
+      if(!hidden && hitsName) c.style.display='';
+    });
+  }
+  $('#chips')?.addEventListener('click', e=>{
+    const chip=e.target.closest('.chip'); if(!chip) return;
+    activateChip(chip.dataset.filter||'');
+  });
+  $('#search')?.addEventListener('input', searchAndFilter);
+
+  function syncFavStars(){ $$('.card').forEach(card=>card.querySelector('.fav')?.classList.toggle('active', favorites.has(card.dataset.name))); }
+  document.addEventListener('click', e=>{
+    const fav=e.target.closest('.fav'); if(!fav) return;
+    e.stopPropagation();
+    const card=fav.closest('.card'); const name=card.dataset.name;
+    if(favorites.has(name)) favorites.delete(name); else favorites.add(name);
+    saveFavs(); syncFavStars();
+    const favChipActive = $('#chips .chip.active')?.dataset.filter === 'favorites';
+    if(favChipActive && !favorites.has(name)){ card.style.display='none'; searchAndFilter(); }
+  }, {passive:true});
+
+  /* Promo + Tip + Checkout math */
+  function parsePromo(code){
+    code=(code||'').trim().toUpperCase();
+    if(!code) return null;
+    const mPct = code.match(/(SAVE|PCT)(\d{1,2})/);
+    if(mPct) return {type:'percent', value:Math.min(50, parseInt(mPct[2],10))};
+    const mAmt = code.match(/(OFF|\$)(\d{1,3})/);
+    if(mAmt) return {type:'amount', value:Math.min(50, parseInt(mAmt[2],10))};
+    return null;
+  }
+  function computeTotals(){
+    let subtotal=0; for(const[,i] of cart) subtotal+=i.price*i.qty;
+    let disc=0;
+    if(promo){
+      if(promo.type==='percent') disc = subtotal * (promo.value/100);
+      else if(promo.type==='amount') disc = Math.min(subtotal, promo.value);
+    }
+    let tipVal=0;
+    if(tip.type==='amount') tipVal = tip.value;
+    else if(tip.type==='percent') tipVal = (subtotal - disc) * (tip.value/100);
+    const total = Math.max(0, subtotal - disc) + tipVal;
+    return {subtotal,disc,tip:tipVal,total};
+  }
+  function updateCheckoutBreakdown(){
+    const {subtotal,disc,tip:tipVal,total}=computeTotals();
+    $('#ckSub').textContent=fmt(subtotal);
+    $('#ckDisc').textContent=`-${fmt(disc)}`;
+    $('#ckTip').textContent=fmt(tipVal);
+    $('#ckTotal').textContent=fmt(total);
+  }
+  $('#checkoutPromo')?.addEventListener('input', (e)=>{
+    promo = parsePromo(e.target.value);
+    $('#promoStatus').textContent = promo ? (promo.type==='percent' ? `Applying ${promo.value}% off` : `Applying $${promo.value} off`) : '';
+    updateCheckoutBreakdown();
+  });
+  document.querySelectorAll('.tip-btn').forEach(b=>b.addEventListener('click', ()=>{
+    const v=b.getAttribute('data-tip');
+    if(v==='none') tip={type:'none',value:0};
+    else if(v.startsWith('amount')) tip={type:'amount', value:parseFloat(v.split(':')[1])||0};
+    else if(v.startsWith('percent')) tip={type:'percent', value:parseFloat(v.split(':')[1])||0};
+    updateCheckoutBreakdown(); showToast('Tip updated');
+  }));
+
+  /* Checkout */
+  $('#cartCheckout')?.addEventListener('click', ()=>{ $('#checkoutError').style.display='none'; updateCheckoutBreakdown(); closeCart(); $('#checkoutOverlay').classList.add('show'); });
+  $('#checkoutClose')?.addEventListener('click', ()=>$('#checkoutOverlay')?.classList.remove('show'));
+
+  async function writeOrderToFirestore(order){
+    try{
+      if(!window.__fs || !window.__fs.db) return null;
+      const { db } = window.__fs;
+      const ref = await addDoc(collection(db, 'orders'), {
+        when: serverTimestamp(),
+        name: order.name,
+        location: order.location,
+        notes: '',
+        lines: order.lines,
+        total: order.total,
+        status: 'active'
+      });
+      return ref.id;
+    }catch(e){ console.warn('Firestore write failed', e); return null; }
+  }
+
+  function subscribeOrdersRealtime(){
+    try{
+      if(!window.__fs || !window.__fs.db) return;
+      const { db } = window.__fs;
+      const q = query(collection(db, 'orders'), orderBy('when','desc'));
+      onSnapshot(q, (snap)=>{
+        const list = [];
+        snap.forEach(docSnap=>{
+          const o = docSnap.data();
+          list.push({ id: docSnap.id, when: (o.when?.toDate?.()||new Date()), name:o.name, location:o.location, lines:o.lines||[], total:o.total||0, status:o.status||'active' });
+        });
+        renderOrders(list);
+      });
+    }catch(e){ console.warn('Realtime subscribe failed', e); }
+  }
+
+  function checkoutClearUI(){
+    cart.clear(); saveCart(); renderCart(); refreshBadge(); updateGreeting(); showToast('Order placed 🎉');
+    $('#checkoutOverlay').classList.remove('show');
+    updateCartBar();
+  }
+
+  $('#checkoutSubmit')?.addEventListener('click', async ()=>{
+    const name=$('#checkoutName').value.trim();
+    const loc=$('#checkoutLocation').value.trim();
+    if(!name||!loc){ $('#checkoutError').style.display='block'; return; }
+    localStorage.setItem(PROFILE_NAME_KEY,name);
+    localStorage.setItem(PROFILE_LOC_KEY,loc);
+
+    const {total}=computeTotals();
+    const lines=[...cart].map(([n,i])=>({name:n,qty:i.qty,price:i.price,line:i.price*i.qty}));
+    const order={when:new Date().toISOString(),name,location:loc,lines,total,status:'active'};
+
+    // Local mirror
+    const list=JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]'); list.unshift(order);
+    localStorage.setItem(ORDERS_KEY, JSON.stringify(list));
+
+    // Decrement stock
+    lines.forEach(l=>{ stock[l.name]=(stock[l.name]||0)-l.qty; if(stock[l.name]<0) stock[l.name]=0; });
+    saveStock(); reflectStockBadges();
+
+    // IFTTT GET trigger
+    try{
+      const summary = `${order.name} @ ${order.location} • ${fmt(order.total)}`;
+      const lineItems = order.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('\n');
+      fetch(`${IFTTT_URL}?value1=${encodeURIComponent(summary)}&value2=${encodeURIComponent(lineItems)}&value3=`, {method:'GET', mode:'no-cors'});
+    }catch{}
+
+    // Firestore write
+    const fsId = await writeOrderToFirestore(order);
+    if(fsId) order.id = fsId;
+
+    checkoutClearUI();
+    renderOrders(); renderInventory(); renderAnalytics();
+  });
+
+  /* Orders (tappable rows → mini sheet) */
+  function renderOrders(externalList){
+    const list = externalList || JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
+    const box=$('#ordersList'); if(!box) return;
+    if(!list.length){ box.textContent='No orders yet'; return; }
+    box.innerHTML=list.map((o,i)=>`
+      <div class="order-item" data-idx="${i}" data-id="${o.id||''}" style="padding:8px;border-bottom:1px solid #2a2a30;cursor:pointer">
+        <div style="font-weight:700">${new Date(o.when).toLocaleString()}</div>
+        <div>${o.name} @ ${o.location}</div>
+        <div style="font-weight:700">Total ${fmt(o.total)}</div>
+        <div class="muted">Status: ${o.status||'active'}</div>
+      </div>
+    `).join('');
+    box.__list = list;
+  }
+  function openOrderSheetByIndex(idx){
+    const box=$('#ordersList'); const list=box?.__list || JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
+    const o=list[idx]; if(!o) return;
+    $('#orderMeta').textContent=`${new Date(o.when).toLocaleString()} • ${o.name} @ ${o.location}`;
+    $('#orderLines').innerHTML=o.lines.map(l=>`<div class="row-between" style="padding:6px 0">
+      <div>${l.name} × ${l.qty}</div><div style="font-weight:700">${fmt(l.line)}</div></div>`).join('');
+    $('#orderTotal').textContent=fmt(o.total);
+    $('#orderSheet').dataset.id = o.id||'';
+    $('#orderSheet').dataset.idx = idx;
+    document.body.appendChild($('#orderSheet'));
+    $('#orderSheet').classList.add('show');
+  }
+  document.addEventListener('click', e=>{
+    const row=e.target.closest('.order-item'); if(row) openOrderSheetByIndex(parseInt(row.dataset.idx,10));
+  }, {passive:true});
+  $('#orderClose')?.addEventListener('click', ()=>$('#orderSheet').classList.remove('show'));
+  $('#orderCancel')?.addEventListener('click', ()=>$('#orderSheet').classList.remove('show'));
+  $('#orderDelivered')?.addEventListener('click', async ()=>{
+    const idx = parseInt($('#orderSheet').dataset.idx||'-1',10);
+    const box=$('#ordersList'); const list=box?.__list || JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
+    const o=list[idx]; if(!o) return;
+    o.status='delivered';
+    const hist=JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]'); hist.unshift(o); localStorage.setItem(DELIVERED_KEY, JSON.stringify(hist));
+    if(!box?.__list){ localStorage.setItem(ORDERS_KEY, JSON.stringify(list)); }
+    try{
+      if(o.id && window.__fs?.db){
+        const { db } = window.__fs;
+        await updateDoc(doc(db,'orders',o.id), { status:'delivered' });
+      }
+    }catch(e){ console.warn('Failed to update Firestore status', e); }
+    renderHistory();
+    renderOrders(box?.__list ? list : undefined);
+    $('#orderSheet').classList.remove('show');
+    showToast('Marked delivered');
+  });
+
+  /* Analytics */
+  function renderAnalytics(){
+    const all = ($('#ordersList').__list) || JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
+    let rev=0, items=0; all.forEach(o=>{ rev+=o.total; o.lines.forEach(l=>items+=l.qty); });
+    const cnt=all.length, aov=cnt?rev/cnt:0;
+    $('#kpiRevenue').textContent=fmt(rev); $('#kpiOrders').textContent=cnt; $('#kpiAOV').textContent=fmt(aov); $('#kpiItems').textContent=items;
+
+    const days=Array(7).fill(0), now=Date.now();
+    all.forEach(o=>{ const d=new Date(o.when); const diff=Math.floor((now-d)/86400000); if(diff>=0 && diff<7) days[6-diff]+=o.total; });
+    const svg=$('#revSpark'); if(svg){ const max=Math.max(1,...days), step=100/(days.length-1||1); const pts=days.map((v,i)=>`${i*step},${40-(v/max)*36-2}`).join(' '); svg.innerHTML=`<polyline points="${pts}" fill="none" stroke="#6ea8fe" stroke-width="2"/>`; }
+
+    const agg={}; all.forEach(o=>o.lines.forEach(l=>{ agg[l.name]=agg[l.name]||{qty:0,rev:0}; agg[l.name].qty+=l.qty; agg[l.name].rev+=l.line; }));
+    const sorted=Object.entries(agg).sort((a,b)=>b[1].rev-a[1].rev).slice(0,8);
+    $('#topProducts').innerHTML = sorted.length
+      ? `<div class="table"><div class="rowh"><div>Product</div><div>Qty</div><div>Revenue</div><div>-</div></div>${
+          sorted.map(([n,v])=>`<div class="rowd"><div>${n}</div><div>${v.qty}</div><div>${fmt(v.rev)}</div><div>-</div></div>`).join('')
+        }</div>`
+      : '<div class="admin-list">No sales yet</div>';
+  }
+
+  /* Inventory (editable) */
+  function renderInventory(){
+    const wrap = $('#inventoryList'); if(!wrap) return;
+    const items = $$('.card').map(c => ({ name:c.dataset.name, price:+c.dataset.price||0 }));
+    if(!items.length){ wrap.innerHTML = '<div class="admin-list">No products found.</div>'; return; }
+
+    let html = `
+      <div class="table">
+        <div class="rowh" style="grid-template-columns:1fr 90px 70px 70px">
           <div>Item</div><div>Stock</div><div></div><div></div>
         </div>
-        ${cards.map(c => {
-          const name = c.dataset.name;
-          const price = Number(c.dataset.price||0);
-          const qty = stock[name] ?? 0;
-          return `
-            <div class="rowd" style="display:grid;grid-template-columns:1fr 90px 70px 70px;gap:8px;">
-              <div>
-                <strong>${name}</strong>
-                <div class="muted">${fmt(price)}</div>
-              </div>
-              <div>
-                <input type="number" min="0" step="1" value="${qty}" data-stock="${name}"
-                       style="width:100%;padding:6px;border-radius:8px;background:#111;border:1px solid #2a2a30;color:#fff;">
-              </div>
-              <div><button class="ghost" data-stock-save="${name}" type="button">Save</button></div>
-              <div><button class="ghost" data-stock-zero="${name}" type="button">Zero</button></div>
-            </div>`;
-        }).join('')}
-      `;
+    `;
+    html += items.map(i => `
+      <div class="rowd" style="grid-template-columns:1fr 90px 70px 70px">
+        <div>${i.name}</div>
+        <div><input type="number" min="0" inputmode="numeric"
+                    value="${getStock(i.name)}"
+                    data-stock="${i.name}"
+                    style="width:100%;padding:6px;border-radius:8px;background:#111;border:1px solid #2a2a30;color:#fff;"></div>
+        <div><button class="ghost" data-stock-save="${i.name}" type="button">Save</button></div>
+        <div><button class="ghost" data-stock-zero="${i.name}" type="button">Zero</button></div>
+      </div>
+    `).join('') + '</div>';
+
+    wrap.innerHTML = html;
+    reflectStockBadges();
+  }
+  // Save / Zero handlers + numeric guard
+  document.addEventListener('click', (e)=>{
+    const save = e.target.closest('button[data-stock-save]');
+    if(save){
+      const name = save.getAttribute('data-stock-save');
+      const input = document.querySelector(`[data-stock="${CSS.escape(name)}"]`);
+      const val = parseInt(input?.value || '0', 10);
+      stock[name] = Math.max(0, isFinite(val) ? val : 0);
+      saveStock(); renderInventory(); reflectStockBadges(); showToast('Stock updated'); return;
     }
-
-    // Handle Save / Zero
-    document.addEventListener('click', (e)=>{
-      const saveBtn = e.target.closest('button[data-stock-save]');
-      if(saveBtn){
-        const name = saveBtn.getAttribute('data-stock-save');
-        const input = document.querySelector(`[data-stock="${CSS.escape(name)}"]`);
-        const val = parseInt(input?.value||'0',10);
-        stock[name] = Math.max(0,isFinite(val)?val:0);
-        saveStock(); renderInventory(); showToast('Stock updated');
-        return;
-      }
-      const zeroBtn = e.target.closest('button[data-stock-zero]');
-      if(zeroBtn){
-        const name = zeroBtn.getAttribute('data-stock-zero');
-        stock[name] = 0;
-        saveStock(); renderInventory(); showToast('Stock zeroed');
-        return;
-      }
-    }, {passive:true});
-        /* ========== Cart rendering (full) ========== */
-    function renderCart(){
-      let total=0, html='';
-      for(const [name,info] of cart){
-        const line = (info.price||0) * (info.qty||0);
-        total += line;
-        html += `<div class="row-between" style="margin-top:6px">
-          <div style="display:flex;gap:10px;align-items:center">
-            <button data-act="-" data-name="${name}" class="ghost" type="button" aria-label="Decrease">−</button>
-            <div style="min-width:24px;text-align:center">${info.qty}</div>
-            <button data-act="+" data-name="${name}" class="ghost" type="button" aria-label="Increase">+</button>
-            <div style="font-weight:700;margin-left:8px">${name}</div>
-          </div>
-          <div style="display:flex;gap:6px;align-items:center">
-            <div style="font-weight:700">${fmt(line)}</div>
-            <button data-remove="${name}" class="ghost" type="button" style="padding:2px 6px;font-size:12px">x</button>
-          </div>
-        </div>`;
-      }
-      const box = $('#cartContent');
-      if(box) box.innerHTML = html || '<div style="color:#aaa;margin-top:8px;">Cart is empty</div>';
-      const tot = $('#cartTotal'); if(tot) tot.textContent = fmt(total);
-      updateCartBar();
+    const zero = e.target.closest('button[data-stock-zero]');
+    if(zero){
+      const name = zero.getAttribute('data-stock-zero');
+      stock[name] = 0; saveStock(); renderInventory(); reflectStockBadges(); showToast('Stock set to 0');
     }
+  }, {passive:true});
+  document.addEventListener('input', (e)=>{
+    if(e.target.matches('input[data-stock]')){ e.target.value = e.target.value.replace(/[^\d]/g,''); }
+  });
 
-    // + / − / remove (delegated)
-    document.addEventListener('click', e=>{
-      const b = e.target.closest('button[data-act][data-name]');
-      if(b){
-        const name=b.getAttribute('data-name');
-        const act=b.getAttribute('data-act');
-        const entry=cart.get(name);
-        if(entry){
-          entry.qty = Math.max( (act==='+') ? entry.qty+1 : entry.qty-1 , 0 );
-          if(entry.qty===0) cart.delete(name);
-          saveCart(); renderCart(); refreshBadge();
-        }
-        return;
-      }
-      const rm = e.target.closest('button[data-remove]');
-      if(rm){
-        const name = rm.getAttribute('data-remove');
-        if(cart.has(name)){ cart.delete(name); saveCart(); renderCart(); refreshBadge(); }
-      }
-    }, {passive:true});
-
-    // open/close cart
-    function openCart(){ $('#cartOverlay')?.classList.add('show'); }
-    function closeCart(){ $('#cartOverlay')?.classList.remove('show'); }
-    $('#cartBtn')?.addEventListener('click', openCart);
-    $('#cartBack')?.addEventListener('click', closeCart);
-
-    // sticky bar (kept simple)
-    function updateCartBar(){
-      const bar=$('#cartBar'); if(!bar) return;
-      let total=0, count=0;
-      for(const [,i] of cart){ total+=i.price*i.qty; count+=i.qty; }
-      if(count>0){ $('#cartBarTotal').textContent=fmt(total); bar.classList.add('show'); }
-      else bar.classList.remove('show');
+  /* Heat (demo) */
+  function renderHeat(){
+    const grid=$('#heatGridHM'); if(!grid) return; grid.innerHTML='';
+    const total=7*24;
+    for(let i=0;i<total;i++){
+      const cell=document.createElement('div'); cell.className='heat-cell';
+      const a=0.15+0.65*Math.random(); cell.style.background=`rgba(110,168,254,${a})`;
+      grid.appendChild(cell); if((i%24)===23) grid.appendChild(document.createElement('br'));
     }
-    $('#cartBarView')?.addEventListener('click', openCart);
-    $('#cartBarCheckout')?.addEventListener('click', ()=>{
-      let count=0; for(const v of cart.values()) count+=v.qty;
-      if(count===0){ showToast('Your cart is empty'); return; }
-      $('#checkoutError')?.style && ($('#checkoutError').style.display='none');
-      updateCheckoutBreakdown();
-      $('#checkoutOverlay')?.classList.add('show');
-    });
+  }
 
-    /* ========== Search & Filter & Favorites ========== */
-    function shouldShowForChip(val, card){
-      if(!val) return true;
-      if(val==='favorites') return favorites.has(card.dataset.name);
-      if(val==='stock') return (stock[card.dataset.name]||0) > 0;
-      const tags=(card.dataset.tags||'').toLowerCase();
-      return tags.includes(val);
+  /* History */
+  function renderHistory(){
+    const list=JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]');
+    const box=$('#historyList'); if(!box) return;
+    if(!list.length){ box.textContent='No delivered orders'; return; }
+    box.innerHTML=list.map(o=>`
+      <div style="padding:8px;border-bottom:1px solid #2a2a30">
+        <div style="font-weight:700">Delivered ${new Date(o.when).toLocaleString()}</div>
+        <div>${o.name} @ ${o.location}</div>
+        <div>Total ${fmt(o.total)}</div>
+      </div>
+    `).join('');
+  }
+  $('#historyClear')?.addEventListener('click',()=>{ localStorage.setItem(DELIVERED_KEY,'[]'); renderHistory(); });
+
+  /* Overlays: backdrop/ESC close */
+  document.querySelectorAll('.overlay').forEach(ov=>{
+    ov.addEventListener('click', (e)=>{ if(e.target===ov) ov.classList.remove('show'); }, {passive:true});
+  });
+  document.addEventListener('keydown', e=>{
+    if(e.key==='Escape'){
+      document.querySelectorAll('.overlay.show').forEach(ov=>ov.classList.remove('show'));
     }
-    function activateChip(val){
-      $$('#chips .chip').forEach(ch=>ch.classList.toggle('active', ch.dataset.filter===val));
-      $$('.card').forEach(c=>{
-        const show=shouldShowForChip(val,c);
-        if(show) c.style.removeProperty('display'); else c.style.display='none-filter';
-      });
-      searchAndFilter();
-    }
-    function searchAndFilter(){
-      const q = ($('#search')?.value||'').toLowerCase();
-      $$('.card').forEach(c=>{
-        const matches = c.dataset.name.toLowerCase().includes(q);
-        const visible = (c.style.display!=='none-filter') && matches;
-        c.style.display = visible ? '' : 'none';
-      });
-    }
-    $('#chips')?.addEventListener('click', e=>{
-      const chip=e.target.closest('.chip'); if(!chip) return;
-      activateChip(chip.dataset.filter||'');
-    });
-    $('#search')?.addEventListener('input', searchAndFilter);
+  });
 
-    // favorites
-    function syncFavStars(){ $$('.card').forEach(card=>card.querySelector('.fav')?.classList.toggle('active', favorites.has(card.dataset.name))); }
-    function saveFavs(){ localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(favorites))); }
-    document.addEventListener('click', e=>{
-      const fav=e.target.closest('.fav'); if(!fav) return;
-      e.stopPropagation();
-      const card=fav.closest('.card'); const name=card.dataset.name;
-      if(favorites.has(name)) favorites.delete(name); else favorites.add(name);
-      saveFavs(); syncFavStars();
-      const active = $('#chips .chip.active')?.dataset.filter==='favorites';
-      if(active && !favorites.has(name)){ card.style.display='none-filter'; searchAndFilter(); }
-    }, {passive:true});
-
-    /* ========== Promo & Tip & Checkout ========== */
-    function parsePromo(code){
-      code=(code||'').trim().toUpperCase();
-      if(!code) return null;
-      const mPct=code.match(/(SAVE|PCT)(\d{1,2})/);
-      if(mPct) return {type:'percent', value:Math.min(50, parseInt(mPct[2],10))};
-      const mAmt=code.match(/(OFF|\$)(\d{1,3})/);
-      if(mAmt) return {type:'amount', value:Math.min(50, parseInt(mAmt[2],10))};
-      return null;
-    }
-    function computeTotals(){
-      let subtotal=0; for(const[,i] of cart) subtotal+=i.price*i.qty;
-      let disc=0;
-      if(promo){
-        if(promo.type==='percent') disc=subtotal*(promo.value/100);
-        else if(promo.type==='amount') disc=Math.min(subtotal, promo.value);
-      }
-      let tipVal=0;
-      if(tip.type==='amount') tipVal=tip.value;
-      else if(tip.type==='percent') tipVal=(subtotal-disc)*(tip.value/100);
-      const total=Math.max(0, subtotal-disc)+tipVal;
-      return {subtotal,disc,tip:tipVal,total};
-    }
-    function updateCheckoutBreakdown(){
-      const {subtotal,disc,tip:tipVal,total}=computeTotals();
-      $('#ckSub')  && ($('#ckSub').textContent = fmt(subtotal));
-      $('#ckDisc') && ($('#ckDisc').textContent= `-${fmt(disc)}`);
-      $('#ckTip')  && ($('#ckTip').textContent = fmt(tipVal));
-      $('#ckTotal')&& ($('#ckTotal').textContent= fmt(total));
-    }
-    $('#checkoutPromo')?.addEventListener('input', e=>{
-      promo = parsePromo(e.target.value);
-      $('#promoStatus') && ($('#promoStatus').textContent = promo ? (promo.type==='percent' ? `Applying ${promo.value}% off` : `Applying $${promo.value} off`) : '');
-      updateCheckoutBreakdown();
-    });
-    $$('.tip-btn').forEach(b=>b.addEventListener('click', ()=>{
-      const v=b.getAttribute('data-tip')||'none';
-      if(v==='none') tip={type:'none',value:0};
-      else if(v.startsWith('amount')) tip={type:'amount', value:parseFloat(v.split(':')[1])||0};
-      else if(v.startsWith('percent')) tip={type:'percent', value:parseFloat(v.split(':')[1])||0};
-      updateCheckoutBreakdown(); showToast('Tip updated');
-    }));
-
-    $('#cartCheckout')?.addEventListener('click', ()=>{
-      $('#checkoutError') && ($('#checkoutError').style.display='none');
-      updateCheckoutBreakdown(); closeCart(); $('#checkoutOverlay')?.classList.add('show');
-    });
-    $('#checkoutClose')?.addEventListener('click', ()=>$('#checkoutOverlay')?.classList.remove('show'));
-
-    async function placeOrderIFTTTAndFS(order){
-      // IFTTT (GET is simplest on iOS Safari)
-      try{
-        const summary = `${order.name} @ ${order.location} • ${fmt(order.total)}`;
-        const lines   = order.lines.map(l=>`${l.name} × ${l.qty} -- ${fmt(l.line)}`).join('\n');
-        fetch(`${IFTTT_URL}?value1=${encodeURIComponent(summary)}&value2=${encodeURIComponent(lines)}&value3=`, {method:'GET', mode:'no-cors'});
-      }catch{}
-      // Firestore
-      const fsId = await writeOrderToFirestore(order);
-      if(fsId) order.id = fsId;
-    }
-
-    $('#checkoutSubmit')?.addEventListener('click', async ()=>{
-      const name = ($('#checkoutName')?.value||'').trim();
-      const loc  = ($('#checkoutLocation')?.value||'').trim();
-      if(!name || !loc){ $('#checkoutError') && ($('#checkoutError').style.display='block'); return; }
-      localStorage.setItem(PROFILE_NAME_KEY, name);
-      localStorage.setItem(PROFILE_LOC_KEY, loc);
-
-      const lines = Array.from(cart.entries()).map(([n,i])=>({name:n, qty:i.qty, price:i.price, line:i.price*i.qty}));
-      const {total} = computeTotals();
-      const order = { when:new Date().toISOString(), name, location:loc, lines, total, status:'active' };
-
-      // Mirror locally (for Orders tab)
-      const local = JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
-      local.unshift(order);
-      localStorage.setItem(ORDERS_KEY, JSON.stringify(local));
-
-      // Decrement stock
-      lines.forEach(l=>{
-        stock[l.name] = Math.max(0, (stock[l.name]||0)-l.qty);
-      });
-      saveStock(); renderInventory();
-
-      // Send
-      await placeOrderIFTTTAndFS(order);
-
-      // Clear cart & UI
-      cart.clear(); saveCart(); renderCart(); refreshBadge();
-      $('#checkoutOverlay')?.classList.remove('show');
-      showToast('Order placed 🎉');
-
-      // Admin views
-      renderOrders(); renderAnalytics(); renderHistory();
-    });
-
-    /* ========== Orders (admin list → tap to open sheet) ========== */
-    function renderOrders(external){
-      const list = external || JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
-      const box = $('#ordersList'); if(!box) return;
-      if(!list.length){ box.textContent = 'No orders yet'; box.__list = []; return; }
-      box.innerHTML = list.map((o,i)=>`
-        <div class="order-item" data-idx="${i}" data-id="${o.id||''}" style="padding:8px;border-bottom:1px solid #2a2a30;cursor:pointer">
-          <div style="font-weight:700">${new Date(o.when).toLocaleString()}</div>
-          <div>${o.name} @ ${o.location}</div>
-          <div style="font-weight:700">Total ${fmt(o.total)}</div>
-          <div class="muted">Status: ${o.status||'active'}</div>
-        </div>`).join('');
-      box.__list = list;
-    }
-
-    function openOrderSheetByIndex(idx){
-      const box=$('#ordersList'); const list=box?.__list || JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
-      const o=list[idx]; if(!o) return;
-      $('#orderMeta').textContent = `${new Date(o.when).toLocaleString()} • ${o.name} @ ${o.location}`;
-      $('#orderLines').innerHTML = o.lines.map(l=>`
-        <div class="row-between" style="padding:6px 0">
-          <div>${l.name} × ${l.qty}</div><div style="font-weight:700">${fmt(l.line)}</div>
-        </div>`).join('');
-      $('#orderTotal').textContent = fmt(o.total);
-      $('#orderSheet').dataset.idx = idx;
-      $('#orderSheet').dataset.id  = o.id || '';
-      // ensure on top
-      document.body.appendChild($('#orderSheet'));
-      $('#orderSheet').classList.add('show');
-    }
-
-    document.addEventListener('click', e=>{
-      const row = e.target.closest('.order-item'); if(row) openOrderSheetByIndex(parseInt(row.dataset.idx,10));
-    }, {passive:true});
-    $('#orderClose')?.addEventListener('click', ()=>$('#orderSheet')?.classList.remove('show'));
-    $('#orderCancel')?.addEventListener('click',()=>$('#orderSheet')?.classList.remove('show'));
-
-    $('#orderDelivered')?.addEventListener('click', async ()=>{
-      const idx = parseInt($('#orderSheet')?.dataset.idx||'-1',10);
-      const box=$('#ordersList'); const list = box?.__list || JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
-      const o=list[idx]; if(!o) return;
-
-      o.status='delivered';
-
-      // Move to delivered history
-      const hist = JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]');
-      hist.unshift(o);
-      localStorage.setItem(DELIVERED_KEY, JSON.stringify(hist));
-
-      // Persist orders locally when not rendering from external
-      if(!box?.__list){ localStorage.setItem(ORDERS_KEY, JSON.stringify(list)); }
-
-      // Firestore status patch
-      try{
-        if(o.id && window.__fs?.db){
-          const { db } = window.__fs;
-          await window.__fs.fns.updateDoc(window.__fs.fns.doc(db,'orders',o.id), { status:'delivered' });
-        }
-      }catch(e){ console.warn('FS status update failed', e); }
-
-      renderHistory();
-      renderOrders(box?.__list ? list : undefined);
-      $('#orderSheet')?.classList.remove('show');
-      showToast('Marked delivered');
-    });
-
-    // Live Firestore sync (always on)
-    function subscribeOrdersRealtime(){
-      try{
-        if(!window.__fs?.db) return;
-        const { db, fns } = window.__fs;
-        const q = fns.query(fns.collection(db, 'orders'), fns.orderBy('when','desc'));
-        fns.onSnapshot(q, (snap)=>{
-          const list=[];
-          snap.forEach(docSnap=>{
-            const d = docSnap.data();
-            list.push({
-              id: docSnap.id,
-              when: d.when?.toDate?.() || new Date(),
-              name: d.name, location: d.location,
-              lines: d.lines||[], total: d.total||0,
-              status: d.status||'active'
-            });
-          });
-          renderOrders(list);
-        });
-      }catch(e){ console.warn('subscribe realtime failed', e); }
-    }
-
-    /* ========== Analytics, Heat, History ========== */
-    function renderAnalytics(){
-      const all = ($('#ordersList')?.__list) || JSON.parse(localStorage.getItem(ORDERS_KEY)||'[]');
-      let rev=0, items=0; all.forEach(o=>{ rev+=o.total||0; (o.lines||[]).forEach(l=>items+=l.qty||0); });
-      const cnt=all.length, aov=cnt ? rev/cnt : 0;
-      $('#kpiRevenue') && ($('#kpiRevenue').textContent = fmt(rev));
-      $('#kpiOrders')  && ($('#kpiOrders').textContent  = String(cnt));
-      $('#kpiAOV')     && ($('#kpiAOV').textContent     = fmt(aov));
-      $('#kpiItems')   && ($('#kpiItems').textContent   = String(items));
-
-      // 7-day spark
-      const days=Array(7).fill(0), now=Date.now();
-      all.forEach(o=>{
-        const d=new Date(o.when); const diff=Math.floor((now-d)/86400000);
-        if(diff>=0 && diff<7) days[6-diff]+=o.total||0;
-      });
-      const svg=$('#revSpark');
-      if(svg){
-        const max=Math.max(1,...days), step=100/(days.length-1||1);
-        const pts=days.map((v,i)=>`${i*step},${40-(v/max)*36-2}`).join(' ');
-        svg.innerHTML = `<polyline points="${pts}" fill="none" stroke="#6ea8fe" stroke-width="2"/>`;
-      }
-
-      // top products
-      const agg={};
-      all.forEach(o=>(o.lines||[]).forEach(l=>{
-        agg[l.name]=agg[l.name]||{qty:0,rev:0};
-        agg[l.name].qty+=l.qty||0;
-        agg[l.name].rev+=(l.line||0);
-      }));
-      const top = Object.entries(agg).sort((a,b)=>b[1].rev-a[1].rev).slice(0,8);
-      const host = $('#topProducts');
-      if(host){
-        host.innerHTML = top.length
-          ? `<div class="table"><div class="rowh"><div>Product</div><div>Qty</div><div>Revenue</div><div>-</div></div>${
-              top.map(([n,v])=>`<div class="rowd"><div>${n}</div><div>${v.qty}</div><div>${fmt(v.rev)}</div><div>-</div></div>`).join('')
-            }</div>`
-          : '<div class="admin-list">No sales yet</div>';
-      }
-    }
-
-    function renderHeat(){
-      const grid=$('#heatGridHM'); if(!grid) return; grid.innerHTML='';
-      // simple 7x24 demo using random alpha (keeps UI alive even before real analytics)
-      for(let r=0;r<7;r++){
-        for(let c=0;c<24;c++){
-          const a = 0.15 + 0.65 * Math.random();
-          const cell=document.createElement('span');
-          cell.className='heat-cell';
-          cell.style.cssText='display:inline-block;width:12px;height:12px;margin:1px;border-radius:3px;background:rgba(110,168,254,'+a+')';
-          grid.appendChild(cell);
-        }
-        grid.appendChild(document.createElement('br'));
-      }
-    }
-
-    function renderHistory(){
-      const list=JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]');
-      const box=$('#historyList'); if(!box) return;
-      if(!list.length){ box.textContent='No delivered orders'; return; }
-      box.innerHTML = list.map(o=>`
-        <div style="padding:8px;border-bottom:1px solid #2a2a30">
-          <div style="font-weight:700">Delivered ${new Date(o.when).toLocaleString()}</div>
-          <div>${o.name} @ ${o.location}</div>
-          <div>Total ${fmt(o.total)}</div>
-        </div>`).join('');
-    }
-    $('#historyClear')?.addEventListener('click',()=>{
-      localStorage.setItem(DELIVERED_KEY,'[]'); renderHistory();
-    });
-
-    /* ========== Admin tabs & unlock ========== */
-    function switchTab(which){
-      const g=$('#tabGeneral'), a=$('#tabAdmin'), pg=$('#panelGeneral'), pa=$('#panelAdmin');
-      if(which==='admin'){
-        g.classList.remove('active'); g.setAttribute('aria-selected','false');
-        a.classList.add('active');    a.setAttribute('aria-selected','true');
-        pg.style.display='none'; pa.style.display='block';
-        ensureAdminLoginVisible();
-      }else{
-        a.classList.remove('active'); a.setAttribute('aria-selected','false');
-        g.classList.add('active');    g.setAttribute('aria-selected','true');
-        pa.style.display='none'; pg.style.display='block';
-      }
-    }
-    function ensureAdminLoginVisible(){
-      const logged = localStorage.getItem(UNLOCK_KEY)==='1';
-      $('#adminLogin').style.display  = logged ? 'none'  : 'block';
-      $('#adminContent').style.display= logged ? 'block' : 'none';
-      if(logged){
-        renderOrders(); renderInventory(); renderAnalytics(); renderHeat(); renderHistory();
-        subscribeOrdersRealtime();
-      }
-    }
-    document.addEventListener('click', e=>{
-      if(e.target.closest('#tabGeneral')) switchTab('general');
-      if(e.target.closest('#tabAdmin'))   switchTab('admin');
-      if(e.target.closest('#adminSubmit')){
-        const ok = ($('#adminPassword')?.value||'') === ADMIN_PASSWORD;
-        if(ok){ localStorage.setItem(UNLOCK_KEY,'1'); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
-        else  { $('#adminError').style.display='block'; }
-      }
-      const sub=e.target.closest('.subtab');
-      if(sub){
-        $$('.subtab').forEach(s=>s.classList.remove('active'));
-        sub.classList.add('active');
-        const id=sub.dataset.subtab;
-        ['orders','inventory','analytics','heat','history'].forEach(k=>{
-          $('#subtab-'+k).style.display = (k===id)?'block':'none';
-        });
-        if(id==='inventory') renderInventory();
-        if(id==='orders')    renderOrders();
-        if(id==='analytics') renderAnalytics();
-        if(id==='heat')      renderHeat();
-        if(id==='history')   renderHistory();
-      }
-    }, {passive:true});
-
-    /* ========== Bootstrap ========== */
-    document.addEventListener('DOMContentLoaded', ()=>{
-      // greet
-      updateGreeting();
-      // carousel
-      buildPromos?.();
-      // cart
-      renderCart(); refreshBadge(); updateCartBar();
-      // favorites
-      syncFavStars();
-      // filters
-      activateChip('');
-      // admin settings entry points
-      $('#settingsBtn')?.addEventListener('click',()=>{ $('#settingsOverlay')?.classList.add('show'); switchTab('general'); });
-      $('#settingsClose')?.addEventListener('click',()=>$('#settingsOverlay')?.classList.remove('show'));
-      // ensure admin UI correct
+  /* Admin Tabs & Login */
+  function switchTab(which){
+    const g=$('#tabGeneral'), a=$('#tabAdmin'), pg=$('#panelGeneral'), pa=$('#panelAdmin');
+    if(which==='admin'){
+      g.classList.remove('active'); g.setAttribute('aria-selected','false');
+      a.classList.add('active');    a.setAttribute('aria-selected','true');
+      pg.style.display='none'; pa.style.display='block';
       ensureAdminLoginVisible();
-    });
-    </script>
+    }else{
+      a.classList.remove('active'); a.setAttribute('aria-selected','false');
+      g.classList.add('active');    g.setAttribute('aria-selected','true');
+      pa.style.display='none'; pg.style.display='block';
+    }
+  }
+  function ensureAdminLoginVisible(){
+    const logged=localStorage.getItem(UNLOCK_KEY)==='1';
+    $('#adminLogin').style.display=logged?'none':'block';
+    $('#adminContent').style.display=logged?'block':'none';
+    if(logged){
+      renderOrders(); renderInventory(); renderAnalytics(); renderHeat(); renderHistory();
+      subscribeOrdersRealtime();
+    }
+  }
+  document.addEventListener('click', e=>{
+    if(e.target.closest('#tabGeneral')) switchTab('general');
+    if(e.target.closest('#tabAdmin'))   switchTab('admin');
+    if(e.target.closest('#adminSubmit')){
+      const ok=$('#adminPassword').value===ADMIN_PASSWORD;
+      if(ok){ localStorage.setItem(UNLOCK_KEY,'1'); $('#adminError').style.display='none'; ensureAdminLoginVisible(); }
+      else { $('#adminError').style.display='block'; }
+    }
+    const sub=e.target.closest('.subtab');
+    if(sub){
+      $$('.subtab').forEach(s=>s.classList.remove('active'));
+      sub.classList.add('active');
+      const id=sub.dataset.subtab;
+      ['orders','inventory','analytics','heat','history'].forEach(k=>{
+        $('#subtab-'+k).style.display = (k===id)?'block':'none';
+      });
+    }
+  }, {passive:true});
+
+  /* Init */
+  updateGreeting(); buildPromos(); renderCart(); refreshBadge(); updateCartBar(); syncFavStars(); reflectStockBadges();
+  renderOrders(); renderInventory(); renderAnalytics(); renderHeat(); renderHistory(); activateChip('');
+  (function(){
+    $('#settingsBtn')?.addEventListener('click',()=>{ $('#settingsOverlay')?.classList.add('show'); switchTab('general'); });
+    $('#settingsClose')?.addEventListener('click',()=>$('#settingsOverlay')?.classList.remove('show'));
+    $('#cartBtn')?.addEventListener('click',()=>$('#cartOverlay')?.classList.add('show'));
+    $('#cartBack')?.addEventListener('click',()=>$('#cartOverlay')?.classList.remove('show'));
+  })();
+  </script>
+</body>
+</html>
