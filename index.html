@@ -1,4 +1,15 @@
 <!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<script>window.addEventListener("error",function(e){try{var pre=document.createElement("pre");pre.style.cssText="position:fixed;inset:0;background:#000;color:#0f0;padding:12px;font:12px/1.4 monospace;z-index:999999;overflow:auto";pre.textContent="JS ERROR: "+(e.message||e)+"\n"+(e.filename||"")+":"+(e.lineno||"")+":"+(e.colno||"");document.body.innerHTML="";document.body.appendChild(pre)}catch(_){};});</script>
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>FitSnacks – minimal test</title>
 <h1 style="font:700 20px/1.4 -apple-system,Segoe UI,sans-serif">Minimal test</h1>
 <p>If you can read this, rendering is fine and the issue is in app CSS/JS.</p>
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister()));
+}
+if (window.caches) {
+  caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+}
+console.log("SW & caches cleared");
+</script>
