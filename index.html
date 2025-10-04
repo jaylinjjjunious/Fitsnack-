@@ -65,18 +65,7 @@
     /* Grid */
     .grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
     .card{ border-radius:16px; padding:10px; position:relative; display:flex; flex-direction:column; min-height:190px; }
-    .thumb{ height:90px; border-radius:12px; overflow:hidden; margin-bottom:8px; display:flex; align-items:center; justify-content:center; background:#0e0e12; }
-    .thumb img{ width:100%; height:100%; object-fit:contain; }
-    .title{ font-weight:700; margin:4px 0 2px; }
-    .price{ color:#c7c7cc; font-weight:600; margin-top:auto; }
-    .add{ position:absolute; right:10px; bottom:10px; background:var(--accent); border:0; color:#001a12; border-radius:14px; width:42px; height:42px; font-size:22px; display:flex; align-items:center; justify-content:center; font-weight:800; cursor:pointer; }
-    .fav{ position:absolute; right:10px; top:10px; width:36px; height:36px; border-radius:12px; display:flex; align-items:center; justify-content:center; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.25); cursor:pointer; }
-    .fav.active{ background:rgba(255,215,0,.15); box-shadow:0 0 0 1px rgba(255,215,0,.35) inset; }
-
-    /* OOS */
-    .card.oos{ opacity:.55; filter:grayscale(.35); }
-    .card.oos::after{ content:"Out of stock"; position:absolute; top:10px; left:10px; font-size:11px; font-weight:800; letter-spacing:.2px; padding:4px 8px; border-radius:999px; background:rgba(0,0,0,.6); border:1px solid rgba(255,255,255,.1); color:#eee; }
-
+    .thumb{ height:90px; border-radius:12px; overflow:hidden; margin-bottom:8px; display:flex; align-items:center; justify-c
     /* Overlays */
     .overlay{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; padding:20px; z-index:9990; }
     .overlay.show{ display:flex; }
@@ -143,50 +132,7 @@
     }
     @keyframes popfade{
       0%  {opacity:0; transform:translateY(-6px) scale(.95)}
-      12% {opacity:1; transform:translateY(0)    scale(1)}
-      80% {opacity:1}
-      100%{opacity:0; transform:translateY(-4px) scale(.98)}
-    }
-    .card.pulse{
-      box-shadow:0 0 0 2px rgba(46,230,166,.45), 0 8px 24px rgba(0,0,0,.25);
-      transition:box-shadow .35s ease;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .overlay .sheet { animation:none!important; -webkit-animation:none!important; transform:translateY(0)!important; -webkit-transform:translateY(0)!important; }
-      .card-pop{ animation:none!important; opacity:1!important; }
-    }
-  </style>
-</head>
-<body>
-  <div class="app" role="application">
-    <!-- Header -->
-    <div class="row">
-      <div class="search-wrap">
-        <span class="icon-left" aria-hidden="true">🔍</span>
-        <input id="search" class="search" placeholder="Search snacks…" autocomplete="off">
-      </div>
-      <div class="icon-rights">
-        <button type="button" class="btn" id="cartBtn" aria-label="Open cart">
-          🛒 <span id="cartBadge" class="badge">0</span>
-        </button>
-        <button type="button" class="btn" id="settingsBtn" aria-label="Open settings">⚙️</button>
-      </div>
-    </div>
-
-    <div id="greet" class="greet">Welcome 👋</div>
-
-    <!-- Promo carousel -->
-    <div class="carousel" aria-label="Promotions">
-      <div id="snapper" class="snapper" aria-roledescription="carousel">
-        <div class="snap-spacer" aria-hidden="true"></div>
-        <!-- JS inserts promo cards -->
-        <div class="snap-spacer" aria-hidden="true"></div>
-      </div>
-      <div id="snapDots" class="snap-dots" aria-hidden="true"></div>
-    </div>
-
-    <!-- Filter chips -->
+          <!-- Filter chips -->
     <div class="chips" id="chips">
       <div class="chip" data-filter="">all</div>
       <div class="chip" data-filter="vegan">vegan</div>
@@ -248,31 +194,7 @@
         <div class="thumb"><img src="assets/product-nuts.jpg" alt="Mixed Nuts" loading="lazy"></div>
         <div class="title">Mixed Nuts</div>
         <div class="price">$3.20</div>
-        <button class="add" aria-label="Add Mixed Nuts">+</button>
-      </div>
-      <div class="card" role="listitem" data-name="Fruit Cup" data-price="2.19" data-img="assets/product-fruit.jpg" data-tags="vegan,gluten-free">
-        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb"><img src="assets/product-fruit.jpg" alt="Fruit Cup" loading="lazy"></div>
-        <div class="title">Fruit Cup</div>
-        <div class="price">$2.19</div>
-        <button class="add" aria-label="Add Fruit Cup">+</button>
-      </div>
-      <div class="card" role="listitem" data-name="Energy Drink" data-price="2.99" data-img="assets/product-energy.jpg" data-tags="snack">
-        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb"><img src="assets/product-energy.jpg" alt="Energy Drink" loading="lazy"></div>
-        <div class="title">Energy Drink</div>
-        <div class="price">$2.99</div>
-        <button class="add" aria-label="Add Energy Drink">+</button>
-      </div>
-      <div class="card" role="listitem" data-name="Chocolate Bar" data-price="1.75" data-img="assets/product-chocolate.jpg" data-tags="snack">
-        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb"><img src="assets/product-chocolate.jpg" alt="Chocolate Bar" loading="lazy"></div>
-        <div class="title">Chocolate Bar</div>
-        <div class="price">$1.75</div>
-        <button class="add" aria-label="Add Chocolate Bar">+</button>
-      </div>
-    </div>
-
+        <button class="a
     <!-- Product mini sheet -->
     <div id="productSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Add item">
       <div class="sheet" role="document">
@@ -353,33 +275,7 @@
           <input id="checkoutLocation" class="field" style="width:100%;padding:10px;border-radius:10px" autocomplete="organization-title">
 
           <div style="margin-top:12px;">Promo code</div>
-          <input id="checkoutPromo" class="field" style="width:100%;padding:10px;border-radius:10px">
-          <div id="promoStatus" style="margin-top:6px;color:#aaa;font-size:13px"></div>
-
-          <div style="margin-top:12px;">Tip (optional)</div>
-          <div id="tipGroup" style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="ghost tip-btn" data-tip="none" type="button">No tip</button>
-            <button class="ghost tip-btn" data-tip="amount:1" type="button">$1</button>
-            <button class="ghost tip-btn" data-tip="amount:2" type="button">$2</button>
-            <button class="ghost tip-btn" data-tip="percent:10" type="button">10%</button>
-            <button class="ghost tip-btn" data-tip="percent:15" type="button">15%</button>
-          </div>
-
-          <div class="admin-list" style="margin-top:12px;">
-            <div class="row-between"><span>Subtotal</span><strong id="ckSub">$0.00</strong></div>
-            <div class="row-between"><span>Discount</span><strong id="ckDisc">-$0.00</strong></div>
-            <div class="row-between"><span>Tip</span><strong id="ckTip">$0.00</strong></div>
-            <div class="row-between" style="margin-top:6px;"><strong>Total</strong><strong id="ckTotal">$0.00</strong></div>
-          </div>
-        </div>
-
-        <div class="actions" style="margin-top:12px;">
-          <button class="ghost" id="checkoutBack" type="button">Back</button>
-          <button class="primary" id="checkoutPlace" type="button">Place order</button>
-        </div>
-      </div>
-    </div>
-
+          <input id="checkoutPromo" class="
     <!-- Settings / Admin -->
     <div id="settingsOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Settings">
       <div class="sheet" role="document">
@@ -457,36 +353,7 @@
         </div>
         <div style="margin-top:8px;">Please unlock Admin in Settings first.</div>
         <div class="actions" style="margin-top:12px;">
-          <button class="primary" id="openSettingsFromPrompt" type="button">Open Settings</button>
-        </div>
-      </div>
-    </div>
-  </div><!-- /.app -->
-
-  <!-- Toast Host -->
-  <div id="toastHost"></div>
-
-  <!-- Firebase + Firestore -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-    import {
-      getFirestore, collection, addDoc, serverTimestamp,
-      onSnapshot, query, orderBy, updateDoc, doc
-    } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAdjxpOK1ir5y-sHCh4PodIxe8TkEYBAsY",
-      authDomain: "fitsnack-bd51d.firebaseapp.com",
-      projectId: "fitsnack-bd51d",
-      storageBucket: "fitsnack-bd51d.firebasestorage.app",
-      messagingSenderId: "978231518137",
-      appId: "1:978231518137:web:528c32d35d5b4f22038c68"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    window.__fs = { db };
-  </script>
-
+          <button class="primary" id="openSe
   <script>
   /* ========= Boot ========= */
   const APP_SCHEMA_VERSION = 4, SCHEMA_KEY = 'fitsnacks.schema';
@@ -567,7 +434,6 @@
     const name = (localStorage.getItem(PROFILE_NAME_KEY) || '').trim();
     $('#greet') && ($('#greet').textContent = name ? `Hi, ${name} 👋` : 'Welcome 👋');
   }
-
   /* ---------- Carousel ---------- */
   function buildPromos(){
     const snapper = $('#snapper'); if(!snapper) return;
@@ -648,7 +514,6 @@
     }
     requestAnimationFrame(step);
   }
-
   /* ---------- Cart ---------- */
   function saveCart(){ localStorage.setItem(CART_KEY, JSON.stringify(Array.from(cart.entries()))); }
   function refreshBadge(){
@@ -705,7 +570,6 @@
   function closeCart(){ $('#cartOverlay')?.classList.remove('show'); }
   $('#cartBtn')?.addEventListener('click', openCart);
   $('#cartBack')?.addEventListener('click', closeCart);
-
   /* ---------- Favorites ---------- */
   function saveFavs(){ localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(favorites))); }
   function syncFavStars(){
@@ -786,22 +650,7 @@
     if(s <= 0){ showToast('Out of stock'); return; }
     if(qty > s){ showToast('Not enough stock'); return; }
     const entry = cart.get(currentProduct.name) || { price: currentProduct.price, qty:0 };
-    entry.qty += qty; cart.set(currentProduct.name, entry);
-    setStock(currentProduct.name, s - qty); // decrement
-    saveCart(); renderCart(); refreshBadge();
-    closeProductSheet(); openCart();
-    showToast(`Added ${qty} × ${currentProduct.name}`);
-  });
-  /* Open product sheet from card or + button */
-  document.addEventListener('click', e => {
-    const plus = e.target.closest('.card .add');
-    if(plus){ e.stopPropagation(); const card = plus.closest('.card'); if(card && !card.classList.contains('oos')) openProductSheet(card); return; }
-    const card = e.target.closest('.card');
-    if(card && !e.target.closest('.fav') && !e.target.closest('.add') && !card.classList.contains('oos')){
-      openProductSheet(card);
-    }
-  }, {passive:true});
-
+    entry.qty += qty; cart.set(currentProduct
   /* ---------- Promo & Tip ---------- */
   function parsePromo(code){
     code = (code || '').trim().toUpperCase();
@@ -878,7 +727,6 @@
       return ref.id;
     }catch(e){ console.warn('Firestore write failed', e); return null; }
   }
-
   async function placeOrder(){
     if(cart.size === 0){ showToast('Cart is empty'); return; }
     const name = ($('#checkoutName')?.value || '').trim();
@@ -940,7 +788,6 @@
     }
     saveCart(); renderCart(); refreshBadge(); openCart(); showToast('Added last order items');
   });
-
   /* ---------- Settings & Admin ---------- */
   function switchTab(which){
     const gen = $('#settingsGeneral'), adm = $('#settingsAdmin');
@@ -1082,7 +929,6 @@
         <div>Item</div><div>Stock</div><div></div><div></div>
       </div>${rows}`;
   }
-
   /* Handle Save / Zero in Inventory and pop on card */
   document.addEventListener('click', e => {
     const s = e.target.closest('button[data-stock-save]');
@@ -1093,12 +939,12 @@
       setStock(name, isFinite(val) ? val : 0);
       showToast('Stock updated');
 
-      // Pop on product card
+      // Pop on product card + pulse
       flashCardNote(name, `Stock: ${Math.max(0, val|0)}`);
       pulseCard(name);
 
-      // Refresh other views
-      renderAdminOrders(); updateKpis(); buildHeatMap(); // if needed
+      // Refresh dependent views
+      renderAdminOrders(); updateKpis(); buildHeatMap();
       return;
     }
     const z = e.target.closest('button[data-stock-zero]');
@@ -1118,7 +964,10 @@
   /* ---- Admin: Orders view (tap to detail) ---- */
   function renderAdminOrders(){
     const host = $('#adminOrders'); if(!host) return;
-    if(!orders.length){ host.innerHTML = '<div style="color:#c7c7cc;">No orders yet.</div>'; return; }
+    if(!orders.length){
+      host.innerHTML = '<div style="color:#c7c7cc;">No orders yet.</div>';
+      return;
+    }
     host.innerHTML = orders.slice().reverse().map((o,i) => `
       <div class="order-item" data-idx="${i}" data-id="${o.id||''}" style="padding:8px;border-bottom:1px solid #2a2a30;cursor:pointer">
         <div style="font-weight:700">${new Date(o.at||o.when).toLocaleString()}</div>
@@ -1128,6 +977,7 @@
       </div>
     `).join('');
   }
+
   function openOrderSheetByIndex(idx){
     const o = orders.slice().reverse()[idx]; if(!o) return;
     $('#orderMeta').textContent=`${new Date(o.at||o.when).toLocaleString()} • ${o.name} @ ${o.loc||o.location}`;
@@ -1141,23 +991,32 @@
     document.body.appendChild($('#orderSheet'));
     $('#orderSheet').classList.add('show');
   }
+
   document.addEventListener('click', e=>{
-    const row=e.target.closest('.order-item'); if(row) openOrderSheetByIndex(parseInt(row.dataset.idx,10));
+    const row=e.target.closest('.order-item');
+    if(row) openOrderSheetByIndex(parseInt(row.dataset.idx,10));
   }, {passive:true});
+
   $('#orderClose')?.addEventListener('click', ()=>$('#orderSheet').classList.remove('show'));
   $('#orderCancel')?.addEventListener('click', ()=>$('#orderSheet').classList.remove('show'));
+
   $('#orderDelivered')?.addEventListener('click', async ()=>{
     const idx = parseInt($('#orderSheet').dataset.idx||'-1',10);
     const list = orders.slice().reverse();
     const o = list[idx]; if(!o) return;
+
     o.status='delivered';
 
-    const hist=JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]'); hist.unshift(o);
+    // Add to delivered history (local)
+    const hist=JSON.parse(localStorage.getItem(DELIVERED_KEY)||'[]'); 
+    hist.unshift(o);
     localStorage.setItem(DELIVERED_KEY, JSON.stringify(hist));
-    // write back to the original orders array (reverse mapping)
+
+    // Write back to original order array (reverse mapping)
     orders = list.slice().reverse();
     localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
 
+    // Try Firestore status update (best-effort)
     try{
       if(o.id && window.__fs?.db){
         const { db } = window.__fs;
@@ -1175,71 +1034,7 @@
     const openCount = orders.length;
     const revenue = orders.reduce((a,b)=>a+(b.total||0),0);
     $('#kpiOpen') && ($('#kpiOpen').textContent = String(openCount));
-    $('#kpiRev')  && ($('#kpiRev').textContent  = fmt(revenue));
-  }
-
-  /* ---- Admin: Analytics (Heat Map) ---- */
-  function buildHeatMap(){
-    const grid = $('#heatGrid'); if(!grid) return;
-    const counts = Array.from({length:7}, ()=>Array(24).fill(0));
-    for(const o of orders){
-      const d = new Date(o.at||o.when); const dow = d.getDay(); const hr = d.getHours();
-      counts[dow][hr] += 1;
-    }
-    const max = counts.flat().reduce((m,v)=>Math.max(m,v),0) || 1;
-    grid.innerHTML = '';
-    grid.style.gridTemplateColumns = '20px repeat(24, 1fr)';
-    const days = ['S','M','T','W','T','F','S'];
-    for(let r=0;r<7;r++){
-      const label = document.createElement('div');
-      label.style.fontSize='12px'; label.style.color='#c7c7cc';
-      label.textContent = days[r];
-      grid.appendChild(label);
-      for(let c=0;c<24;c++){
-        const v = counts[r][c];
-        const cell = document.createElement('div');
-        cell.className='heat-cell';
-        const t = v/max;
-        const a = 0.15 + 0.65*t;
-        cell.style.background = `rgba(46,230,166,${a})`;
-        cell.title = `${days[r]} @ ${String(c).padStart(2,'0')}:00 -- ${v} orders`;
-        grid.appendChild(cell);
-      }
-    }
-    $('#legendLow') && ($('#legendLow').style.background = 'rgba(46,230,166,0.15)');
-    $('#legendMid') && ($('#legendMid').style.background = 'rgba(46,230,166,0.45)');
-    $('#legendHigh')&& ($('#legendHigh').style.background= 'rgba(46,230,166,0.80)');
-  }
-
-  /* ---- Admin: History ---- */
-  function appendHistoryEvent(order){
-    const list = JSON.parse(localStorage.getItem('fitsnacks.history.v1') || '[]');
-    list.push({
-      id: order.id,
-      at: order.at,
-      who: order.name,
-      where: order.loc,
-      total: order.total,
-      lines: order.lines
-    });
-    localStorage.setItem('fitsnacks.history.v1', JSON.stringify(list));
-  }
-  function renderHistory(){
-    const host = $('#adminHistory'); if(!host) return;
-    const list = JSON.parse(localStorage.getItem(DELIVERED_KEY) || '[]').slice().reverse();
-    if(!list.length){ host.innerHTML = '<div style="color:#c7c7cc;">No delivered orders</div>'; return; }
-    host.innerHTML = list.map(ev => `
-      <div class="rowd" style="display:grid;grid-template-columns:1fr 100px;gap:8px;">
-        <div>
-          <div style="font-weight:700">${new Date(ev.at||ev.when).toLocaleString()}</div>
-          <div style="color:#c7c7cc;font-size:12px;">${ev.name} @ ${ev.loc||ev.location}</div>
-          <div style="color:#c7c7cc;font-size:12px;">${ev.lines.map(l => `${l.qty}× ${l.name}`).join(', ')}</div>
-        </div>
-        <div style="font-weight:700">${fmt(ev.total)}</div>
-      </div>
-    `).join('');
-  }
-
+    $('#kpi
   /* ---------- Bootstrap ---------- */
   document.addEventListener('DOMContentLoaded', async () => {
     try{
@@ -1258,7 +1053,7 @@
         renderHistory();
       }
 
-      // overlay close on backdrop & ESC
+      // Overlay close on backdrop & ESC
       document.querySelectorAll('.overlay').forEach(ov=>{
         ov.addEventListener('click', (e)=>{ if(e.target===ov) ov.classList.remove('show'); }, {passive:true});
       });
