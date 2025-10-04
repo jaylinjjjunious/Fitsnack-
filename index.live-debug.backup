@@ -39,14 +39,14 @@
     .icon-left{ position:absolute; left:12px; top:50%; transform:translateY(-50%); pointer-events:none; }
     .icon-rights{ margin-left:auto; display:flex; gap:10px; flex-shrink:0; position:relative; z-index:10060; }
     .btn{ border-radius:14px; width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; }
-    #cartBtn .badge{ position:absolute; top:-6px; right:-8px; background:var(--badge); color:#fff; border-radius:999px; padding:1px 6px; font-size:12px; font-weight:700; display:block; }
+    #cartBtn .badge{ position:absolute; top:-6px; right:-8px; background:var(--badge); color:#fff; border-radius:999px; padding:1px 6px; font-size:12px; font-weight:700; display:none; }
 
     .greet{ margin:8px 2px 2px; color:#c7c7cc; font-size:14px; }
 
     /* Carousel */
     .carousel{ margin:10px 0 6px; position:relative; z-index:1; }
     .snapper{ height:100px; display:flex; align-items:stretch; gap:var(--snap-gap); overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; padding:0 var(--snap-gap); }
-    .snapper::-webkit-scrollbar{display:block;}
+    .snapper::-webkit-scrollbar{display:none;}
     .snap-spacer{flex:0 0 7.5%;}
     .snap-card{ position:relative; flex:0 0 85%; scroll-snap-align:center; border-radius:14px; overflow:hidden; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.25); display:flex; align-items:center; justify-content:center; }
     .banner{ width:100%; height:100%; object-fit:cover; }
@@ -67,7 +67,7 @@
     .card{ border-radius:16px; padding:10px; position:relative; display:flex; flex-direction:column; min-height:190px; }
     .thumb{ height:90px; border-radius:12px; overflow:hidden; margin-bottom:8px; display:flex; align-items:center; justify-c
     /* Overlays */
-    .overlay{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:block; align-items:center; justify-content:center; padding:20px; z-index:9990; }
+    .overlay{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; padding:20px; z-index:9990; }
     .overlay.show{ display:flex; }
     .sheet{ width:92%; max-width:480px; border-radius:20px; padding:16px; }
     #cartOverlay,#checkoutOverlay,#settingsOverlay,#orderSheet,#productSheet,#adminPrompt{ align-items:flex-end; }
@@ -103,7 +103,7 @@
 
     /* Sticky cart bar */
     #cartBar{
-      position:fixed;left:12px;right:12px;bottom:12px;display:block;align-items:center;justify-content:space-between;
+      position:fixed;left:12px;right:12px;bottom:12px;display:none;align-items:center;justify-content:space-between;
       gap:10px;padding:10px 12px;border-radius:14px;z-index:1000;
       -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));
       background:rgba(20,20,24,0.7);border:1px solid rgba(255,255,255,.08);
@@ -209,7 +209,7 @@
           <div style="flex:1">
             <div id="sheetPrice" class="price" style="font-size:18px;"></div>
             <div id="sheetStock" style="margin-top:6px;color:#c7c7cc;font-size:13px;">Stock: --</div>
-            <div id="sheetLowWarn" style="display:block;margin-top:6px;color:#ff6b6b;font-weight:600;font-size:13px;">Low stock</div>
+            <div id="sheetLowWarn" style="display:none;margin-top:6px;color:#ff6b6b;font-weight:600;font-size:13px;">Low stock</div>
           </div>
         </div>
         <div class="row-between" style="margin-top:10px;">
@@ -299,7 +299,7 @@
           </div>
         </div>
 
-        <div id="settingsAdmin" class="sheet-body" role="tabpanel" aria-labelledby="tabAdmin" style="display:block;">
+        <div id="settingsAdmin" class="sheet-body" role="tabpanel" aria-labelledby="tabAdmin" style="display:none;">
           <div style="margin-top:6px;">Admin password</div>
           <input id="adminPass" class="field" style="width:100%;padding:10px;border-radius:10px" type="password">
           <div class="actions" style="margin-top:12px;">
@@ -307,7 +307,7 @@
           </div>
 
           <!-- Admin area appears after unlock -->
-          <div id="adminArea" style="display:block; margin-top:16px;">
+          <div id="adminArea" style="display:none; margin-top:16px;">
             <div class="kpis">
               <div class="kpi"><div class="label">Open orders</div><div class="value" id="kpiOpen">0</div></div>
               <div class="kpi"><div class="label">Revenue (local)</div><div class="value" id="kpiRev">$0.00</div></div>
@@ -318,9 +318,9 @@
 
             <!-- Panels -->
             <div id="adminPanels">
-              <div id="adminStock"   class="admin-list" style="display:block;"></div>
-              <div id="adminOrders"  class="admin-list" style="display:block;"></div>
-              <div id="adminHeat"    class="admin-list" style="display:block;">
+              <div id="adminStock"   class="admin-list" style="display:none;"></div>
+              <div id="adminOrders"  class="admin-list" style="display:none;"></div>
+              <div id="adminHeat"    class="admin-list" style="display:none;">
                 <div class="heat">
                   <div style="font-weight:700;margin-bottom:6px;">Orders Heat Map (7×24)</div>
                   <div class="heat-grid" id="heatGrid"></div>
@@ -333,8 +333,8 @@
                   </div>
                 </div>
               </div>
-              <div id="adminHistory" class="admin-list" style="display:block;"></div>
-              <div id="adminPromos"  class="admin-list" style="display:block;">
+              <div id="adminHistory" class="admin-list" style="display:none;"></div>
+              <div id="adminPromos"  class="admin-list" style="display:none;">
                 <div style="margin-bottom:8px;">Active promo pattern examples: <code>SAVE10</code>, <code>$3</code></div>
                 <div style="color:#c7c7cc;">(This simple demo reads codes at checkout; extend here to manage scheduled promos.)</div>
               </div>
@@ -361,6 +361,7 @@
     const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY)||'0')||0;
     if(cur < APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
   }catch{ localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION)); }
+  if('serviceWorker' in navigator){ window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js')); }
 
   /* ---------- Helpers ---------- */
   const $  = s => document.querySelector(s);
@@ -864,11 +865,11 @@
   }
   function setActiveSubtab(id){
     $$('.subtab').forEach(b => b.classList.toggle('active', b.dataset.sub === id));
-    $('#adminStock')?.setAttribute('style','display:block;');
-    $('#adminOrders')?.setAttribute('style','display:block;');
-    $('#adminHeat')?.setAttribute('style','display:block;');
-    $('#adminHistory')?.setAttribute('style','display:block;');
-    $('#adminPromos')?.setAttribute('style','display:block;');
+    $('#adminStock')?.setAttribute('style','display:none;');
+    $('#adminOrders')?.setAttribute('style','display:none;');
+    $('#adminHeat')?.setAttribute('style','display:none;');
+    $('#adminHistory')?.setAttribute('style','display:none;');
+    $('#adminPromos')?.setAttribute('style','display:none;');
     if(id==='stock')   $('#adminStock').style.display='';
     if(id==='orders')  $('#adminOrders').style.display='';
     if(id==='heat')    $('#adminHeat').style.display='';
@@ -1073,13 +1074,3 @@
 </body>
 </html>
 <!-- rebuild 1759556295 -->
-<script>(async()=>{
-  if("serviceWorker" in navigator){
-    try{
-      const regs=await navigator.serviceWorker.getRegistrations();
-      for(const r of regs){ await r.unregister(); }
-      if(window.caches){ const keys=await caches.keys(); for(const k of keys){ await caches.delete(k);} }
-      if(!location.search.includes("norefresh")){ location.replace(location.pathname+"?norefresh=1" ); }
-    }catch(e){ console.log("SW cleanup error",e); }
-  }
-})();</script>

@@ -361,6 +361,7 @@
     const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY)||'0')||0;
     if(cur < APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
   }catch{ localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION)); }
+  if('serviceWorker' in navigator){ window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js')); }
 
   /* ---------- Helpers ---------- */
   const $  = s => document.querySelector(s);
@@ -1073,13 +1074,3 @@
 </body>
 </html>
 <!-- rebuild 1759556295 -->
-<script>(async()=>{
-  if("serviceWorker" in navigator){
-    try{
-      const regs=await navigator.serviceWorker.getRegistrations();
-      for(const r of regs){ await r.unregister(); }
-      if(window.caches){ const keys=await caches.keys(); for(const k of keys){ await caches.delete(k);} }
-      if(!location.search.includes("norefresh")){ location.replace(location.pathname+"?norefresh=1" ); }
-    }catch(e){ console.log("SW cleanup error",e); }
-  }
-})();</script>
