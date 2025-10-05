@@ -90,3 +90,22 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 });
 </script>
+<!-- Cart Overlay -->
+<div id="cartOverlay" class="overlay" style="display:none;">
+  <div class="sheet" style="background:rgba(20,20,24,.95);padding:20px;border-radius:18px;max-width:380px;margin:auto;">
+    <div class="row-between" style="display:flex;justify-content:space-between;align-items:center;">
+      <h3>Your Cart</h3>
+      <button id="closeCart" style="background:none;border:none;color:#fff;font-size:18px;">✕</button>
+    </div>
+    <div id="cartContent" style="margin-top:12px;color:#c7c7cc;">Cart is empty</div>
+  </div>
+</div>
+
+<script>
+document.querySelector('#cartBtn')?.addEventListener('click',()=>{
+  document.querySelector('#cartOverlay').style.display='flex';
+});
+document.querySelector('#closeCart')?.addEventListener('click',()=>{
+  document.querySelector('#cartOverlay').style.display='none';
+});
+</script>
