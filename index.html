@@ -145,3 +145,82 @@
 </script>
 <!-- ===== /FitSnacks basic tabs & section shells ===== -->
 
+
+<!-- ===== Header menu with chevron ===== -->
+<style>
+  .site-header{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 16px; background:rgba(16,16,18,.85);
+    backdrop-filter:blur(8px); border-bottom:1px solid #2a2a2e;
+  }
+  .brand{font-weight:800; font-size:22px; letter-spacing:.2px; color:#b9c8ff}
+  .menu-toggle{
+    display:flex; align-items:center; gap:8px;
+    padding:8px 12px; border:1px solid #2a2a2e; border-radius:10px;
+    background:#1a1a1e; color:#cfcfd4; font-weight:600;
+  }
+  .chev{display:inline-block; transition:transform .15s ease}
+  .menu.open .chev{ transform:rotate(180deg); }
+
+  .menu-panel{
+    position:absolute; right:16px; top:56px; width:220px;
+    display:none; flex-direction:column; gap:8px;
+    padding:12px; background:rgba(24,24,28,.95);
+    border:1px solid #2a2a2e; border-radius:14px;
+    box-shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  .menu.open .menu-panel{ display:flex; }
+  /* reuse tab button styling */
+  .menu-panel .tab-btn{
+    padding:10px 12px; border:1px solid #2a2a2e; border-radius:10px;
+    background:#1a1a1e; color:#cfcfd4; font-weight:700; text-align:left;
+  }
+  .menu-panel .tab-btn.active{ outline:2px solid #6ea8ff; }
+
+  /* Hide the old inline tabs if present */
+  nav.tabs{ display:none !important; }
+</style>
+
+<header class="site-header">
+  <div class="brand">FitSnacks</div>
+  <div class="menu" id="headerMenu">
+    <button class="menu-toggle" id="menuToggle" aria-haspopup="true" aria-expanded="false">
+      Sections <span class="chev">▾</span>
+    </button>
+    <div class="menu-panel" role="menu" aria-label="FitSnacks sections">
+      <button class="tab-btn active" data-view="home"  role="menuitem">Home</button>
+      <button class="tab-btn"        data-view="menu"  role="menuitem">Menu</button>
+      <button class="tab-btn"        data-view="cart"  role="menuitem">Cart</button>
+    </div>
+  </div>
+</header>
+
+<script>
+  // Header chevron menu toggling
+  (function(){
+    const menu = document.getElementById('headerMenu');
+    const toggle = document.getElementById('menuToggle');
+
+    function closeMenu(){ menu.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); }
+    function openMenu(){ menu.classList.add('open'); toggle.setAttribute('aria-expanded','true'); }
+
+    toggle.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      menu.classList.contains('open') ? closeMenu() : openMenu();
+    });
+    // close on outside click or ESC
+    window.addEventListener('click', closeMenu);
+    window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeMenu(); });
+
+    // Keep tab highlight synced with current view
+    const btns = Array.from(menu.querySelectorAll('.tab-btn'));
+    function setActive(view){
+      btns.forEach(b => b.classList.toggle('active', b.dataset.view===view));
+    }
+    // Hook into existing tab switcher if present:
+    window.addEventListener('fs:view-changed', (ev)=> setActive(ev.detail));
+  })();
+</script>
+<!-- ===== /Header menu with chevron ===== -->
+
