@@ -146,3 +146,63 @@ document.addEventListener('DOMContentLoaded', () => {
   overlay?.addEventListener('click', (e) => { if (e.target === overlay) overlay.style.display = 'none'; });
 });
 </script>
+<!-- CART-UNLINK-HARDEN -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // 1) Find an existing CART element (by id or text) or create one
+  let btn = document.querySelector('#cartBtn');
+  if (!btn) {
+    // try to find a button that says CART
+    btn = Array.from(document.querySelectorAll('button, a')).find(el => (el.textContent||'').trim().toUpperCase() === 'CART');
+  }
+  if (!btn) {
+    // create one and put it near the search input or header
+    const host = document.querySelector('header, .header') || document.body;
+    btn = document.createElement('button');
+    btn.textContent = 'CART';
+    host.appendChild(btn);
+  }
+
+  // 2) Replace the node to strip ALL existing listeners/classes/datasets from old code
+  const clean = btn.cloneNode(true);
+  clean.id = 'cartBtn';
+  clean.textContent = 'CART';
+  clean.type = 'button';                       // never submit a form
+  clean.className = 'cart-btn';                // drop any search-related classes
+  clean.removeAttribute('href');
+  clean.removeAttribute('data-*');
+  clean.setAttribute('aria-label','Open cart');
+  // basic styling if needed
+  if (!clean.style || !clean.style.padding) {
+    clean.style.cssText = 'margin-left:8px;padding:8px 12px;border-radius:10px;border:1px solid #2a2a30;background:#18181d;color:#fff;cursor:pointer;';
+  }
+  btn.replaceWith(clean);
+
+  // 3) Make sure CART is not inside a search <form>. If it is, move it right after the form.
+  const form = clean.closest('form');
+  if (form) form.after(clean);
+
+  // 4) Kill any bubbling that search code might rely on
+  clean.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+    const overlay = document.querySelector('#cartOverlay');
+    if (overlay) overlay.style.display = 'flex';
+  });
+
+  // 5) Close behavior (X button & backdrop)
+  const overlay = document.querySelector('#cartOverlay');
+  document.querySelector('#closeCart')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    overlay && (overlay.style.display = 'none');
+  });
+  overlay?.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.style.display = 'none';
+  });
+
+  // 6) Optional: disable search form default submit so Enter doesn’t reload
+  const searchForm = document.querySelector('header form, .header form, form#searchForm');
+  if (searchForm) searchForm.addEventListener('submit', (e) => e.preventDefault());
+});
+</script>
