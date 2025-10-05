@@ -39,7 +39,7 @@
       <!-- Search bar only (no FitSnacks text) -->
       <form class="search" role="search" aria-label="Search snacks" onsubmit="return handleSearch(event)">
         <input id="q" name="q" type="search" placeholder="Search snacks…" autocomplete="off" />
-        <button type="submit" aria-label="Search" onclick="showCart()">CART</button>
+        <button type="submit" aria-label="Search" onclick="showCart()" onclick="showCart()">CART</button>
       </form>
     </div>
   </header>
@@ -77,7 +77,7 @@
 <div id="cartModal" style="position:fixed;inset:0;display:none;z-index:9999;">
   <div onclick="hideCart()" style="position:absolute;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);"></div>
   <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-              width:90%;max-width:520px;background:#111827;color:#fff;border-radius:16px;
+              width:90%;max-width:420px;background:#111827;color:#fff;border-radius:16px;
               padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.6);">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
       <h2 style="margin:0;font-size:22px;">Your Cart</h2>
@@ -88,6 +88,22 @@
 </div>
 <script>function showCart(){var m=document.getElementById("cartModal"); if(m){m.style.display="block";}}
 function hideCart(){var m=document.getElementById("cartModal"); if(m){m.style.display="none";}}</script>
+<script>
+(function(){
+  function q(id){return document.getElementById(id);}
+  window.showCart = function(){ var m=q("cartModal"); if(m){ m.style.display="block"; }};
+  window.hideCart = function(){ var m=q("cartModal"); if(m){ m.style.display="none"; }};
+  window.addEventListener("DOMContentLoaded", function(){
+    // If multiple #cartModal exist, keep the first and remove the rest
+    var mods = document.querySelectorAll("#cartModal");
+    for (var i=1;i<mods.length;i++){ mods[i].remove(); }
+    // Always start hidden
+    if (mods[0]) { mods[0].style.display="none"; }
+    // Close on ESC
+    document.addEventListener("keydown", function(e){ if(e.key==="Escape"){ hideCart(); }});
+  });
+})();
+</script>
 </body>
 </html>
 <script>
