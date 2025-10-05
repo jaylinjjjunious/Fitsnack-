@@ -7,28 +7,48 @@
   <meta name="theme-color" content="#0b0b0d">
   <link rel="manifest" href="manifest.webmanifest">
   <style>
-    :root { --bg:#0b0b0d; --text:#e9e9e9; --accent:#6ea8fe; }
+    :root { --bg:#0b0b0d; --text:#e9e9e9; --muted:#cfcfd6; --accent:#6ea8fe; --glass:rgba(30,30,36,.55); --line:rgba(255,255,255,.08); }
     html,body{height:100%}
-    body{margin:0;background:var(--bg);color:var(--text);font:16px system-ui, -apple-system, Segoe UI, Roboto, sans-serif;display:flex;flex-direction:column}
-    header{position:sticky;top:0;z-index:10;backdrop-filter:saturate(140%) blur(8px);background:rgba(16,16,20,.55);border-bottom:1px solid rgba(255,255,255,.06)}
-    .bar{max-width:960px;margin:0 auto;padding:14px 16px;display:flex;align-items:center;gap:12px}
-    .brand{font-weight:700;letter-spacing:.2px;color:var(--accent)}
+    body{margin:0;background:var(--bg);color:var(--text);font:16px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:flex;flex-direction:column}
+
+    /* Header */
+    header{position:sticky;top:0;z-index:10;backdrop-filter:saturate(140%) blur(8px);background:rgba(16,16,20,.55);border-bottom:1px solid var(--line)}
+    .bar{max-width:960px;margin:0 auto;padding:10px 12px;display:flex;align-items:center;gap:12px}
+    form.search{flex:1;display:flex;align-items:center;gap:8px}
+    .search input[type="search"]{
+      width:100%; padding:10px 14px; border-radius:999px; border:1px solid var(--line);
+      background:var(--glass); color:var(--text); outline:none;
+    }
+    .search button{
+      border:1px solid var(--line); background:var(--glass); color:var(--text);
+      border-radius:999px; padding:10px 14px; cursor:pointer;
+    }
+
+    /* Layout */
     main{flex:1;display:flex;justify-content:center;align-items:flex-start}
     .wrap{width:100%;max-width:960px;padding:28px 16px}
-    .card{background:rgba(30,30,36,.55);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:28px;box-shadow:0 6px 24px rgba(0,0,0,.28)}
+    .card{background:var(--glass);border:1px solid var(--line);border-radius:14px;padding:28px;box-shadow:0 6px 24px rgba(0,0,0,.28)}
     h1{margin:0 0 8px;font-size:28px}
-    p{margin:0;color:#cfcfd6}
+    p{margin:0;color:var(--muted)}
     footer{opacity:.7;text-align:center;padding:24px 8px}
   </style>
 </head>
 <body>
-  <header><div class="bar"><div class="brand">FitSnacks</div></div></header>
+  <header>
+    <div class="bar">
+      <!-- Search bar only (no FitSnacks text) -->
+      <form class="search" role="search" aria-label="Search snacks" onsubmit="return handleSearch(event)">
+        <input id="q" name="q" type="search" placeholder="Search snacks…" autocomplete="off" />
+        <button type="submit" aria-label="Search">Search</button>
+      </form>
+    </div>
+  </header>
 
   <main>
     <div class="wrap">
       <section class="card">
         <h1>Clean start</h1>
-        <p>No tabs/navigation rendered. We’ll add features one by one.</p>
+        <p>Header now has a search bar. No brand text is shown.</p>
       </section>
     </div>
   </main>
@@ -36,7 +56,16 @@
   <footer>© 2025 FitSnacks</footer>
 
   <script>
-    console.log('FitSnacks base loaded');
+    function handleSearch(e){
+      e.preventDefault();
+      const q = (document.getElementById('q')?.value || '').trim();
+      if(!q){ alert('Type something to search.'); return false; }
+      console.log('Search submitted:', q);
+      // TODO: replace with real search later
+      alert('Searching for: ' + q);
+      return false;
+    }
+
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js')
