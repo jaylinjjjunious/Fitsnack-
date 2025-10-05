@@ -1,6 +1,9 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta name="theme-color" content="#0b0b0d">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>FitSnacks</title>
@@ -34,3 +37,12 @@
   <button onclick="alert('Base page is working!')">Test Button</button>
 </body>
 </html>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").then(reg => {
+      console.log("✅ Service Worker registered:", reg.scope);
+    }).catch(err => console.warn("SW registration failed:", err));
+  });
+}
+</script>
