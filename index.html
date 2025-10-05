@@ -396,3 +396,24 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 </script>
 <!-- /Force CART modal to enlarge + center -->
+<style>
+.cart-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(30, 30, 35, 0.95);
+  color: white;
+  padding: 20px 30px;
+  border-radius: 18px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  width: 80%;
+  max-width: 400px;
+  text-align: center;
+  z-index: 9999;
+  display: none;
+}
+.cart-modal.active {
+  display: block;
+}
+</style>
