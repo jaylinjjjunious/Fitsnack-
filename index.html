@@ -109,3 +109,40 @@ document.querySelector('#closeCart')?.addEventListener('click',()=>{
   document.querySelector('#cartOverlay').style.display='none';
 });
 </script>
+<!-- CART-INDEPENDENT-BUTTON v1 -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Prevent search form submits from hijacking clicks
+  const searchForm = document.querySelector('header form, .header form, form#searchForm');
+  if (searchForm) searchForm.addEventListener('submit', e => e.preventDefault());
+
+  const searchInput = document.querySelector('#search, input[type="search"]');
+  if (searchInput) {
+    searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
+  }
+
+  // Ensure a standalone CART button exists and is NOT a submit
+  let cartBtn = document.querySelector('#cartBtn');
+  if (!cartBtn) {
+    cartBtn = document.createElement('button');
+    cartBtn.id = 'cartBtn';
+    cartBtn.type = 'button';
+    cartBtn.textContent = 'CART';
+    cartBtn.style.cssText = 'margin-left:8px;padding:8px 12px;border-radius:10px;border:1px solid #2a2a30;background:#18181d;color:#fff;cursor:pointer;';
+    // Try to place it next to the search input; otherwise put it in header
+    const target = (searchInput && searchInput.parentElement) || document.querySelector('header, .header') || document.body;
+    target.appendChild(cartBtn);
+  } else {
+    cartBtn.type = 'button'; // force non-submit behavior
+    if (!cartBtn.textContent.trim()) cartBtn.textContent = 'CART';
+  }
+
+  // Wire open/close
+  const overlay = document.querySelector('#cartOverlay');
+  cartBtn.addEventListener('click', () => { if (overlay) overlay.style.display = 'flex'; });
+  document.querySelector('#closeCart')?.addEventListener('click', () => { if (overlay) overlay.style.display = 'none'; });
+
+  // Close overlay when clicking backdrop
+  overlay?.addEventListener('click', (e) => { if (e.target === overlay) overlay.style.display = 'none'; });
+});
+</script>
