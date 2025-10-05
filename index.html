@@ -349,3 +349,50 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 </style>
 <!-- /CART MODAL OVERRIDES -->
+<!-- Force CART modal to enlarge + center -->
+<style>
+  #cartPanel,
+  .cart-panel,
+  [data-cart-panel] {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90% !important;
+    max-width: 500px !important;
+    height: auto !important;
+    min-height: 280px !important;
+    background: #111 !important;
+    border-radius: 22px !important;
+    padding: 30px !important;
+    z-index: 9999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    box-shadow: 0 20px 50px rgba(0,0,0,.7) !important;
+  }
+
+  #cartPanel h3,
+  .cart-panel h3,
+  [data-cart-panel] h3 {
+    font-size: 22px !important;
+    margin-bottom: 15px !important;
+  }
+</style>
+
+<script>
+  // Force real-time centering when opened
+  document.addEventListener("DOMContentLoaded", () => {
+    const cart = document.querySelector("#cartPanel, .cart-panel, [data-cart-panel]");
+    if (cart) {
+      const observer = new MutationObserver(() => {
+        cart.style.top = "50%";
+        cart.style.left = "50%";
+        cart.style.transform = "translate(-50%, -50%)";
+      });
+      observer.observe(cart, { attributes: true, attributeFilter: ["style"] });
+    }
+  });
+</script>
+<!-- /Force CART modal to enlarge + center -->
