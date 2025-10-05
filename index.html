@@ -259,3 +259,50 @@ document.addEventListener('DOMContentLoaded', () => {
 })();
 </script>
 <!-- === /CART MINI-PANEL === -->
+<!-- === UPDATE CART STYLES: CENTERED MODAL === -->
+<style>
+  #cartPanel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 92%;
+    max-width: 460px;
+    background: #111;
+    border: 1px solid #2a2a2e;
+    border-radius: 20px;
+    box-shadow: 0 25px 60px rgba(0,0,0,.6);
+    padding: 24px;
+    display: none;
+    z-index: 10000;
+    animation: fadeIn .25s ease;
+  }
+  #cartPanel.show {
+    display: block;
+  }
+  #cartPanel h3 {
+    margin: 0 0 12px;
+    font-size: 20px;
+    text-align: center;
+  }
+  #cartClose {
+    appearance: none;
+    border: 0;
+    background: #222;
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 12px;
+    display: block;
+    margin: 16px auto 0;
+  }
+  #cartEmpty {
+    opacity: .8;
+    text-align: center;
+    margin-top: 20px;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -46%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+  }
+</style>
+<!-- === /UPDATE CART STYLES === -->
