@@ -80,3 +80,68 @@
     });
   }
 </script>
+
+<!-- ===== FitSnacks basic tabs & section shells ===== -->
+<style>
+  nav.tabs{display:flex; gap:12px; padding:12px 16px; position:sticky; top:0;
+           background:rgba(16,16,18,.8); backdrop-filter:blur(8px);
+           border-bottom:1px solid #2a2a2e; z-index:5}
+  .tab-btn{padding:8px 14px; border:1px solid #2a2a2e; border-radius:10px;
+           background:#1a1a1e; color:#cfcfd4; font-weight:600}
+  .tab-btn.active{outline:2px solid #6ea8ff}
+  main{max-width:900px; margin:24px auto; padding:0 16px}
+  .view{display:none}
+  .view.active{display:block}
+  .card{background:rgba(24,24,28,.6); border:1px solid #2a2a2e; border-radius:16px; padding:18px}
+</style>
+
+<nav class="tabs" aria-label="FitSnacks sections">
+  <button class="tab-btn active" data-view="home">Home</button>
+  <button class="tab-btn" data-view="menu">Menu</button>
+  <button class="tab-btn" data-view="cart">Cart</button>
+</nav>
+
+<main id="app-views">
+  <section id="view-home" class="view active">
+    <div class="card">
+      <h2>Welcome 👋</h2>
+      <p>This is the FitSnacks starter shell. Use the tabs above to navigate. We’ll add real data and actions next.</p>
+    </div>
+  </section>
+
+  <section id="view-menu" class="view">
+    <div class="card">
+      <h2>Menu</h2>
+      <p>Coming next: simple product list with “Add to cart”.</p>
+    </div>
+  </section>
+
+  <section id="view-cart" class="view">
+    <div class="card">
+      <h2>Your Cart</h2>
+      <p>Nothing here yet. We’ll wire this up after the menu.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Lightweight tab switcher (no frameworks)
+  (function(){
+    const btns = Array.from(document.querySelectorAll('.tab-btn'));
+    const views = {
+      home: document.getElementById('view-home'),
+      menu: document.getElementById('view-menu'),
+      cart: document.getElementById('view-cart'),
+    };
+    function show(view){
+      Object.values(views).forEach(v => v.classList.remove('active'));
+      views[view]?.classList.add('active');
+      btns.forEach(b => b.classList.toggle('active', b.dataset.view===view));
+    }
+    btns.forEach(b => b.addEventListener('click', () => show(b.dataset.view)));
+    // default
+    show('home');
+  })();
+</script>
+<!-- ===== /FitSnacks basic tabs & section shells ===== -->
+
