@@ -306,3 +306,46 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 </style>
 <!-- === /UPDATE CART STYLES === -->
+<!-- CART MODAL OVERRIDES -->
+<style>
+  /* Target multiple possibilities just in case the id/class differs */
+  #cartPanel,
+  .cart-panel,
+  [data-cart-panel] {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+
+    width: 92% !important;
+    max-width: 480px !important;
+    background: #111 !important;
+    border: 1px solid #2a2a2e !important;
+    border-radius: 20px !important;
+    box-shadow: 0 25px 60px rgba(0,0,0,.6) !important;
+    padding: 24px !important;
+    z-index: 10000 !important;
+
+    /* Kill any previous bottom/right/inset rules */
+    bottom: auto !important;
+    right: auto !important;
+    inset: auto !important;
+  }
+
+  #cartPanel h3,
+  .cart-panel h3,
+  [data-cart-panel] h3 {
+    margin: 0 0 12px !important;
+    font-size: 20px !important;
+    text-align: center !important;
+  }
+
+  #cartEmpty,
+  .cart-empty,
+  [data-cart-empty] {
+    opacity: .8 !important;
+    text-align: center !important;
+    margin-top: 20px !important;
+  }
+</style>
+<!-- /CART MODAL OVERRIDES -->
