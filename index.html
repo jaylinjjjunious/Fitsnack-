@@ -206,3 +206,56 @@ document.addEventListener('DOMContentLoaded', () => {
   if (searchForm) searchForm.addEventListener('submit', (e) => e.preventDefault());
 });
 </script>
+<!-- === CART MINI-PANEL (standalone) === -->
+<style>
+  #cartPanel{position:fixed;right:12px;top:64px;width:88%;max-width:420px;background:#111;border:1px solid #2a2a2e;border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,.45);padding:16px;display:none;z-index:10000}
+  #cartPanel.show{display:block}
+  #cartPanel h3{margin:0 0 8px;font-size:18px}
+  #cartPanel .row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  #cartClose{appearance:none;border:0;background:#222;padding:8px 12px;border-radius:12px}
+  #cartEmpty{opacity:.7}
+</style>
+
+<div id="cartPanel" role="dialog" aria-label="Cart panel">
+  <div class="row">
+    <h3>Your cart</h3>
+    <button id="cartClose">Close</button>
+  </div>
+  <p id="cartEmpty">Cart is empty.</p>
+</div>
+
+<script>
+(function(){
+  // Find the CART button by its label, then give it an id and its own handler.
+  function findCartBtn(){
+    const els = Array.from(document.querySelectorAll('button, .btn, [role="button"]'));
+    return els.find(el => (el.textContent || '').trim().toUpperCase() === 'CART');
+  }
+  function openCart(e){
+    if(e){ e.preventDefault(); e.stopPropagation(); }
+    document.getElementById('cartPanel').classList.add('show');
+  }
+
+  const cartBtn = findCartBtn();
+  if (cartBtn){
+    cartBtn.id = 'cartBtn';
+    cartBtn.setAttribute('aria-controls','cartPanel');
+    // Use capture + stopPropagation so any header/search delegation won't fire.
+    cartBtn.addEventListener('click', openCart, true);
+  }
+
+  // Close button
+  document.getElementById('cartClose').addEventListener('click', function(e){
+    e.preventDefault();
+    document.getElementById('cartPanel').classList.remove('show');
+  });
+
+  // Clicks anywhere else close the panel but ignore clicks inside the panel or on CART.
+  document.addEventListener('click', function(ev){
+    const t = ev.target;
+    if (t && (t.id === 'cartBtn' || t.closest('#cartPanel'))) return;
+    document.getElementById('cartPanel').classList.remove('show');
+  }, true);
+})();
+</script>
+<!-- === /CART MINI-PANEL === -->
