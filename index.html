@@ -32,6 +32,17 @@
     p{margin:0;color:var(--muted)}
     footer{opacity:.7;text-align:center;padding:24px 8px}
   </style>
+<style id="cartModalOverrides">
+  /* Always start hidden */
+  #cartModal{display:none !important; position:fixed; inset:0; z-index:10000; 
+             align-items:center; justify-content:center; background:rgba(0,0,0,.5);}
+  /* When opened */
+  #cartModal.open{display:flex !important;}
+  /* Panel size: a bit smaller */
+  #cartModal .cart-panel{width:92vw; max-width:340px; border-radius:16px; 
+    background:#121214; color:#eee; padding:20px; box-shadow:0 10px 40px rgba(0,0,0,.35);}
+  #cartModal .close-btn{float:right; padding:6px 10px; border:1px solid #333; border-radius:10px;}
+</style>
 </head>
 <body>
   <header>
@@ -39,7 +50,7 @@
       <!-- Search bar only (no FitSnacks text) -->
       <form class="search" role="search" aria-label="Search snacks" onsubmit="return handleSearch(event)">
         <input id="q" name="q" type="search" placeholder="Search snacks…" autocomplete="off" />
-        <button type="submit" aria-label="Search" onclick="showCart()" onclick="showCart()">CART</button>
+        <button type="submit" aria-label="Search" onclick="showCart()" onclick="showCart()" onclick="showCart()">CART</button>
       </form>
     </div>
   </header>
@@ -104,6 +115,28 @@ function hideCart(){var m=document.getElementById("cartModal"); if(m){m.style.di
   });
 })();
 </script>
+<script id="cartModalFix">(function(){
+  function $(s,root){return (root||document).querySelector(s);}
+  function $all(s,root){return Array.from((root||document).querySelectorAll(s));}
+  function modal(){return document.getElementById("cartModal");}
+  window.showCart=function(){ var m=modal(); if(!m) return; m.classList.add("open"); m.style.display="flex"; };
+  window.hideCart=function(){ var m=modal(); if(!m) return; m.classList.remove("open","show","visible"); m.style.display="none"; };
+  window.addEventListener("DOMContentLoaded", function(){
+    var mods=$all("#cartModal");
+    for (var i=1;i<mods.length;i++){ mods[i].remove(); }
+    var m=mods[0];
+    if(!m){ return; }
+    /* Strip any inline display or auto-open classes */
+    m.classList.remove("open","show","visible","active");
+    m.style.display="none";
+    /* Overlay click to close */
+    m.addEventListener("click", function(e){ if(e.target===m){ hideCart(); }});
+    /* Close buttons inside */
+    $all(".close-btn,[data-close]", m).forEach(function(btn){ btn.addEventListener("click", hideCart); });
+    /* ESC to close */
+    document.addEventListener("keydown", function(e){ if(e.key==="Escape") hideCart(); });
+  });
+})();</script>
 </body>
 </html>
 <script>
