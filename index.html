@@ -76,3 +76,17 @@
   </script>
 </body>
 </html>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const cartBtn = document.getElementById('cartBtn');
+  if (cartBtn) {
+    cartBtn.textContent = 'CART';
+    cartBtn.setAttribute('aria-label','Open cart');
+    cartBtn.addEventListener('click', function(){
+      const ov = document.getElementById('cartOverlay');
+      if (ov) ov.classList.add('show');
+      else alert('Cart overlay not found yet');
+    });
+  }
+});
+</script>
