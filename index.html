@@ -2,225 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>FitSnacks</title>
   <meta name="theme-color" content="#0b0b0d">
+  <link rel="manifest" href="manifest.webmanifest">
   <style>
-    :root {
-      --bg:#0b0b0d;
-      --text:#e9e9ec;
-      --accent:#6ea8fe;
-      --card:rgba(25,25,28,0.6);
-      --radius:18px;
-      --nav:#151518;
-    }
-    html,body {
-      margin:0; padding:0; height:100%;
-      font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background:var(--bg); color:var(--text);
-      display:flex; flex-direction:column;
-    }
-    header {
-      background:var(--nav);
-      padding:14px 20px;
-      text-align:center;
-      font-weight:600;
-      color:var(--accent);
-      font-size:1.2rem;
-      border-bottom:1px solid rgba(255,255,255,0.05);
-    }
-    main {
-      flex:1;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-    }
-    section {
-      background:var(--card);
-      padding:40px;
-      border-radius:var(--radius);
-      text-align:center;
-      box-shadow:0 8px 20px rgba(0,0,0,0.4);
-      max-width:340px;
-    }
-    p { opacity:0.8; line-height:1.5; }
-    footer {
-      text-align:center;
-      padding:10px;
-      font-size:13px;
-      opacity:0.6;
-    }
+    :root { --bg:#0b0b0d; --text:#e9e9e9; --accent:#6ea8fe; }
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);font:16px system-ui, -apple-system, Segoe UI, Roboto, sans-serif;display:flex;flex-direction:column}
+    header{position:sticky;top:0;z-index:10;backdrop-filter:saturate(140%) blur(8px);background:rgba(16,16,20,.55);border-bottom:1px solid rgba(255,255,255,.06)}
+    .bar{max-width:960px;margin:0 auto;padding:14px 16px;display:flex;align-items:center;gap:12px}
+    .brand{font-weight:700;letter-spacing:.2px;color:var(--accent)}
+    main{flex:1;display:flex;justify-content:center;align-items:flex-start}
+    .wrap{width:100%;max-width:960px;padding:28px 16px}
+    .card{background:rgba(30,30,36,.55);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:28px;box-shadow:0 6px 24px rgba(0,0,0,.28)}
+    h1{margin:0 0 8px;font-size:28px}
+    p{margin:0;color:#cfcfd6}
+    footer{opacity:.7;text-align:center;padding:24px 8px}
   </style>
 </head>
 <body>
-  <header>FitSnacks</header>
+  <header><div class="bar"><div class="brand">FitSnacks</div></div></header>
+
   <main>
-    <section>
-      <h2>Navigation Shell Ready</h2>
-      <p>We’ll now begin adding real content and JS next.</p>
-    </section>
+    <div class="wrap">
+      <section class="card">
+        <h1>Clean start</h1>
+        <p>No tabs/navigation rendered. We’ll add features one by one.</p>
+      </section>
+    </div>
   </main>
+
   <footer>© 2025 FitSnacks</footer>
+
+  <script>
+    console.log('FitSnacks base loaded');
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(r => console.log('SW registered:', r.scope))
+          .catch(err => console.warn('SW registration failed:', err));
+      });
+    }
+  </script>
 </body>
 </html>
-<script>
-  console.log("🟦 FitSnacks UI booting...");
-  document.addEventListener("DOMContentLoaded", () => {
-    console.log("✅ DOM ready. Initializing app shell.");
-    const footer = document.querySelector("footer");
-    if (footer) {
-      footer.insertAdjacentHTML("beforeend", "<br><span style=\"opacity:0.8\">JS loaded successfully</span>");
-    }
-  });
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("sw.js").then(reg => {
-        console.log("✅ Service Worker active:", reg.scope);
-      }).catch(err => console.warn("⚠️ SW registration failed:", err));
-    });
-  }
-</script>
-
-<!-- ===== FitSnacks basic tabs & section shells ===== -->
-<style>
-  nav.tabs{display:flex; gap:12px; padding:12px 16px; position:sticky; top:0;
-           background:rgba(16,16,18,.8); backdrop-filter:blur(8px);
-           border-bottom:1px solid #2a2a2e; z-index:5}
-  .tab-btn{padding:8px 14px; border:1px solid #2a2a2e; border-radius:10px;
-           background:#1a1a1e; color:#cfcfd4; font-weight:600}
-  .tab-btn.active{outline:2px solid #6ea8ff}
-  main{max-width:900px; margin:24px auto; padding:0 16px}
-  .view{display:none}
-  .view.active{display:block}
-  .card{background:rgba(24,24,28,.6); border:1px solid #2a2a2e; border-radius:16px; padding:18px}
-</style>
-
-<nav class="tabs" aria-label="FitSnacks sections">
-  <button class="tab-btn active" data-view="home">Home</button>
-  <button class="tab-btn" data-view="menu">Menu</button>
-  <button class="tab-btn" data-view="cart">Cart</button>
-</nav>
-
-<main id="app-views">
-  <section id="view-home" class="view active">
-    <div class="card">
-      <h2>Welcome 👋</h2>
-      <p>This is the FitSnacks starter shell. Use the tabs above to navigate. We’ll add real data and actions next.</p>
-    </div>
-  </section>
-
-  <section id="view-menu" class="view">
-    <div class="card">
-      <h2>Menu</h2>
-      <p>Coming next: simple product list with “Add to cart”.</p>
-    </div>
-  </section>
-
-  <section id="view-cart" class="view">
-    <div class="card">
-      <h2>Your Cart</h2>
-      <p>Nothing here yet. We’ll wire this up after the menu.</p>
-    </div>
-  </section>
-</main>
-
-<script>
-  // Lightweight tab switcher (no frameworks)
-  (function(){
-    const btns = Array.from(document.querySelectorAll('.tab-btn'));
-    const views = {
-      home: document.getElementById('view-home'),
-      menu: document.getElementById('view-menu'),
-      cart: document.getElementById('view-cart'),
-    };
-    function show(view){
-      Object.values(views).forEach(v => v.classList.remove('active'));
-      views[view]?.classList.add('active');
-      btns.forEach(b => b.classList.toggle('active', b.dataset.view===view));
-    }
-    btns.forEach(b => b.addEventListener('click', () => show(b.dataset.view)));
-    // default
-    show('home');
-  })();
-</script>
-<!-- ===== /FitSnacks basic tabs & section shells ===== -->
-
-
-<!-- ===== Header menu with chevron ===== -->
-<style>
-  .site-header{
-    position:sticky; top:0; z-index:10;
-    display:flex; align-items:center; justify-content:space-between;
-    padding:12px 16px; background:rgba(16,16,18,.85);
-    backdrop-filter:blur(8px); border-bottom:1px solid #2a2a2e;
-  }
-  .brand{font-weight:800; font-size:22px; letter-spacing:.2px; color:#b9c8ff}
-  .menu-toggle{
-    display:flex; align-items:center; gap:8px;
-    padding:8px 12px; border:1px solid #2a2a2e; border-radius:10px;
-    background:#1a1a1e; color:#cfcfd4; font-weight:600;
-  }
-  .chev{display:inline-block; transition:transform .15s ease}
-  .menu.open .chev{ transform:rotate(180deg); }
-
-  .menu-panel{
-    position:absolute; right:16px; top:56px; width:220px;
-    display:none; flex-direction:column; gap:8px;
-    padding:12px; background:rgba(24,24,28,.95);
-    border:1px solid #2a2a2e; border-radius:14px;
-    box-shadow:0 10px 30px rgba(0,0,0,.35);
-  }
-  .menu.open .menu-panel{ display:flex; }
-  /* reuse tab button styling */
-  .menu-panel .tab-btn{
-    padding:10px 12px; border:1px solid #2a2a2e; border-radius:10px;
-    background:#1a1a1e; color:#cfcfd4; font-weight:700; text-align:left;
-  }
-  .menu-panel .tab-btn.active{ outline:2px solid #6ea8ff; }
-
-  /* Hide the old inline tabs if present */
-  nav.tabs{ display:none !important; }
-</style>
-
-<header class="site-header">
-  <div class="brand">FitSnacks</div>
-  <div class="menu" id="headerMenu">
-    <button class="menu-toggle" id="menuToggle" aria-haspopup="true" aria-expanded="false">
-      Sections <span class="chev">▾</span>
-    </button>
-    <div class="menu-panel" role="menu" aria-label="FitSnacks sections">
-      <button class="tab-btn active" data-view="home"  role="menuitem">Home</button>
-      <button class="tab-btn"        data-view="menu"  role="menuitem">Menu</button>
-      <button class="tab-btn"        data-view="cart"  role="menuitem">Cart</button>
-    </div>
-  </div>
-</header>
-
-<script>
-  // Header chevron menu toggling
-  (function(){
-    const menu = document.getElementById('headerMenu');
-    const toggle = document.getElementById('menuToggle');
-
-    function closeMenu(){ menu.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); }
-    function openMenu(){ menu.classList.add('open'); toggle.setAttribute('aria-expanded','true'); }
-
-    toggle.addEventListener('click', (e)=>{
-      e.stopPropagation();
-      menu.classList.contains('open') ? closeMenu() : openMenu();
-    });
-    // close on outside click or ESC
-    window.addEventListener('click', closeMenu);
-    window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeMenu(); });
-
-    // Keep tab highlight synced with current view
-    const btns = Array.from(menu.querySelectorAll('.tab-btn'));
-    function setActive(view){
-      btns.forEach(b => b.classList.toggle('active', b.dataset.view===view));
-    }
-    // Hook into existing tab switcher if present:
-    window.addEventListener('fs:view-changed', (ev)=> setActive(ev.detail));
-  })();
-</script>
-<!-- ===== /Header menu with chevron ===== -->
-
