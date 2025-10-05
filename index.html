@@ -1,48 +1,45 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta name="theme-color" content="#0b0b0d">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>FitSnacks</title>
-  <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#0b0b0d">
   <style>
+    :root {
+      --bg:#0b0b0d;
+      --text:#e9e9ec;
+      --accent:#6ea8fe;
+      --card:rgba(25,25,28,0.6);
+      --radius:18px;
+    }
     html,body {
       margin:0;
       padding:0;
       height:100%;
-      background:#0b0b0d;
-      color:#e9e9ec;
-      font-family:-apple-system,BlinkMacSystemFont,sans-serif;
+      font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background:var(--bg);
+      color:var(--text);
       display:flex;
-      flex-direction:column;
-      align-items:center;
       justify-content:center;
+      align-items:center;
       text-align:center;
     }
-    h1 { font-size:2em; color:#6ea8fe; }
-    p { color:#aaa; max-width:300px; }
-    button {
-      background:#6ea8fe; color:white; border:none;
-      padding:10px 20px; border-radius:12px; margin-top:20px;
+    main {
+      padding:40px;
+      border-radius:var(--radius);
+      background:var(--card);
+      max-width:340px;
+      box-shadow:0 8px 20px rgba(0,0,0,0.4);
     }
+    h1 { color:var(--accent); font-size:1.8rem; }
+    p { opacity:0.8; line-height:1.4; }
   </style>
 </head>
 <body>
-  <h1>FitSnacks</h1>
-  <p>Site is rebuilding cleanly. Once confirmed working, we’ll reattach scripts and assets.</p>
-  <button onclick="alert('Base page is working!')">Test Button</button>
+  <main>
+    <h1>FitSnacks</h1>
+    <p>Base UI loaded successfully.<br>Next step: reattach navigation and app logic.</p>
+  </main>
 </body>
 </html>
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js").then(reg => {
-      console.log("✅ Service Worker registered:", reg.scope);
-    }).catch(err => console.warn("SW registration failed:", err));
-  });
-}
-</script>
