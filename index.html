@@ -37,11 +37,6 @@
     </form>
   </header>
 
-  <main>
-    <h1>Hello</h1>
-    <p>Your header has a working search bar (no page reload). Hook it up later by replacing the <code>onsubmit</code> with your logic.</p>
-    <p>Scroll to confirm the header stays put. No sticky cart bar was added.</p>
-  </main>
   <div class="overlay" id="overlay">
     <section class="sheet" id="cartSheet" role="dialog" aria-modal="true">
       <header class="sheet-head">
@@ -53,5 +48,6 @@
   </div>
   <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v21-patch</div>
   <script>(function(){var overlay=document.getElementById("overlay"),openBtn=document.getElementById("cartBtn"),closeBtn=document.getElementById("closeBtn");function op(){document.body.classList.add("lock");overlay.classList.add("show");}function cl(){overlay.classList.remove("show");document.body.classList.remove("lock");}openBtn&&openBtn.addEventListener("click",op);closeBtn&&closeBtn.addEventListener("click",cl);overlay&&overlay.addEventListener("click",function(e){if(e.target===overlay)cl();});window.addEventListener("keydown",function(e){if(e.key==="Escape")cl();});})();</script>
+  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v22-clean</div>
 </body>
 </html>
