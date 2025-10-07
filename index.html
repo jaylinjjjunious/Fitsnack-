@@ -5,36 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title></title>
   <meta name="theme-color" content="#0b0b0d">
-  <!-- v25-restore -->
+  <!-- v26-restore -->
   <style>
-    :root{--bg:#0b0b0d;--text:#e9e9ec;}
+    :root{
+      --bg:#0b0b0d; --text:#e9e9ec;
+      /* keep the right stop so the bar ends before the white line */
+      --right-stop:120px;
+    }
     html,body{
       margin:0;height:100%;
-      background:var(--bg);
-      color:var(--text);
+      background:var(--bg);color:var(--text);
       font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif;
     }
-    .hdr{
-      padding:10px 0;
-      background:#0b0b0d;
-      position:sticky;
-      top:0;
-      z-index:1;
-    }
-    .search{
-      padding-left:max(0px, env(safe-area-inset-left));
-      padding-right:42px; /* leaves right stop like your photo */
-    }
+    .hdr{padding:10px 0;background:#0b0b0d;position:sticky;top:0;z-index:1;}
+    /* flush LEFT, hard stop on RIGHT (like your working v19) */
+    .search{margin-left:max(0px, env(safe-area-inset-left));}
     .search input{
-      width:100%;
-      border:0;
-      outline:0;
-      padding:8px 12px;
-      color:#fff;
-      background:rgba(255,255,255,.1);
-      border-radius:20px;
-      font-size:.95em;
-      display:block;
+      width:calc(
+        100vw
+        - max(0px, env(safe-area-inset-left))
+        - ( max(0px, env(safe-area-inset-right)) + var(--right-stop) )
+      );
+      display:block;border:0;outline:0;padding:8px 12px;
+      color:#fff;background:rgba(255,255,255,.12);border-radius:20px;font-size:.95em;
+      -webkit-appearance:none;appearance:none;
     }
   </style>
 </head>
@@ -44,7 +38,6 @@
       <input type="search" name="q" placeholder="Search…" autocomplete="off" enterkeyhint="search">
     </form>
   </header>
-
-  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v25-restore</div>
+  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v26-restore</div>
 </body>
 </html>
