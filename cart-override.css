@@ -1,0 +1,18 @@
+/* Stronger rules to beat any earlier styles */
+#cartDialog.cart-dialog{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(320px, 60vw, 420px);
+  max-height: 60vh;
+  border-radius: 16px;
+  z-index: 1000;
+}
+#cartBackdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(2px);
+  z-index: 999;
+}
