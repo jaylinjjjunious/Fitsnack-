@@ -500,3 +500,51 @@ document.addEventListener('DOMContentLoaded', () => {
   z-index:999 !important;
 }
 </style>
+<!-- v:cart-fix-5 -->
+<style>
+  /* Resize + center the REAL cart dialog */
+  #cartDialog{
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%,-50%) !important;
+    width: clamp(320px, 55vw, 420px) !important;  /* a bit smaller */
+    max-height: 55vh !important;                  /* a bit smaller */
+    border-radius: 16px !important;
+    z-index: 1000 !important;
+  }
+  #cartBackdrop{
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0,0,0,.55) !important;
+    backdrop-filter: blur(2px) !important;
+    z-index: 999 !important;
+  }
+</style>
+
+<script>
+/* Kill any legacy cart UIs and stop auto-open */
+(function(){
+  const keep = new Set(['cartDialog','cartBackdrop','cartBtn','cartClose']);
+  // Hide any old cart elements that might be stuck on screen
+  document.querySelectorAll('[id*="cart"]').forEach(el=>{
+    if(!keep.has(el.id)) el.style.display = 'none';
+  });
+  // Ensure our real cart is hidden by default
+  const dialog = document.getElementById('cartDialog');
+  const backdrop = document.getElementById('cartBackdrop');
+  if (dialog) dialog.hidden = true;
+  if (backdrop) backdrop.hidden = true;
+
+  // Remove ANY accidental auto-open calls that might have slipped in
+  // (If some inline script called openCart(), this prevents it from running again)
+  window.openCart = window.openCart || function(){ 
+    if (!dialog || !backdrop) return;
+    backdrop.hidden = false; dialog.hidden = false; document.body.style.overflow = 'hidden';
+  };
+  window.closeCart = window.closeCart || function(){
+    if (!dialog || !backdrop) return;
+    dialog.hidden = true; backdrop.hidden = true; document.body.style.overflow = '';
+  };
+})();
+</script>
