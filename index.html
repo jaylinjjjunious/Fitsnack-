@@ -78,3 +78,60 @@ O&&O.addEventListener(click,function(e){if(e.target===O) close();});
 window.addEventListener(keydown,function(e){if(e.key===Escape) close();});})();</script>
 </body>
 </html>
+<!-- MODAL START v29-modal -->
+<style>
+  /* mini cart modal */
+  .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:saturate(1.2) blur(4px);z-index:20;}
+  .overlay.show{display:flex;}
+  .sheet{width:min(88vw,420px);max-height:72vh;background:#16161a;color:#e9e9ec;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.45);display:flex;flex-direction:column;overflow:hidden;transform:translateY(10px);opacity:0;transition:transform .18s ease,opacity .18s ease;}
+  .overlay.show .sheet{transform:translateY(0);opacity:1;}
+  .sheet-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#1c1c21;border-bottom:1px solid rgba(255,255,255,.06);}
+  .sheet-title{font-weight:600;}
+  .sheet-close{border:0;border-radius:12px;padding:6px 10px;background:rgba(255,255,255,.12);color:#fff;font-size:14px;}
+  .sheet-body{padding:14px;overflow:auto;}
+  body.lock{overflow:hidden;}
+</style>
+
+<div class="overlay" id="overlay" aria-hidden="true">
+  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+    <header class="sheet-head">
+      <div class="sheet-title" id="cartTitle">Your Cart</div>
+      <button class="sheet-close" id="closeBtn" type="button">Close</button>
+    </header>
+    <div class="sheet-body" tabindex="0">
+      <p>Mini cart page. Centered. Medium size.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  var overlay=document.getElementById('overlay');
+  var openBtn=document.querySelector('.cart');   // the right-side cart button we added
+  var closeBtn=document.getElementById('closeBtn');
+  var lastFocus=null;
+
+  function openSheet(){
+    if(!overlay) return;
+    lastFocus=document.activeElement;
+    document.body.classList.add('lock');
+    overlay.classList.add('show');
+    overlay.setAttribute('aria-hidden','false');
+    setTimeout(function(){ (document.querySelector('.sheet-body')||overlay).focus(); },0);
+  }
+  function closeSheet(){
+    overlay.classList.remove('show');
+    overlay.setAttribute('aria-hidden','true');
+    document.body.classList.remove('lock');
+    if(lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  if(openBtn){ openBtn.addEventListener('click', openSheet); }
+  if(closeBtn){ closeBtn.addEventListener('click', closeSheet); }
+  if(overlay){ overlay.addEventListener('click', function(e){ if(e.target===overlay) closeSheet(); }); }
+  window.addEventListener('keydown', function(e){ if(e.key==='Escape') closeSheet(); });
+})();
+</script>
+
+<div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v29-modal</div>
+<!-- MODAL END v29-modal -->
