@@ -65,7 +65,7 @@
     <form class="search" role="search" onsubmit="event.preventDefault();">
       <input type="search" name="q" placeholder="Search…" autocomplete="off" enterkeyhint="search">
     </form>
-    <button class="cart" aria-label="Cart">🛒</button>
+    <button class="cart" id="cartBtn" aria-label="Cart">🛒</button>
   </header>
   <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v26-restore</div>
   <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v27-cart</div>
@@ -79,28 +79,27 @@
     </section>
   </div>
   <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v28-modal</div>
-  <script>(function(){var O=document.getElementById(overlay),B=document.querySelector(.cart),C=null;
-function open(){document.body.classList.add(lock);O.classList.add(show);C=document.activeElement;setTimeout(function(){(document.querySelector(.sheet-body)||O).focus();},0);}
-function close(){O.classList.remove(show);document.body.classList.remove(lock);if(C) C.focus();}
-B&&B.addEventListener(click,open);
-document.getElementById(closeBtn)&&document.getElementById(closeBtn).addEventListener(click,close);
-O&&O.addEventListener(click,function(e){if(e.target===O) close();});
-window.addEventListener(keydown,function(e){if(e.key===Escape) close();});})();</script>
   <!-- v30-modal -->
-  <div class="overlay" id="overlay" aria-hidden="true">
-    <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
-      <header class="sheet-head">
-        <div class="sheet-title" id="cartTitle">Your Cart</div>
         <button class="sheet-close" id="closeBtn" type="button">Close</button>
       </header>
       <div class="sheet-body" tabindex="0">Mini cart goes here.</div>
     </section>
   </div>
-  <script>(function(){var O=document.getElementById("overlay"), B=document.querySelector(".cart"), C=document.getElementById("closeBtn"), last=null;
-function openM(){last=document.activeElement; document.body.classList.add("lock"); O.classList.add("show"); O.setAttribute("aria-hidden","false"); setTimeout(function(){(document.querySelector(".sheet-body")||O).focus();},0);}
-function closeM(){O.classList.remove("show"); O.setAttribute("aria-hidden","true"); document.body.classList.remove("lock"); if(last&&last.focus) last.focus();}
-B&&B.addEventListener("click",openM); C&&C.addEventListener("click",closeM); O&&O.addEventListener("click",function(e){if(e.target===O) closeM();}); window.addEventListener("keydown",function(e){if(e.key==="Escape") closeM();});})();</script>
   <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v30-modal</div>
+  <!-- v31-fix: single modal binder -->
+  <script>(function(){
+    var O=document.getElementById("overlay");
+    var B=document.getElementById("cartBtn");
+    var C=document.getElementById("closeBtn");
+    var last=null;
+    function openM(){ if(!O) return; last=document.activeElement; document.body.classList.add("lock"); O.classList.add("show"); O.setAttribute("aria-hidden","false"); setTimeout(function(){(document.querySelector(".sheet-body")||O).focus();},0);} 
+    function closeM(){ if(!O) return; O.classList.remove("show"); O.setAttribute("aria-hidden","true"); document.body.classList.remove("lock"); if(last&&last.focus) last.focus(); }
+    if(B) B.addEventListener("click", openM);
+    if(C) C.addEventListener("click", closeM);
+    if(O) O.addEventListener("click", function(e){ if(e.target===O) closeM(); });
+    window.addEventListener("keydown", function(e){ if(e.key==="Escape") closeM(); });
+  })();</script>
+  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v31-fix</div>
 </body>
 </html>
 <!-- MODAL START v29-modal -->
@@ -127,10 +126,6 @@ B&&B.addEventListener("click",openM); C&&C.addEventListener("click",closeM); O&&
     body.lock{overflow:hidden;}
 </style>
 
-<div class="overlay" id="overlay" aria-hidden="true">
-  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
-    <header class="sheet-head">
-      <div class="sheet-title" id="cartTitle">Your Cart</div>
       <button class="sheet-close" id="closeBtn" type="button">Close</button>
     </header>
     <div class="sheet-body" tabindex="0">
@@ -139,34 +134,6 @@ B&&B.addEventListener("click",openM); C&&C.addEventListener("click",closeM); O&&
   </section>
 </div>
 
-<script>
-(function(){
-  var overlay=document.getElementById('overlay');
-  var openBtn=document.querySelector('.cart');   // the right-side cart button we added
-  var closeBtn=document.getElementById('closeBtn');
-  var lastFocus=null;
-
-  function openSheet(){
-    if(!overlay) return;
-    lastFocus=document.activeElement;
-    document.body.classList.add('lock');
-    overlay.classList.add('show');
-    overlay.setAttribute('aria-hidden','false');
-    setTimeout(function(){ (document.querySelector('.sheet-body')||overlay).focus(); },0);
-  }
-  function closeSheet(){
-    overlay.classList.remove('show');
-    overlay.setAttribute('aria-hidden','true');
-    document.body.classList.remove('lock');
-    if(lastFocus && lastFocus.focus) lastFocus.focus();
-  }
-
-  if(openBtn){ openBtn.addEventListener('click', openSheet); }
-  if(closeBtn){ closeBtn.addEventListener('click', closeSheet); }
-  if(overlay){ overlay.addEventListener('click', function(e){ if(e.target===overlay) closeSheet(); }); }
-  window.addEventListener('keydown', function(e){ if(e.key==='Escape') closeSheet(); });
-})();
-</script>
 
 <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v29-modal</div>
 <!-- MODAL END v29-modal -->
