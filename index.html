@@ -164,3 +164,33 @@ if(O&&B){ bind(); O.addEventListener("click",function(e){ if(e.target===O) close
   <!-- v45-height: 94px mobile / 120px tablet (slightly larger) -->
   <style>.carousel .slide{height:94px}@media (min-width:768px){.carousel .slide{height:120px}}</style>
 </body>
+  <!-- v52-autorotate7s-io: observer-based loop 1→2→3→1 -->
+<script>(function(){
+  var t=document.getElementById("carTrack"); if(!t) return;
+  var slides=[].slice.call(t.querySelectorAll(":scope > .slide"));
+  if(!slides.length) slides=[].slice.call(t.querySelectorAll(".slide"));
+  var L=slides.length; if(!L) return;
+  var cur=0;
+  function go(i){slides[i].scrollIntoView({behavior:"smooth",inline:"start",block:"nearest"})}
+  // Track the slide that is mostly in view using IntersectionObserver
+  if("IntersectionObserver" in window){
+    var io=new IntersectionObserver(function(es){
+      var best=-1,bi=cur; es.forEach(function(e){
+        var i=slides.indexOf(e.target); if(e.intersectionRatio>best){best=e.intersectionRatio;bi=i}
+      }); cur=bi;
+    },{root:t,threshold:[0.6]});
+    slides.forEach(function(s){io.observe(s)});
+  }else{
+    // Fallback: snap from pixels if IO missing
+    function W(){return t.clientWidth};
+    t.addEventListener("scroll",function(){cur=Math.round(t.scrollLeft/W())},{passive:true});
+  }
+  function advance(){cur=(cur+1)%L; go(cur)}
+  function start(){ stop(); t._auto=setInterval(advance,7000) }
+  function stop(){ if(t._auto){clearInterval(t._auto); t._auto=null} }
+  document.addEventListener("visibilitychange",function(){ if(document.hidden) stop(); else start() });
+  window.addEventListener("resize",function(){ go(cur) });
+  start();
+})();</script>
+<div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v52-autorotate7s-io</div>
+</body>
