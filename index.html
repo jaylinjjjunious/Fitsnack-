@@ -9,12 +9,13 @@
     :root{--bg:#0b0b0d;--text:#e9e9ec}
     html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif}
     .hdr{display:flex;justify-content:center;padding:10px 14px;background:#0b0b0d;position:sticky;top:0;z-index:1}
-    .search{flex:1;max-width:260px;background:rgba(255,255,255,.1);border-radius:20px;overflow:hidden}
+    .search{flex:1;max-width:260px;background:rgba(255,255,255,.1);border-radius:20px}
     .search input{width:100%;border:0;outline:0;padding:8px 12px;color:#fff;background:transparent;font-size:.95em}
   </style>
 </head>
 <body>
   <header class="hdr">
+    <!-- NO cart, NO search button -->
     <form class="search" role="search" onsubmit="event.preventDefault(); console.log(this.q.value);">
       <input type="search" name="q" placeholder="Search…" autocomplete="off" enterkeyhint="search">
     </form>
