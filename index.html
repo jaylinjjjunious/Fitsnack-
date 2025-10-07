@@ -58,7 +58,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.off.js?v=1759818838')
+        navigator.serviceWorker.register('sw.js')
           .then(r => console.log('SW registered:', r.scope))
           .catch(err => console.warn('SW registration failed:', err));
       });
@@ -533,7 +533,7 @@ document.querySelector('#closeCart')?.addEventListener('click',()=>{
     const cur = JSON.parse(localStorage.getItem(SCHEMA_KEY)||'0')||0;
     if(cur < APP_SCHEMA_VERSION) localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION));
   }catch{ localStorage.setItem(SCHEMA_KEY, JSON.stringify(APP_SCHEMA_VERSION)); }
-  if('serviceWorker' in navigator){ window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.off.js?v=1759818838')); }
+  if('serviceWorker' in navigator){ window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js')); }
 
   /* ---------- Helpers ---------- */
   const $  = s => document.querySelector(s);
@@ -1246,4 +1246,19 @@ document.querySelector('#closeCart')?.addEventListener('click',()=>{
 </body>
 </html>
 <!-- rebuild 1759556295 -->
+html>
+<!-- rebuild 1759556295 -->
 <!-- deploy 1759818838 -->
+<style id="headerStyles">
+  .app-header{position:sticky;top:0;z-index:50;background:#0d0d10bf;
+    -webkit-backdrop-filter:saturate(180%) blur(10px);backdrop-filter:saturate(180%) blur(10px);
+    padding:12px 16px;display:flex;gap:12px;align-items:center}
+  .search{flex:1;display:flex;align-items:center;border:1px solid #2a2a2e;border-radius:16px;padding:10px 14px}
+  .search input{all:unset;flex:1;color:#fff}
+  .btn{border:1px solid #2a2a2e;border-radius:16px;padding:10px 16px;color:#fff}
+  /* modal */
+  .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none}
+  .dialog{position:fixed;left:50%;top:18%;transform:translateX(-50%);
+    background:#121217;border:1px solid #2a2a2e;border-radius:16px;padding:16px;min-width:320px;max-width:92vw}
+  .show{display:block}
+</style>
