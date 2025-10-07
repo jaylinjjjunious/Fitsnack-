@@ -548,3 +548,62 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 })();
 </script>
+<!-- v:cart-fix-6 -->
+<style>
+  /* Always hide any element marked hidden */
+  [hidden]{display:none !important;}
+
+  /* Nuke any legacy cart dialogs, keep only our #cartDialog visible */
+  .cart-dialog:not(#cartDialog), .cart-modal:not(#cartDialog) { display:none !important; }
+
+  /* Resize + center our real cart */
+  #cartDialog{
+    position:fixed !important;
+    top:50% !important; left:50% !important; transform:translate(-50%,-50%) !important;
+    width: clamp(320px, 52vw, 420px) !important;
+    max-height: 55vh !important;
+    border-radius:16px !important; z-index:1000 !important;
+  }
+  #cartBackdrop{
+    position:fixed !important; inset:0 !important;
+    background:rgba(0,0,0,.55) !important; backdrop-filter:blur(2px) !important;
+    z-index:999 !important;
+  }
+</style>
+
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const dialog   = $('#cartDialog');
+  const backdrop = $('#cartBackdrop');
+  const cartBtn  = $('#cartBtn');
+  const closeBtn = $('#cartClose');
+
+  // 1) Hide ANY stray/legacy cart UIs
+  document.querySelectorAll('[id*="cart"], .cart-dialog, .cart-modal, .modal').forEach(el=>{
+    if (el !== dialog && el !== backdrop) {
+      el.style.display = 'none';
+      el.hidden = true;
+      el.removeAttribute('open');
+    }
+  });
+
+  // 2) Make sure our cart starts hidden and is closable
+  function openCart(){ if(!dialog||!backdrop) return;
+    backdrop.hidden=false; dialog.hidden=false; document.body.style.overflow='hidden';
+  }
+  function closeCart(){ if(!dialog||!backdrop) return;
+    dialog.hidden=true; backdrop.hidden=true; document.body.style.overflow='';
+  }
+  window.openCart = openCart; window.closeCart = closeCart;
+
+  // wire buttons (overwrite any previous handlers)
+  if (cartBtn)  cartBtn.onclick  = openCart;
+  if (closeBtn) closeBtn.onclick = closeCart;
+  if (backdrop) backdrop.onclick = closeCart;
+  window.addEventListener('keydown', e => { if (e.key === 'Escape') closeCart(); });
+
+  // 3) Kill any accidental auto-open that may have been left in earlier scripts
+  setTimeout(closeCart, 10);
+})();
+</script>
