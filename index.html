@@ -30,6 +30,14 @@
       color:#fff;background:rgba(255,255,255,.12);border-radius:20px;font-size:.95em;
       -webkit-appearance:none;appearance:none;
     }
+    /* cart button next to search */
+    .hdr{display:grid;grid-template-columns:1fr 48px;align-items:center;column-gap:12px;
+         padding:10px max(0px, env(safe-area-inset-right)) 10px max(0px, env(safe-area-inset-left));}
+    .search{margin-left:0;padding-left:0;}
+    .search input{width:100%;}
+    .cart{width:48px;height:36px;display:flex;align-items:center;justify-content:center;border:0;
+          border-radius:18px;background:rgba(255,255,255,.12);color:#fff;font-size:18px;}
+    .cart:active{transform:scale(.98);}
   </style>
 </head>
 <body>
@@ -37,7 +45,9 @@
     <form class="search" role="search" onsubmit="event.preventDefault();">
       <input type="search" name="q" placeholder="Search…" autocomplete="off" enterkeyhint="search">
     </form>
+    <button class="cart" aria-label="Cart">🛒</button>
   </header>
   <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v26-restore</div>
+  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v27-cart</div>
 </body>
 </html>
