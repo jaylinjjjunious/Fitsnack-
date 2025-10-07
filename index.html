@@ -163,3 +163,18 @@ if(O&&B){ bind(); O.addEventListener("click",function(e){ if(e.target===O) close
   <style>.carousel .slide{height:84px}@media (min-width:768px){.carousel .slide{height:120px}}</style>
   <!-- v45-height: 94px mobile / 120px tablet (slightly larger) -->
   <style>.carousel .slide{height:94px}@media (min-width:768px){.carousel .slide{height:120px}}</style>
+  <!-- v49-autorotate7s: working JS -->
+<script>(function(){
+  var t=document.getElementById("carTrack"); if(!t) return;
+  var slides=t.querySelectorAll(".slide");
+  function W(){return t.getBoundingClientRect().width}
+  function idx(){return Math.round(t.scrollLeft/W())}
+  function go(i){t.scrollTo({left:i*W(),behavior:"smooth"})}
+  function start(){stop();t._auto=setInterval(function(){var i=idx();var n=(i+1)%slides.length;go(n);},7000)}
+  function stop(){if(t._auto){clearInterval(t._auto);t._auto=null}}
+  document.addEventListener("visibilitychange",function(){if(document.hidden)stop();else start()});
+  window.addEventListener("resize",function(){go(idx())});
+  start();
+})();</script>
+<div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v49-autorotate7s</div>
+</body>
