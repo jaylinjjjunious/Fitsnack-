@@ -68,6 +68,16 @@
     .dot{width:6px;height:6px;border-radius:50%;background:#5a5a5a;opacity:.6;}
     .dot.active{background:#cfcfcf;opacity:1;}
     @media (min-width:768px){ .slide{height:240px} }
+    /* v39: carousel */
+    .carousel{margin:10px auto 0;max-width:680px;padding:0 12px;}
+    .carousel-wrap{position:relative;border-radius:14px;overflow:hidden;background:#151515;}
+    .track{display:flex;scroll-snap-type:x mandatory;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;}
+    .slide{min-width:100%;height:200px;scroll-snap-align:center;position:relative;}
+    .slide img{width:100%;height:100%;object-fit:cover;display:block;}
+    .dots{display:flex;gap:6px;justify-content:center;padding:8px 0;}
+    .dot{width:6px;height:6px;border-radius:50%;background:#5a5a5a;opacity:.6;}
+    .dot.active{background:#cfcfcf;opacity:1;}
+    @media (min-width:768px){.slide{height:240px}}
   </style>
 </head>
 <body>
@@ -77,6 +87,16 @@
     </form>
     <button class="cart" id="cartBtn" aria-label="Cart">🛒</button>
   </header>
+  <section class="carousel" aria-label="Promos">
+    <div class="carousel-wrap">
+      <div class="track" id="carTrack" aria-live="polite">
+        <figure class="slide"><img src="img/banner1.svg" alt="Banner 1" loading="lazy"></figure>
+        <figure class="slide"><img src="img/banner2.svg" alt="Banner 2" loading="lazy"></figure>
+        <figure class="slide"><img src="img/banner3.svg" alt="Banner 3" loading="lazy"></figure>
+      </div>
+    </div>
+    <div class="dots" id="carDots" aria-hidden="true"></div>
+  </section>
   <section class="carousel" aria-label="Promos">
     <div class="carousel-wrap">
       <div class="track" id="carTrack">
@@ -112,6 +132,16 @@
     .dot{width:6px;height:6px;border-radius:50%;background:#5a5a5a;opacity:.6;}
     .dot.active{background:#cfcfcf;opacity:1;}
     @media (min-width:768px){ .slide{height:240px} }
+    /* v39: carousel */
+    .carousel{margin:10px auto 0;max-width:680px;padding:0 12px;}
+    .carousel-wrap{position:relative;border-radius:14px;overflow:hidden;background:#151515;}
+    .track{display:flex;scroll-snap-type:x mandatory;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-behavior:smooth;}
+    .slide{min-width:100%;height:200px;scroll-snap-align:center;position:relative;}
+    .slide img{width:100%;height:100%;object-fit:cover;display:block;}
+    .dots{display:flex;gap:6px;justify-content:center;padding:8px 0;}
+    .dot{width:6px;height:6px;border-radius:50%;background:#5a5a5a;opacity:.6;}
+    .dot.active{background:#cfcfcf;opacity:1;}
+    @media (min-width:768px){.slide{height:240px}}
   </style>
   <div class="overlay" id="overlay" aria-hidden="true">
     <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
@@ -119,6 +149,16 @@
         <div class="sheet-title" id="cartTitle">Your Cart</div>
         <button class="sheet-close" id="closeBtn" type="button">Close</button>
       </header>
+  <section class="carousel" aria-label="Promos">
+    <div class="carousel-wrap">
+      <div class="track" id="carTrack" aria-live="polite">
+        <figure class="slide"><img src="img/banner1.svg" alt="Banner 1" loading="lazy"></figure>
+        <figure class="slide"><img src="img/banner2.svg" alt="Banner 2" loading="lazy"></figure>
+        <figure class="slide"><img src="img/banner3.svg" alt="Banner 3" loading="lazy"></figure>
+      </div>
+    </div>
+    <div class="dots" id="carDots" aria-hidden="true"></div>
+  </section>
   <section class="carousel" aria-label="Promos">
     <div class="carousel-wrap">
       <div class="track" id="carTrack">
