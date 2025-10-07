@@ -172,6 +172,14 @@ if(O&&B){ bind(); O.addEventListener("click",function(e){ if(e.target===O) close
   .slide { margin:0; overflow:hidden; border-radius:16px; }
   .slide img { display:block; width:100%; height:100%; object-fit:cover; }
   </style>
+  <style>
+  /* Fill the rounded card – no inner gap */
+  .carousel{padding:0; margin:16px auto; background:transparent; overflow:hidden; border-radius:16px;}
+  .track{display:flex; align-items:stretch; gap:0; padding:0; margin:0;}
+  .slide{flex:0 0 100%; height:170px; margin:0; overflow:hidden; border-radius:16px;}
+  @media (min-width:768px){ .slide{height:200px;} }
+  .slide img{display:block; width:100%; height:100%; object-fit:cover;}
+  </style>
 </body>
   <!-- v52-autorotate7s-io: observer-based loop 1→2→3→1 -->
 <script>(function(){
