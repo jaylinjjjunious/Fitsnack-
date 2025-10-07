@@ -5,36 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title></title>
   <meta name="theme-color" content="#0b0b0d">
+  <!-- v13 -->
   <style>
-    :root{--bg:#0b0b0d;--text:#e9e9ec;--right-gap:56px} /* reserve 56px on the right */
+    :root{
+      --bg:#0b0b0d; --text:#e9e9ec;
+      --cart-gap:56px;            /* change this width if you want more/less stop on right */
+    }
     html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif}
 
-    /* Header: flush-left input, fixed right gap for future cart */
+    /* Header: obey safe areas, flush-left, reserve fixed space on right */
     .hdr{
-      display:grid;
-      grid-template-columns: 1fr var(--right-gap);
-      column-gap: 0;
-      align-items:center;
-      padding:10px 0 10px 0;           /* no left padding so it's truly flush-left */
-      background:#0b0b0d;
-      position:sticky; top:0; z-index:1;
-    }
-
-    .search{ /* sits in column 1 (auto) */
-      padding-right:10px;               /* small breathing room before the right gap */
-      box-sizing:border-box;
+      padding-top:10px;
+      padding-bottom:10px;
+      padding-left: max(0px, env(safe-area-inset-left));              /* flush to the white line */
+      padding-right: calc(max(0px, env(safe-area-inset-right)) + var(--cart-gap)); /* stop early on right */
+      background:#0b0b0d; position:sticky; top:0; z-index:1;
     }
     .search input{
-      width:100%;
-      display:block;
+      width:100%; display:block;
       border:0; outline:0;
       padding:8px 12px;
       color:#fff; background:rgba(255,255,255,.1);
       border-radius:20px; font-size:.95em;
     }
 
-    /* Column 2 = reserved gap (empty, for future cart) */
-    .gap{ width:var(--right-gap); }
+    .ver{position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px}
   </style>
 </head>
 <body>
@@ -42,7 +37,7 @@
     <form class="search" role="search" onsubmit="event.preventDefault(); console.log(this.q.value);">
       <input type="search" name="q" placeholder="Search…" autocomplete="off" enterkeyhint="search">
     </form>
-    <div class="gap" aria-hidden="true"></div>
   </header>
+  <div class="ver">v13</div>
 </body>
 </html>
