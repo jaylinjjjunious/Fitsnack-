@@ -17,15 +17,6 @@
     /* Demo content so you can scroll */
     main{padding:16px}
     /* Mini cart modal */
-    .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:saturate(1.2) blur(4px);z-index:20;}
-    .overlay.show{display:flex;}
-    .sheet{width:min(88vw,420px);max-height:72vh;background:#16161a;color:#e9e9ec;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.45);display:flex;flex-direction:column;overflow:hidden;transform:translateY(10px);opacity:0;transition:transform .18s ease, opacity .18s ease;}
-    .overlay.show .sheet{transform:translateY(0);opacity:1;}
-    .sheet-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#1c1c21;border-bottom:1px solid rgba(255,255,255,.06);}
-    .sheet-title{font-weight:600;}
-    .sheet-close{border:0;border-radius:12px;padding:6px 10px;background:rgba(255,255,255,.12);color:#fff;font-size:14px;}
-    .sheet-body{padding:14px;overflow:auto;}
-    body.lock{overflow:hidden;}
   </style>
 </head>
 <body>
@@ -33,21 +24,12 @@
     <button class="cart-btn" aria-label="Open cart" title="Cart">🛒</button>
     <form class="search" role="search" aria-label="Search" onsubmit="event.preventDefault(); /* wire to your search later */">
       <input class="search-input" type="search" name="q" placeholder="Search snacks…" autocomplete="off" enterkeyhint="search">
-      <button class="search-btn" type="submit" aria-label="Search">Search</button>
     </form>
   </header>
 
-  <div class="overlay" id="overlay">
-    <section class="sheet" id="cartSheet" role="dialog" aria-modal="true">
-      <header class="sheet-head">
-        <div class="sheet-title">Your Cart</div>
         <button class="sheet-close" id="closeBtn" type="button">Close</button>
       </header>
       <div class="sheet-body">Mini cart goes here.</div>
     </section>
   </div>
   <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v21-patch</div>
-  <script>(function(){var overlay=document.getElementById("overlay"),openBtn=document.getElementById("cartBtn"),closeBtn=document.getElementById("closeBtn");function op(){document.body.classList.add("lock");overlay.classList.add("show");}function cl(){overlay.classList.remove("show");document.body.classList.remove("lock");}openBtn&&openBtn.addEventListener("click",op);closeBtn&&closeBtn.addEventListener("click",cl);overlay&&overlay.addEventListener("click",function(e){if(e.target===overlay)cl();});window.addEventListener("keydown",function(e){if(e.key==="Escape")cl();});})();</script>
-  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v22-clean</div>
-</body>
-</html>
