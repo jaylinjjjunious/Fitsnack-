@@ -237,47 +237,6 @@ document.addEventListener('DOMContentLoaded', () => {
   clean.setAttribute('aria-label','Open cart');
   // basic styling if needed
   if (!clean.style || !clean.style.padding) {
-    clean.style.cssText = 'margin-left:8px;padding:8px 12px;border-radius:10px;border:1px solid #2a2a30;background:#18181d;color:#fff;cursor:pointer;';
-  }
-  btn.replaceWith(clean);
-
-  // 3) Make sure CART is not inside a search <form>. If it is, move it right after the form.
-  const form = clean.closest('form');
-  if (form) form.after(clean);
-
-  // 4) Kill any bubbling that search code might rely on
-  clean.addEventListener('click', (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation();
-    const overlay = document.querySelector('#cartOverlay');
-    if (overlay) overlay.style.display = 'flex';
-  });
-
-  // 5) Close behavior (X button & backdrop)
-  const overlay = document.querySelector('#cartOverlay');
-  document.querySelector('#closeCart')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    overlay && (overlay.style.display = 'none');
-  });
-  overlay?.addEventListener('click', (e) => {
-    if (e.target === overlay) overlay.style.display = 'none';
-  });
-
-  // 6) Optional: disable search form default submit so Enter doesn’t reload
-  const searchForm = document.querySelector('header form, .header form, form#searchForm');
-  if (searchForm) searchForm.addEventListener('submit', (e) => e.preventDefault());
-});
-</script>
-<!-- === CART MINI-PANEL (standalone) === -->
-<style>
-  #cartPanel{position:fixed;right:12px;top:64px;width:88%;max-width:420px;background:#111;border:1px solid #2a2a2e;border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,.45);padding:16px;display:none;z-index:10000}
-  #cartPanel.show{display:block}
-  #cartPanel h3{margin:0 0 8px;font-size:18px}
-  #cartPanel .row{display:flex;justify-content:space-between;align-items:center;gap:12px}
-  #cartClose{appearance:none;border:0;background:#222;padding:8px 12px;border-radius:12px}
-  #cartEmpty{opacity:.7}
-</style>
 
 <div id="cartPanel" role="dialog" aria-label="Cart panel">
   <div class="row">
