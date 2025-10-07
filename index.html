@@ -6,38 +6,35 @@
   <title></title>
   <meta name="theme-color" content="#0b0b0d">
   <style>
-    :root{--bg:#0b0b0d;--text:#e9e9ec}
+    :root{--bg:#0b0b0d;--text:#e9e9ec;--right-gap:56px} /* reserve 56px on the right */
     html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+
+    /* Header: flush-left input, fixed right gap for future cart */
     .hdr{
-      display:flex;
+      display:grid;
+      grid-template-columns: 1fr var(--right-gap);
+      column-gap: 0;
       align-items:center;
-      justify-content:space-between;
-      padding:10px 0 10px 0;
+      padding:10px 0 10px 0;           /* no left padding so it's truly flush-left */
       background:#0b0b0d;
-      position:sticky;
-      top:0;
-      z-index:1;
+      position:sticky; top:0; z-index:1;
     }
-    .search{
-      flex:1;
-      padding-left:0;
-      padding-right:14px;
+
+    .search{ /* sits in column 1 (auto) */
+      padding-right:10px;               /* small breathing room before the right gap */
       box-sizing:border-box;
     }
     .search input{
       width:100%;
-      border:0;
-      outline:0;
-      padding:8px 12px;
-      color:#fff;
-      background:rgba(255,255,255,.1);
-      border-radius:20px;
-      font-size:.95em;
       display:block;
+      border:0; outline:0;
+      padding:8px 12px;
+      color:#fff; background:rgba(255,255,255,.1);
+      border-radius:20px; font-size:.95em;
     }
-    .right-space{
-      width:48px; /* reserve space for future cart */
-    }
+
+    /* Column 2 = reserved gap (empty, for future cart) */
+    .gap{ width:var(--right-gap); }
   </style>
 </head>
 <body>
@@ -45,7 +42,7 @@
     <form class="search" role="search" onsubmit="event.preventDefault(); console.log(this.q.value);">
       <input type="search" name="q" placeholder="Search…" autocomplete="off" enterkeyhint="search">
     </form>
-    <div class="right-space"></div>
+    <div class="gap" aria-hidden="true"></div>
   </header>
 </body>
 </html>
