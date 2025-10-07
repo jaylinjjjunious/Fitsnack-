@@ -43,6 +43,12 @@
     background:#121214; color:#eee; padding:20px; box-shadow:0 10px 40px rgba(0,0,0,.35);}
   #cartModal .close-btn{float:right; padding:6px 10px; border:1px solid #333; border-radius:10px;}
 </style>
+  <style id="cartSizingOverride">
+  .cart-dialog{width:clamp(320px,60vw,420px);max-height:60vh;top:50%;left:50%;transform:translate(-50%,-50%);position:fixed;z-index:1000;padding:18px;border-radius:16px;background:#141414;box-shadow:0 10px 40px rgba(0,0,0,.45)}
+  .cart-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);z-index:999}
+  .cart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .cart-title{font-size:20px;font-weight:700}
+  </style>
 </head>
 <body>
   <header>
@@ -137,6 +143,24 @@ function hideCart(){var m=document.getElementById("cartModal"); if(m){m.style.di
     document.addEventListener("keydown", function(e){ if(e.key==="Escape") hideCart(); });
   });
 })();</script>
+  <div id="cartBackdrop" class="cart-backdrop" hidden></div>
+  <div id="cartDialog" class="cart-dialog" hidden>
+    <div class="cart-head"><div class="cart-title">Your cart</div><button id="cartClose" class="icon-btn" type="button">Close</button></div>
+    <p class="muted" id="cartBody">Cart is empty.</p>
+  </div>
+  <script id="cartLogic">
+  const $=s=>document.querySelector(s);
+  const cartBtn=$("#cartBtn"); const dialog=$("#cartDialog"); const backdrop=$("#cartBackdrop"); const closeBtn=$("#cartClose");
+  // Hide ANY stray old cart overlays that might be hard-coded
+  document.querySelectorAll(".cart-dialog:not(#cartDialog)").forEach(el=>el.hidden=true);
+  document.querySelectorAll(".cart-backdrop:not(#cartBackdrop)").forEach(el=>el.hidden=true);
+  function openCart(){backdrop.hidden=false;dialog.hidden=false;document.body.style.overflow=hidden}
+  function closeCart(){dialog.hidden=true;backdrop.hidden=true;document.body.style.overflow=}
+  cartBtn&&cartBtn.addEventListener(click,openCart);
+  closeBtn&&closeBtn.addEventListener(click,closeCart);
+  backdrop&&backdrop.addEventListener(click,closeCart);
+  window.addEventListener(keydown,e=>{if(e.key===Escape) closeCart()});
+  </script>
 </body>
 </html>
 <script>
