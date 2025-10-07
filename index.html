@@ -188,6 +188,19 @@ function hideCart(){var m=document.getElementById("cartModal"); if(m){m.style.di
    window.addEventListener("keydown",e=>{ if(e.key==="Escape") closeCart(); });
  })();
 </script>
+<script>
+(function(){
+ const btn=document.getElementById("cartBtn");
+ const dlg=document.getElementById("cartDialog");
+ const bg=document.getElementById("cartBackdrop");
+ function openCart(){ if(bg) bg.hidden=false; if(dlg) dlg.hidden=false; document.body.style.overflow="hidden"; }
+ function closeCart(){ if(bg) bg.hidden=true; if(dlg) dlg.hidden=true; document.body.style.overflow=""; }
+ if(btn) btn.onclick=openCart;
+ if(bg) bg.onclick=closeCart;
+ const x=document.getElementById("cartClose"); if(x) x.onclick=closeCart;
+ window.addEventListener("keydown",e=>{ if(e.key==="Escape") closeCart(); });
+})();
+</script>
 </body>
 </html>
 <script>
