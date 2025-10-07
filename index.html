@@ -78,6 +78,11 @@
     .dot{width:6px;height:6px;border-radius:50%;background:#5a5a5a;opacity:.6;}
     .dot.active{background:#cfcfcf;opacity:1;}
     @media (min-width:768px){.slide{height:240px}}
+.prod-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:12px;}
+.card{background:rgba(255,255,255,0.05);border-radius:14px;padding:10px;text-align:center;}
+.card button{background:#6ea8fe;color:#fff;border:none;border-radius:8px;padding:4px 10px;font-size:16px;}
+.card h3{margin:6px 0 4px;font-size:16px;}
+.card p{margin:0 0 8px;color:#ccc;}
   </style>
 </head>
 <body>
@@ -97,6 +102,13 @@
     </div>
     <div class="dots" id="carDots" aria-hidden="true"></div>
   </section>
+<section id="products" class="prod-grid">
+<div class="card"><h3>Potato Chips</h3><p>$2.50</p><button>+</button></div>
+<div class="card"><h3>Protein Bar</h3><p>$2.99</p><button>+</button></div>
+<div class="card"><h3>Trail Mix</h3><p>$3.49</p><button>+</button></div>
+<div class="card"><h3>Granola Bar</h3><p>$1.99</p><button>+</button></div>
+<div class="card"><h3>Greek Yogurt</h3><p>$2.79</p><button>+</button></div>
+</section>
   
   <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v35-trim</div>
   <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v36-bind</div>
