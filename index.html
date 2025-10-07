@@ -5,39 +5,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title></title>
   <meta name="theme-color" content="#0b0b0d">
-  <!-- v19 -->
+  <!-- v20 -->
   <style>
-    :root{
-      --bg:#0b0b0d; --text:#e9e9ec;
-      /* BIG on purpose so you can see it move clearly. We'll tune after. */
-      --right-stop:120px;
-    }
+    :root{ --bg:#0b0b0d; --text:#e9e9ec; --accent:#6ea8fe; }
     html,body{
-      margin:0;height:100%;
-      background:var(--bg);color:var(--text);
+      margin:0; height:100%;
+      background:var(--bg); color:var(--text);
       font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif;
     }
 
-    .hdr{padding:10px 0;background:#0b0b0d;position:sticky;top:0;z-index:1}
-
-    /* Flush LEFT; hard-cap RIGHT (respects safe areas) */
-    .search{ margin-left:max(0px, env(safe-area-inset-left)); }
-    .search input{
-      width:calc(
-        100vw
-        - max(0px, env(safe-area-inset-left))
-        - ( max(0px, env(safe-area-inset-right)) + var(--right-stop) )
-      );
-      display:block;border:0;outline:0;
-      padding:8px 12px;
-      color:#fff;background:rgba(255,255,255,.12);
-      border-radius:20px;font-size:.95em;
-      /* temporary outline so you can see the exact end; we will remove later */
-      box-shadow:0 0 0 1px rgba(255,255,255,.08) inset;
-      -webkit-appearance:none;appearance:none;
+    /* Header: grid = input (left) + cart button (right) */
+    .hdr{
+      display:grid;
+      grid-template-columns: 1fr 48px;   /* reserve 48px for the cart hit target */
+      align-items:center;
+      column-gap:12px;
+      padding-top:10px;
+      padding-bottom:10px;
+      padding-left:max(0px, env(safe-area-inset-left));
+      padding-right:max(0px, env(safe-area-inset-right));
+      background:#0b0b0d;
+      position:sticky; top:0; z-index:1;
     }
 
-    .ver{position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px}
+    /* Search input flush-left */
+    .search input{
+      width:100%;
+      display:block;
+      border:0; outline:0;
+      padding:8px 12px;
+      color:#fff;
+      background:rgba(255,255,255,.12);
+      border-radius:20px;
+      font-size:.95em;
+      -webkit-appearance:none; appearance:none;
+    }
+
+    /* Cart button (touch-friendly, right side) */
+    .cart{
+      width:48px; height:36px;
+      display:flex; align-items:center; justify-content:center;
+      border:0; border-radius:18px;
+      background:rgba(255,255,255,.12);
+      color:#fff; font-size:18px;
+    }
+    .cart:active{ transform:scale(0.98); }
   </style>
 </head>
 <body>
@@ -45,16 +57,11 @@
     <form class="search" role="search" onsubmit="event.preventDefault(); console.log(this.q.value);">
       <input type="search" name="q" placeholder="Search…" autocomplete="off" enterkeyhint="search">
     </form>
-  </header>
-  <div class="ver">v19</div>
 
-  <!-- one-time cache bump -->
-  <script>(function(){
-    try{
-      if(location.search.indexOf('v19')<0){
-        const u=new URL(location.href);u.searchParams.set('v','19');location.replace(u);
-      }
-    }catch(e){}
-  })();</script>
+    <!-- simple cart button (no sticky bar, no modal yet) -->
+    <button class="cart" aria-label="Cart" title="Cart">🛒</button>
+  </header>
+
+  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v20</div>
 </body>
 </html>
