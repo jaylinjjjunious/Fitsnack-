@@ -58,6 +58,16 @@
     .sheet-close{border:0;border-radius:12px;padding:6px 10px;background:rgba(255,255,255,.12);color:#fff;font-size:14px;}
     .sheet-body{padding:14px;overflow:auto;}
     body.lock{overflow:hidden;}
+    /* v38: carousel */
+    .carousel{margin:10px auto 0; max-width:680px; padding:0 12px;}
+    .carousel-wrap{position:relative; border-radius:14px; overflow:hidden; background:#151515;}
+    .track{display:flex; scroll-snap-type:x mandatory; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-behavior:smooth;}
+    .slide{min-width:100%; height:200px; scroll-snap-align:center; position:relative;}
+    .slide img{width:100%; height:100%; object-fit:cover; display:block;}
+    .dots{display:flex; gap:6px; justify-content:center; padding:8px 0;}
+    .dot{width:6px;height:6px;border-radius:50%;background:#5a5a5a;opacity:.6;}
+    .dot.active{background:#cfcfcf;opacity:1;}
+    @media (min-width:768px){ .slide{height:240px} }
   </style>
 </head>
 <body>
@@ -67,6 +77,17 @@
     </form>
     <button class="cart" id="cartBtn" aria-label="Cart">🛒</button>
   </header>
+  <section class="carousel" aria-label="Promos">
+    <div class="carousel-wrap">
+      <div class="track" id="carTrack">
+        <figure class="slide"><img src="img/banner1.jpg" alt="Banner 1" loading="lazy"></figure>
+        <figure class="slide"><img src="img/banner2.jpg" alt="Banner 2" loading="lazy"></figure>
+        <figure class="slide"><img src="img/banner3.jpg" alt="Banner 3" loading="lazy"></figure>
+      </div>
+    </div>
+    <div class="dots" id="carDots" aria-hidden="true"></div>
+  </section>
+  
   <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v35-trim</div>
   <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v36-bind</div>
   <script>(function(){var O=document.getElementById("overlay"),B=document.getElementById("cartBtn"),C=document.getElementById("closeBtn"),last=null;function openM(){last=document.activeElement;document.body.classList.add("lock");O.classList.add("show");O.setAttribute("aria-hidden","false");setTimeout(function(){(document.querySelector(".sheet-body")||O).focus();},0);}function closeM(){O.classList.remove("show");O.setAttribute("aria-hidden","true");document.body.classList.remove("lock");if(last&&last.focus)last.focus();}if(B)B.addEventListener("click",openM);if(C)C.addEventListener("click",closeM);if(O)O.addEventListener("click",function(e){if(e.target===O)closeM();});window.addEventListener("keydown",function(e){if(e.key==="Escape")closeM();});})();</script>
@@ -81,6 +102,16 @@
     .sheet-close{border:0;border-radius:12px;padding:6px 10px;background:rgba(255,255,255,.12);color:#fff;font-size:14px;}
     .sheet-body{padding:14px;overflow:auto;}
     body.lock{overflow:hidden;}
+    /* v38: carousel */
+    .carousel{margin:10px auto 0; max-width:680px; padding:0 12px;}
+    .carousel-wrap{position:relative; border-radius:14px; overflow:hidden; background:#151515;}
+    .track{display:flex; scroll-snap-type:x mandatory; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-behavior:smooth;}
+    .slide{min-width:100%; height:200px; scroll-snap-align:center; position:relative;}
+    .slide img{width:100%; height:100%; object-fit:cover; display:block;}
+    .dots{display:flex; gap:6px; justify-content:center; padding:8px 0;}
+    .dot{width:6px;height:6px;border-radius:50%;background:#5a5a5a;opacity:.6;}
+    .dot.active{background:#cfcfcf;opacity:1;}
+    @media (min-width:768px){ .slide{height:240px} }
   </style>
   <div class="overlay" id="overlay" aria-hidden="true">
     <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
@@ -88,6 +119,17 @@
         <div class="sheet-title" id="cartTitle">Your Cart</div>
         <button class="sheet-close" id="closeBtn" type="button">Close</button>
       </header>
+  <section class="carousel" aria-label="Promos">
+    <div class="carousel-wrap">
+      <div class="track" id="carTrack">
+        <figure class="slide"><img src="img/banner1.jpg" alt="Banner 1" loading="lazy"></figure>
+        <figure class="slide"><img src="img/banner2.jpg" alt="Banner 2" loading="lazy"></figure>
+        <figure class="slide"><img src="img/banner3.jpg" alt="Banner 3" loading="lazy"></figure>
+      </div>
+    </div>
+    <div class="dots" id="carDots" aria-hidden="true"></div>
+  </section>
+  
       <div class="sheet-body" tabindex="0"><p>Mini cart goes here.</p></div>
     </section>
   </div>
@@ -97,4 +139,15 @@ function openM(){last=document.activeElement; document.body.classList.add("lock"
 function closeM(){O.classList.remove("show"); O.setAttribute("aria-hidden","true"); document.body.classList.remove("lock"); if(last&&last.focus) last.focus();}
 if(O&&B){ bind(); O.addEventListener("click",function(e){ if(e.target===O) closeM();}); window.addEventListener("keydown",function(e){ if(e.key==="Escape") closeM();}); }})();</script>
   <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v37-modal</div>
+  <!-- v38-carousel -->
+  <script>(function(){
+    var t=document.getElementById(carTrack); if(!t) return;
+    var slides=[].slice.call(t.querySelectorAll(.slide)); var dots=document.getElementById(carDots);
+    slides.forEach(function(_,i){ var d=document.createElement(b); d.className=dot+(i?"":" active"); d.addEventListener(click,function(){ t.scrollTo({left:i*t.clientWidth,behavior:smooth}); }); dots.appendChild(d); });
+    function setDot(){ var i=Math.round(t.scrollLeft/t.clientWidth); [].forEach.call(dots.children,function(n,k){ n.classList.toggle(active,k===i); }); }
+    t.addEventListener(scroll, function(){ clearTimeout(t._z); t._z=setTimeout(setDot,60); });
+    var a=setInterval(function(){ var i=Math.round(t.scrollLeft/t.clientWidth); var nx=(i+1)%slides.length; t.scrollTo({left:nx*t.clientWidth,behavior:smooth}); }, 5000);
+    window.addEventListener(visibilitychange, function(){ if(document.hidden) clearInterval(a); });
+  })();</script>
+  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v38-carousel</div>
 </body></html>
