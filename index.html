@@ -20,5 +20,6 @@
       <input type="search" name="q" placeholder="Search…" autocomplete="off" enterkeyhint="search">
     </form>
   </header>
+  <script>(function(){if(!("serviceWorker" in navigator))return;navigator.serviceWorker.getRegistrations().then(r=>Promise.all(r.map(x=>x.unregister()))).then(()=>{if(window.caches){caches.keys().then(k=>k.map(n=>caches.delete(n)));}}).then(()=>{if(location.search.indexOf("cacheCleared=1")<0){location.search+=(location.search?"&":"?")+"cacheCleared=1";}});})();</script>
 </body>
 </html>
