@@ -3,33 +3,48 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>NewApp</title>
+  <title></title>
   <meta name="theme-color" content="#0b0b0d">
+  <!-- v25-restore -->
   <style>
-    :root { --bg:#0b0b0d; --text:#e9e9ec; --accent:#6ea8fe; }
-    html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif}
-    /* Header with cart + centered search */
-    .app-header{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#0b0b0d;position:sticky;top:0;z-index:10}
-    .cart-btn{font-size:1.4em;background:none;border:0;color:var(--text)}
-    .search{display:flex;flex:1;max-width:260px;margin-left:8px;background:rgba(255,255,255,.1);border-radius:20px;overflow:hidden}
-    .search-input{flex:1;border:0;outline:0;padding:8px 12px;color:#fff;background:transparent;font-size:.95em}
-    .search-btn{border:0;padding:0 12px;background:var(--accent);color:#fff}
-    /* Demo content so you can scroll */
-    main{padding:16px}
-    /* Mini cart modal */
+    :root{--bg:#0b0b0d;--text:#e9e9ec;}
+    html,body{
+      margin:0;height:100%;
+      background:var(--bg);
+      color:var(--text);
+      font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+    }
+    .hdr{
+      padding:10px 0;
+      background:#0b0b0d;
+      position:sticky;
+      top:0;
+      z-index:1;
+    }
+    .search{
+      padding-left:max(0px, env(safe-area-inset-left));
+      padding-right:42px; /* leaves right stop like your photo */
+    }
+    .search input{
+      width:100%;
+      border:0;
+      outline:0;
+      padding:8px 12px;
+      color:#fff;
+      background:rgba(255,255,255,.1);
+      border-radius:20px;
+      font-size:.95em;
+      display:block;
+    }
   </style>
 </head>
 <body>
-  <header class="app-header" role="banner">
-    <button class="cart-btn" aria-label="Open cart" title="Cart">🛒</button>
-    <form class="search" role="search" aria-label="Search" onsubmit="event.preventDefault(); /* wire to your search later */">
-      <input class="search-input" type="search" name="q" placeholder="Search snacks…" autocomplete="off" enterkeyhint="search">
+  <header class="hdr">
+    <form class="search" role="search" onsubmit="event.preventDefault();">
+      <input type="search" name="q" placeholder="Search…" autocomplete="off" enterkeyhint="search">
     </form>
   </header>
 
-        <button class="sheet-close" id="closeBtn" type="button">Close</button>
-      </header>
-      <div class="sheet-body">Mini cart goes here.</div>
-    </section>
-  </div>
-  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v21-patch</div>
+  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v25-restore</div>
+</body>
+</html>
