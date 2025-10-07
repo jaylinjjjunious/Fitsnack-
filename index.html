@@ -3,42 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title></title>
+  <title>NewApp</title>
   <meta name="theme-color" content="#0b0b0d">
-  <!-- v26-restore -->
   <style>
-    :root{
-      --bg:#0b0b0d; --text:#e9e9ec;
-      /* keep the right stop so the bar ends before the white line */
-      --right-stop:120px;
-    }
-    html,body{
-      margin:0;height:100%;
-      background:var(--bg);color:var(--text);
-      font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif;
-    }
-    .hdr{padding:10px 0;background:#0b0b0d;position:sticky;top:0;z-index:1;}
-    /* flush LEFT, hard stop on RIGHT (like your working v19) */
-    .search{margin-left:max(0px, env(safe-area-inset-left));}
-    .search input{
-      width:calc(
-        100vw
-        - max(0px, env(safe-area-inset-left))
-        - ( max(0px, env(safe-area-inset-right)) + var(--right-stop) )
-      );
-      display:block;border:0;outline:0;padding:8px 12px;
-      color:#fff;background:rgba(255,255,255,.12);border-radius:20px;font-size:.95em;
-      -webkit-appearance:none;appearance:none;
-    }
-    /* cart button next to search */
-    .hdr{display:grid;grid-template-columns:1fr 48px;align-items:center;column-gap:12px;
-         padding:10px max(0px, env(safe-area-inset-right)) 10px max(0px, env(safe-area-inset-left));}
-    .search{margin-left:0;padding-left:0;}
-    .search input{width:100%;}
-    .cart{width:48px;height:36px;display:flex;align-items:center;justify-content:center;border:0;
-          border-radius:18px;background:rgba(255,255,255,.12);color:#fff;font-size:18px;}
-    .cart:active{transform:scale(.98);}
-    /* mini cart modal */
+    :root { --bg:#0b0b0d; --text:#e9e9ec; --accent:#6ea8fe; }
+    html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+    /* Header with cart + centered search */
+    .app-header{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#0b0b0d;position:sticky;top:0;z-index:10}
+    .cart-btn{font-size:1.4em;background:none;border:0;color:var(--text)}
+    .search{display:flex;flex:1;max-width:260px;margin-left:8px;background:rgba(255,255,255,.1);border-radius:20px;overflow:hidden}
+    .search-input{flex:1;border:0;outline:0;padding:8px 12px;color:#fff;background:transparent;font-size:.95em}
+    .search-btn{border:0;padding:0 12px;background:var(--accent);color:#fff}
+    /* Demo content so you can scroll */
+    main{padding:16px}
+    /* Mini cart modal */
     .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:saturate(1.2) blur(4px);z-index:20;}
     .overlay.show{display:flex;}
     .sheet{width:min(88vw,420px);max-height:72vh;background:#16161a;color:#e9e9ec;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.45);display:flex;flex-direction:column;overflow:hidden;transform:translateY(10px);opacity:0;transition:transform .18s ease, opacity .18s ease;}
@@ -48,20 +26,36 @@
     .sheet-close{border:0;border-radius:12px;padding:6px 10px;background:rgba(255,255,255,.12);color:#fff;font-size:14px;}
     .sheet-body{padding:14px;overflow:auto;}
     body.lock{overflow:hidden;}
-    /* mini cart modal */
-    .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:saturate(1.2) blur(4px);z-index:20;}
-    .overlay.show{display:flex;}
-    .sheet{width:min(88vw,420px);max-height:72vh;background:#16161a;color:#e9e9ec;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.45);display:flex;flex-direction:column;overflow:hidden;transform:translateY(10px);opacity:0;transition:transform .18s ease,opacity .18s ease;}
-    .overlay.show .sheet{transform:translateY(0);opacity:1;}
-    .sheet-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#1c1c21;border-bottom:1px solid rgba(255,255,255,.06);}
-    .sheet-title{font-weight:600;}
-    .sheet-close{border:0;border-radius:12px;padding:6px 10px;background:rgba(255,255,255,.12);color:#fff;font-size:14px;}
-    .sheet-body{padding:14px;overflow:auto;}
-    body.lock{overflow:hidden;}
-    /* v38: carousel */
-    .carousel{margin:10px auto 0; max-width:680px; padding:0 12px;}
-    .carousel-wrap{position:relative; border-radius:14px; overflow:hidden; background:#151515;}
-    .track{display:flex; scroll-snap-type:x mandatory; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-behavior:smooth;}
+  </style>
+</head>
+<body>
+  <header class="app-header" role="banner">
+    <button class="cart-btn" aria-label="Open cart" title="Cart">🛒</button>
+    <form class="search" role="search" aria-label="Search" onsubmit="event.preventDefault(); /* wire to your search later */">
+      <input class="search-input" type="search" name="q" placeholder="Search snacks…" autocomplete="off" enterkeyhint="search">
+      <button class="search-btn" type="submit" aria-label="Search">Search</button>
+    </form>
+  </header>
+
+  <main>
+    <h1>Hello</h1>
+    <p>Your header has a working search bar (no page reload). Hook it up later by replacing the <code>onsubmit</code> with your logic.</p>
+    <p>Scroll to confirm the header stays put. No sticky cart bar was added.</p>
+  </main>
+  <div class="overlay" id="overlay">
+    <section class="sheet" id="cartSheet" role="dialog" aria-modal="true">
+      <header class="sheet-head">
+        <div class="sheet-title">Your Cart</div>
+        <button class="sheet-close" id="closeBtn" type="button">Close</button>
+      </header>
+      <div class="sheet-body">Mini cart goes here.</div>
+    </section>
+  </div>
+  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v21-patch</div>
+  <script>(function(){var overlay=document.getElementById("overlay"),openBtn=document.getElementById("cartBtn"),closeBtn=document.getElementById("closeBtn");function op(){document.body.classList.add("lock");overlay.classList.add("show");}function cl(){overlay.classList.remove("show");document.body.classList.remove("lock");}openBtn&&openBtn.addEventListener("click",op);closeBtn&&closeBtn.addEventListener("click",cl);overlay&&overlay.addEventListener("click",function(e){if(e.target===overlay)cl();});window.addEventListener("keydown",function(e){if(e.key==="Escape")cl();});})();</script>
+</body>
+</html>
+verflow-scrolling:touch; scroll-behavior:smooth;}
     .slide{min-width:100%; height:200px; scroll-snap-align:center; position:relative;}
     .slide img{width:100%; height:100%; object-fit:cover; display:block;}
     .dots{display:flex; gap:6px; justify-content:center; padding:8px 0;}
