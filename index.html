@@ -163,18 +163,27 @@ if(O&&B){ bind(); O.addEventListener("click",function(e){ if(e.target===O) close
   <style>.carousel .slide{height:84px}@media (min-width:768px){.carousel .slide{height:120px}}</style>
   <!-- v45-height: 94px mobile / 120px tablet (slightly larger) -->
   <style>.carousel .slide{height:94px}@media (min-width:768px){.carousel .slide{height:120px}}</style>
-  <!-- v49-autorotate7s: working JS -->
+</body>
+  <!-- v50-autorotate7s: robust 7s loop 1→2→3→1… -->
 <script>(function(){
   var t=document.getElementById("carTrack"); if(!t) return;
-  var slides=t.querySelectorAll(".slide");
+  var slides=t.querySelectorAll(".slide"); var L=slides.length;
   function W(){return t.getBoundingClientRect().width}
-  function idx(){return Math.round(t.scrollLeft/W())}
   function go(i){t.scrollTo({left:i*W(),behavior:"smooth"})}
-  function start(){stop();t._auto=setInterval(function(){var i=idx();var n=(i+1)%slides.length;go(n);},7000)}
-  function stop(){if(t._auto){clearInterval(t._auto);t._auto=null}}
+  // keep our own index so we never misread during smooth scroll
+  var cur=Math.round(t.scrollLeft/W())||0;
+  function advance(){cur=(cur+1)%L; go(cur)}
+  function start(){stop(); t._auto=setInterval(advance,7000)}
+  function stop(){if(t._auto){clearInterval(t._auto); t._auto=null}}
+  // if user swipes, snap our cur to the nearest slide after momentum stops
+  var snapTimer=null;
+  t.addEventListener("scroll",function(){
+    if(snapTimer) clearTimeout(snapTimer);
+    snapTimer=setTimeout(function(){cur=Math.round(t.scrollLeft/W())},200);
+  }, {passive:true});
   document.addEventListener("visibilitychange",function(){if(document.hidden)stop();else start()});
-  window.addEventListener("resize",function(){go(idx())});
+  window.addEventListener("resize",function(){go(cur)});
   start();
 })();</script>
-<div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v49-autorotate7s</div>
+<div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v50-autorotate7s</div>
 </body>
