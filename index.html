@@ -3,20 +3,42 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>NewApp</title>
+  <title></title>
   <meta name="theme-color" content="#0b0b0d">
+  <!-- v26-restore -->
   <style>
-    :root { --bg:#0b0b0d; --text:#e9e9ec; --accent:#6ea8fe; }
-    html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif}
-    /* Header with cart + centered search */
-    .app-header{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#0b0b0d;position:sticky;top:0;z-index:10}
-    .cart-btn{font-size:1.4em;background:none;border:0;color:var(--text)}
-    .search{display:flex;flex:1;max-width:260px;margin-left:8px;background:rgba(255,255,255,.1);border-radius:20px;overflow:hidden}
-    .search-input{flex:1;border:0;outline:0;padding:8px 12px;color:#fff;background:transparent;font-size:.95em}
-    .search-btn{border:0;padding:0 12px;background:var(--accent);color:#fff}
-    /* Demo content so you can scroll */
-    main{padding:16px}
-    /* Mini cart modal */
+    :root{
+      --bg:#0b0b0d; --text:#e9e9ec;
+      /* keep the right stop so the bar ends before the white line */
+      --right-stop:120px;
+    }
+    html,body{
+      margin:0;height:100%;
+      background:var(--bg);color:var(--text);
+      font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+    }
+    .hdr{padding:10px 0;background:#0b0b0d;position:sticky;top:0;z-index:1;}
+    /* flush LEFT, hard stop on RIGHT (like your working v19) */
+    .search{margin-left:max(0px, env(safe-area-inset-left));}
+    .search input{
+      width:calc(
+        100vw
+        - max(0px, env(safe-area-inset-left))
+        - ( max(0px, env(safe-area-inset-right)) + var(--right-stop) )
+      );
+      display:block;border:0;outline:0;padding:8px 12px;
+      color:#fff;background:rgba(255,255,255,.12);border-radius:20px;font-size:.95em;
+      -webkit-appearance:none;appearance:none;
+    }
+    /* cart button next to search */
+    .hdr{display:grid;grid-template-columns:1fr 48px;align-items:center;column-gap:12px;
+         padding:10px max(0px, env(safe-area-inset-right)) 10px max(0px, env(safe-area-inset-left));}
+    .search{margin-left:0;padding-left:0;}
+    .search input{width:100%;}
+    .cart{width:48px;height:36px;display:flex;align-items:center;justify-content:center;border:0;
+          border-radius:18px;background:rgba(255,255,255,.12);color:#fff;font-size:18px;}
+    .cart:active{transform:scale(.98);}
+    /* mini cart modal */
     .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:saturate(1.2) blur(4px);z-index:20;}
     .overlay.show{display:flex;}
     .sheet{width:min(88vw,420px);max-height:72vh;background:#16161a;color:#e9e9ec;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.45);display:flex;flex-direction:column;overflow:hidden;transform:translateY(10px);opacity:0;transition:transform .18s ease, opacity .18s ease;}
@@ -26,36 +48,20 @@
     .sheet-close{border:0;border-radius:12px;padding:6px 10px;background:rgba(255,255,255,.12);color:#fff;font-size:14px;}
     .sheet-body{padding:14px;overflow:auto;}
     body.lock{overflow:hidden;}
-  </style>
-</head>
-<body>
-  <header class="app-header" role="banner">
-    <button class="cart-btn" aria-label="Open cart" title="Cart">🛒</button>
-    <form class="search" role="search" aria-label="Search" onsubmit="event.preventDefault(); /* wire to your search later */">
-      <input class="search-input" type="search" name="q" placeholder="Search snacks…" autocomplete="off" enterkeyhint="search">
-      <button class="search-btn" type="submit" aria-label="Search">Search</button>
-    </form>
-  </header>
-
-  <main>
-    <h1>Hello</h1>
-    <p>Your header has a working search bar (no page reload). Hook it up later by replacing the <code>onsubmit</code> with your logic.</p>
-    <p>Scroll to confirm the header stays put. No sticky cart bar was added.</p>
-  </main>
-  <div class="overlay" id="overlay">
-    <section class="sheet" id="cartSheet" role="dialog" aria-modal="true">
-      <header class="sheet-head">
-        <div class="sheet-title">Your Cart</div>
-        <button class="sheet-close" id="closeBtn" type="button">Close</button>
-      </header>
-      <div class="sheet-body">Mini cart goes here.</div>
-    </section>
-  </div>
-  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v21-patch</div>
-  <script>(function(){var overlay=document.getElementById("overlay"),openBtn=document.getElementById("cartBtn"),closeBtn=document.getElementById("closeBtn");function op(){document.body.classList.add("lock");overlay.classList.add("show");}function cl(){overlay.classList.remove("show");document.body.classList.remove("lock");}openBtn&&openBtn.addEventListener("click",op);closeBtn&&closeBtn.addEventListener("click",cl);overlay&&overlay.addEventListener("click",function(e){if(e.target===overlay)cl();});window.addEventListener("keydown",function(e){if(e.key==="Escape")cl();});})();</script>
-</body>
-</html>
-verflow-scrolling:touch; scroll-behavior:smooth;}
+    /* mini cart modal */
+    .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:saturate(1.2) blur(4px);z-index:20;}
+    .overlay.show{display:flex;}
+    .sheet{width:min(88vw,420px);max-height:72vh;background:#16161a;color:#e9e9ec;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.45);display:flex;flex-direction:column;overflow:hidden;transform:translateY(10px);opacity:0;transition:transform .18s ease,opacity .18s ease;}
+    .overlay.show .sheet{transform:translateY(0);opacity:1;}
+    .sheet-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#1c1c21;border-bottom:1px solid rgba(255,255,255,.06);}
+    .sheet-title{font-weight:600;}
+    .sheet-close{border:0;border-radius:12px;padding:6px 10px;background:rgba(255,255,255,.12);color:#fff;font-size:14px;}
+    .sheet-body{padding:14px;overflow:auto;}
+    body.lock{overflow:hidden;}
+    /* v38: carousel */
+    .carousel{margin:10px auto 0; max-width:680px; padding:0 12px;}
+    .carousel-wrap{position:relative; border-radius:14px; overflow:hidden; background:#151515;}
+    .track{display:flex; scroll-snap-type:x mandatory; overflow-x:auto; -webkit-overflow-scrolling:touch; scroll-behavior:smooth;}
     .slide{min-width:100%; height:200px; scroll-snap-align:center; position:relative;}
     .slide img{width:100%; height:100%; object-fit:cover; display:block;}
     .dots{display:flex; gap:6px; justify-content:center; padding:8px 0;}
@@ -83,16 +89,10 @@ verflow-scrolling:touch; scroll-behavior:smooth;}
 .card button{background:#6ea8fe;color:#fff;border:none;border-radius:8px;padding:4px 10px;font-size:16px;}
 .card h3{margin:6px 0 4px;font-size:16px;}
 .card p{margin:0 0 8px;color:#ccc;}
-  </style>
-.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:14px;}
-.pcard{background:rgba(255,255,255,0.06);border-radius:18px;padding:12px 12px 16px;min-height:230px;box-shadow:0 4px 14px rgba(0,0,0,0.3);position:relative}
-.pcard h3{margin:8px 0 6px;font-size:17px;font-weight:600}
-.pcard p,.pcard .price{color:#ccc;font-size:15px;margin-bottom:14px}
-.pcard button{background:#6ea8fe;color:#fff;border:0;border-radius:12px;padding:8px 14px;font-size:18px;box-shadow:0 3px 10px rgba(110,168,254,.4)}
+/* v51-pcards */
 </head>
 <body>
   <header class="hdr">
-    <form class="search" role="search" onsubmit="event.preventDefault();">
       <input type="search" name="q" placeholder="Search…" autocomplete="off" enterkeyhint="search">
     </form>
     <button class="cart" id="cartBtn" aria-label="Cart">🛒</button>
@@ -115,9 +115,6 @@ verflow-scrolling:touch; scroll-behavior:smooth;}
 <div class="card"><h3>Greek Yogurt</h3><p>$2.79</p><button>+</button></div>
 </section>
   
-  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v35-trim</div>
-  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v36-bind</div>
-  <script>(function(){var O=document.getElementById("overlay"),B=document.getElementById("cartBtn"),C=document.getElementById("closeBtn"),last=null;function openM(){last=document.activeElement;document.body.classList.add("lock");O.classList.add("show");O.setAttribute("aria-hidden","false");setTimeout(function(){(document.querySelector(".sheet-body")||O).focus();},0);}function closeM(){O.classList.remove("show");O.setAttribute("aria-hidden","true");document.body.classList.remove("lock");if(last&&last.focus)last.focus();}if(B)B.addEventListener("click",openM);if(C)C.addEventListener("click",closeM);if(O)O.addEventListener("click",function(e){if(e.target===O)closeM();});window.addEventListener("keydown",function(e){if(e.key==="Escape")closeM();});})();</script>
   <!-- v37-modal: add centered mini page back -->
   <style>
     .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:saturate(1.2) blur(4px);z-index:20;}
@@ -149,12 +146,7 @@ verflow-scrolling:touch; scroll-behavior:smooth;}
     .dot{width:6px;height:6px;border-radius:50%;background:#5a5a5a;opacity:.6;}
     .dot.active{background:#cfcfcf;opacity:1;}
     @media (min-width:768px){.slide{height:240px}}
-  </style>
-.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:14px;}
-.pcard{background:rgba(255,255,255,0.06);border-radius:18px;padding:12px 12px 16px;min-height:230px;box-shadow:0 4px 14px rgba(0,0,0,0.3);position:relative}
-.pcard h3{margin:8px 0 6px;font-size:17px;font-weight:600}
-.pcard p,.pcard .price{color:#ccc;font-size:15px;margin-bottom:14px}
-.pcard button{background:#6ea8fe;color:#fff;border:0;border-radius:12px;padding:8px 14px;font-size:18px;box-shadow:0 3px 10px rgba(110,168,254,.4)}
+/* v51-pcards */
   <div class="overlay" id="overlay" aria-hidden="true">
     <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
       <header class="sheet-head">
@@ -165,47 +157,16 @@ verflow-scrolling:touch; scroll-behavior:smooth;}
       <div class="sheet-body" tabindex="0"><p>Mini cart goes here.</p></div>
     </section>
   </div>
-  <script>(function(){var O=document.getElementById("overlay"),B=document.getElementById("cartBtn"),C=null,last=null;
-function bind(){C=document.getElementById("closeBtn"); if(B)B.addEventListener("click",openM); if(C)C.addEventListener("click",closeM);}
-function openM(){last=document.activeElement; document.body.classList.add("lock"); O.classList.add("show"); O.setAttribute("aria-hidden","false"); setTimeout(function(){(document.querySelector(".sheet-body")||O).focus();},0);}
-function closeM(){O.classList.remove("show"); O.setAttribute("aria-hidden","true"); document.body.classList.remove("lock"); if(last&&last.focus) last.focus();}
-if(O&&B){ bind(); O.addEventListener("click",function(e){ if(e.target===O) closeM();}); window.addEventListener("keydown",function(e){ if(e.key==="Escape") closeM();}); }})();</script>
-  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v37-modal</div>
   <!-- v38-carousel -->
-  <script>(function(){
-    var t=document.getElementById(carTrack); if(!t) return;
-    var slides=[].slice.call(t.querySelectorAll(.slide)); var dots=document.getElementById(carDots);
-    slides.forEach(function(_,i){ var d=document.createElement(b); d.className=dot+(i?"":" active"); d.addEventListener(click,function(){ t.scrollTo({left:i*t.clientWidth,behavior:smooth}); }); dots.appendChild(d); });
-    function setDot(){ var i=Math.round(t.scrollLeft/t.clientWidth); [].forEach.call(dots.children,function(n,k){ n.classList.toggle(active,k===i); }); }
-    t.addEventListener(scroll, function(){ clearTimeout(t._z); t._z=setTimeout(setDot,60); });
-    var a=setInterval(function(){ var i=Math.round(t.scrollLeft/t.clientWidth); var nx=(i+1)%slides.length; t.scrollTo({left:nx*t.clientWidth,behavior:smooth}); }, 5000);
-    window.addEventListener(visibilitychange, function(){ if(document.hidden) clearInterval(a); });
-  })();</script>
-  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v38-carousel</div>
-  <style>.carousel .slide{height:84px}@media (min-width:768px){.carousel .slide{height:120px}}</style>
-.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:14px;}
-.pcard{background:rgba(255,255,255,0.06);border-radius:18px;padding:12px 12px 16px;min-height:230px;box-shadow:0 4px 14px rgba(0,0,0,0.3);position:relative}
-.pcard h3{margin:8px 0 6px;font-size:17px;font-weight:600}
-.pcard p,.pcard .price{color:#ccc;font-size:15px;margin-bottom:14px}
-.pcard button{background:#6ea8fe;color:#fff;border:0;border-radius:12px;padding:8px 14px;font-size:18px;box-shadow:0 3px 10px rgba(110,168,254,.4)}
+/* v51-pcards */
   <!-- v45-height: 94px mobile / 120px tablet (slightly larger) -->
-  <style>.carousel .slide{height:94px}@media (min-width:768px){.carousel .slide{height:120px}}</style>
-.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:14px;}
-.pcard{background:rgba(255,255,255,0.06);border-radius:18px;padding:12px 12px 16px;min-height:230px;box-shadow:0 4px 14px rgba(0,0,0,0.3);position:relative}
-.pcard h3{margin:8px 0 6px;font-size:17px;font-weight:600}
-.pcard p,.pcard .price{color:#ccc;font-size:15px;margin-bottom:14px}
-.pcard button{background:#6ea8fe;color:#fff;border:0;border-radius:12px;padding:8px 14px;font-size:18px;box-shadow:0 3px 10px rgba(110,168,254,.4)}
+/* v51-pcards */
   <style>
   /* Edge-to-edge banner (kill inner padding/background) */
   .carousel, .track { padding:0; background:transparent; }
   .slide { margin:0; overflow:hidden; border-radius:16px; }
   .slide img { display:block; width:100%; height:100%; object-fit:cover; }
-  </style>
-.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:14px;}
-.pcard{background:rgba(255,255,255,0.06);border-radius:18px;padding:12px 12px 16px;min-height:230px;box-shadow:0 4px 14px rgba(0,0,0,0.3);position:relative}
-.pcard h3{margin:8px 0 6px;font-size:17px;font-weight:600}
-.pcard p,.pcard .price{color:#ccc;font-size:15px;margin-bottom:14px}
-.pcard button{background:#6ea8fe;color:#fff;border:0;border-radius:12px;padding:8px 14px;font-size:18px;box-shadow:0 3px 10px rgba(110,168,254,.4)}
+/* v51-pcards */
   <style>
   /* Fill the rounded card – no inner gap */
   .carousel{padding:0; margin:16px auto; background:transparent; overflow:hidden; border-radius:16px;}
@@ -213,12 +174,7 @@ if(O&&B){ bind(); O.addEventListener("click",function(e){ if(e.target===O) close
   .slide{flex:0 0 100%; height:170px; margin:0; overflow:hidden; border-radius:16px;}
   @media (min-width:768px){ .slide{height:200px;} }
   .slide img{display:block; width:100%; height:100%; object-fit:cover;}
-  </style>
-.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:14px;}
-.pcard{background:rgba(255,255,255,0.06);border-radius:18px;padding:12px 12px 16px;min-height:230px;box-shadow:0 4px 14px rgba(0,0,0,0.3);position:relative}
-.pcard h3{margin:8px 0 6px;font-size:17px;font-weight:600}
-.pcard p,.pcard .price{color:#ccc;font-size:15px;margin-bottom:14px}
-.pcard button{background:#6ea8fe;color:#fff;border:0;border-radius:12px;padding:8px 14px;font-size:18px;box-shadow:0 3px 10px rgba(110,168,254,.4)}
+/* v51-pcards */
   <style>
   /* FINAL OVERRIDES: kill inner gaps & baseline space */
   .carousel{padding:0!important; margin:16px auto; background:transparent!important; overflow:hidden!important; border-radius:16px!important; box-shadow:none!important;}
@@ -227,42 +183,127 @@ if(O&&B){ bind(); O.addEventListener("click",function(e){ if(e.target===O) close
   .slide{flex:0 0 100%; height:140px!important; margin:0!important; overflow:hidden!important; border-radius:16px!important; font-size:0!important; line-height:0!important;}
   @media (min-width:768px){ .slide{height:170px!important;} }
   .slide img{display:block!important; width:100%!important; height:100%!important; object-fit:cover!important;}
-  </style>
-.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:14px;}
-.pcard{background:rgba(255,255,255,0.06);border-radius:18px;padding:12px 12px 16px;min-height:230px;box-shadow:0 4px 14px rgba(0,0,0,0.3);position:relative}
-.pcard h3{margin:8px 0 6px;font-size:17px;font-weight:600}
-.pcard p,.pcard .price{color:#ccc;font-size:15px;margin-bottom:14px}
-.pcard button{background:#6ea8fe;color:#fff;border:0;border-radius:12px;padding:8px 14px;font-size:18px;box-shadow:0 3px 10px rgba(110,168,254,.4)}
-<script>(function(){try{var btns=Array.from(document.querySelectorAll("button")).filter(function(b){return b.textContent.trim()==="+";});if(!btns.length)return;var cards=btns.map(function(b){var el=b;while(el&&el.tagName.toLowerCase()!="div")el=el.parentElement;return el;}).filter(Boolean);cards.forEach(function(c){c.classList.add("pcard")});var container=cards[0]&&cards[0].parentElement;while(container&&!cards.every(function(c){return container.contains(c)})){container=container.parentElement}if(container)container.classList.add("pgrid");}catch(e){}})();</script>
+/* v51-pcards */
 </body>
   <!-- v52-autorotate7s-io: observer-based loop 1→2→3→1 -->
-<script>(function(){
-  var t=document.getElementById("carTrack"); if(!t) return;
-  var slides=[].slice.call(t.querySelectorAll(":scope > .slide"));
-  if(!slides.length) slides=[].slice.call(t.querySelectorAll(".slide"));
-  var L=slides.length; if(!L) return;
-  var cur=0;
-  function go(i){slides[i].scrollIntoView({behavior:"smooth",inline:"start",block:"nearest"})}
   // Track the slide that is mostly in view using IntersectionObserver
-  if("IntersectionObserver" in window){
-    var io=new IntersectionObserver(function(es){
-      var best=-1,bi=cur; es.forEach(function(e){
-        var i=slides.indexOf(e.target); if(e.intersectionRatio>best){best=e.intersectionRatio;bi=i}
-      }); cur=bi;
-    },{root:t,threshold:[0.6]});
-    slides.forEach(function(s){io.observe(s)});
-  }else{
     // Fallback: snap from pixels if IO missing
-    function W(){return t.clientWidth};
-    t.addEventListener("scroll",function(){cur=Math.round(t.scrollLeft/W())},{passive:true});
-  }
-  function advance(){cur=(cur+1)%L; go(cur)}
-  function start(){ stop(); t._auto=setInterval(advance,7000) }
-  function stop(){ if(t._auto){clearInterval(t._auto); t._auto=null} }
-  document.addEventListener("visibilitychange",function(){ if(document.hidden) stop(); else start() });
-  window.addEventListener("resize",function(){ go(cur) });
-  start();
-})();</script>
-<div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v52-autorotate7s-io</div>
-<script>(function(){try{var btns=Array.from(document.querySelectorAll("button")).filter(function(b){return b.textContent.trim()==="+";});if(!btns.length)return;var cards=btns.map(function(b){var el=b;while(el&&el.tagName.toLowerCase()!="div")el=el.parentElement;return el;}).filter(Boolean);cards.forEach(function(c){c.classList.add("pcard")});var container=cards[0]&&cards[0].parentElement;while(container&&!cards.every(function(c){return container.contains(c)})){container=container.parentElement}if(container)container.classList.add("pgrid");}catch(e){}})();</script>
 </body>
+rage Keys ---------- */
+
+  /* ---------- External (optional) ---------- */
+
+  /* ---------- Toasts ---------- */
+
+  /* ---------- Persistent state ---------- */
+
+  /* ---------- Stock ---------- */
+    'Potato Chips': 20,'Protein Bar': 18,'Trail Mix': 15,'Granola Bar': 24,
+    'Doritos Flamin’ Hot Nacho': 30,'Greek Yogurt': 12,'Mixed Nuts': 14,
+    'Fruit Cup': 10,'Energy Drink': 16,'Chocolate Bar': 22
+
+
+  /* ---------- Greeting & Profile ---------- */
+  /* ---------- Carousel ---------- */
+      data = [
+
+
+    // autoplay with interaction guard
+    ['pointerdown','wheel','touchstart','mousedown','scroll'].forEach(ev =>
+  /* ---------- Cart ---------- */
+      html += `<div class="row-between" style="margin-top:6px">
+        </div>
+        </div>
+
+  /* Delegate +/− and remove in cart */
+
+  /* ---------- Favorites ---------- */
+
+  /* ---------- Search & Filter ---------- */
+
+  /* ---------- Product Sheet ---------- */
+  /* ---------- Promo & Tip ---------- */
+
+  /* ---------- Checkout Flow ---------- */
+
+        when: serverTimestamp(),
+        name: order.name,
+        location: order.loc,
+        lines: order.lines,
+        total: order.total,
+        status: 'active'
+
+
+      id: 'FS-' + Date.now(),
+      at: new Date().toISOString(),
+      name, loc, promo, tip, subtotal, discount: disc, total,
+      lines
+
+
+    // Optional IFTTT webhook (only if key is set)
+          method:'POST',
+
+
+
+  /* Re-order last */
+  /* ---------- Settings & Admin ---------- */
+
+
+  /* ---- Admin Subtabs (fallbacks OK) ---- */
+  const DEFAULT_SUBTABS = [
+  async function loadSubtabsJSON(urls=[
+    'assets/settings-tabs.json',
+    'assets/admin.json',
+    'assets/settings.json',
+    'assets/ui.json'
+
+  /* ---- Inventory helpers: pop-on-card ---- */
+
+  /* ---- Admin: Stock editor (editable list of products) ---- */
+    const names = Object.keys(stock).length ? Object.keys(stock) :
+    const rows = names.sort().map(n => `
+    host.innerHTML = `
+        <div>Item</div><div>Stock</div><div></div><div></div>
+  /* Handle Save / Zero in Inventory and pop on card */
+
+      // Pop on product card + pulse
+
+      // Refresh dependent views
+
+
+
+  /* ---- Admin: Orders view (tap to detail) ---- */
+    host.innerHTML = orders.slice().reverse().map((o,i) => `
+      </div>
+
+    $('#orderLines').innerHTML=(o.lines||[]).map(l=>`
+      <div class="row-between" style="padding:6px 0">
+
+
+
+
+
+    // Add to delivered history (local)
+
+    // Write back to original order array (reverse mapping)
+
+    // Try Firestore status update (best-effort)
+
+
+  /* ---- Admin: KPIs ---- */
+    $('#kpi
+  /* ---------- Bootstrap ---------- */
+
+      // Overlay close on backdrop & ESC
+
+      // Safe binds
+  </script-->
+</body>
+</html>
+<!-- rebuild 1759556295 -->
+html>
+<!-- rebuild 1759556295 -->
+<!-- deploy 1759818838 -->
+<style id="headerStyles">
+  /* modal */
+</style>
