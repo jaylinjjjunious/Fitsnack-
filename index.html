@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <script>(function(){try{if(!("serviceWorker" in navigator))return;navigator.serviceWorker.getRegistrations().then(rs=>Promise.all(rs.map(r=>r.unregister()))).then(()=>{if(window.caches){return caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k))))}}).then(()=>{if(location.search.indexOf("cacheCleared=1")<0){location.search+=(location.search?"&":"?")+"cacheCleared=1";}});}catch(e){console.log(e)}})();</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title></title>
@@ -9,18 +8,26 @@
   <style>
     :root{--bg:#0b0b0d;--text:#e9e9ec}
     html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif}
-    .hdr{display:flex;justify-content:center;padding:10px 14px;background:#0b0b0d;position:sticky;top:0;z-index:1}
-    .search{flex:1;max-width:260px;background:rgba(255,255,255,.1);border-radius:20px}
-    .search input{width:100%;border:0;outline:0;padding:8px 12px;color:#fff;background:transparent;font-size:.95em}
+    .hdr{padding:10px 0;background:#0b0b0d;position:sticky;top:0;z-index:1}
+    .search{width:100%;padding:0 14px;box-sizing:border-box}
+    .search input{
+      width:100%;
+      border:0;
+      outline:0;
+      padding:8px 12px;
+      color:#fff;
+      background:rgba(255,255,255,.1);
+      border-radius:20px;
+      font-size:.95em;
+      display:block;
+    }
   </style>
 </head>
 <body>
   <header class="hdr">
-    <!-- NO cart, NO search button -->
     <form class="search" role="search" onsubmit="event.preventDefault(); console.log(this.q.value);">
       <input type="search" name="q" placeholder="Search…" autocomplete="off" enterkeyhint="search">
     </form>
   </header>
-  <script>(function(){if(!("serviceWorker" in navigator))return;navigator.serviceWorker.getRegistrations().then(r=>Promise.all(r.map(x=>x.unregister()))).then(()=>{if(window.caches){caches.keys().then(k=>k.map(n=>caches.delete(n)));}}).then(()=>{if(location.search.indexOf("cacheCleared=1")<0){location.search+=(location.search?"&":"?")+"cacheCleared=1";}});})();</script>
 </body>
 </html>
