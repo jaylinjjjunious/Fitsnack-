@@ -174,6 +174,20 @@ function hideCart(){var m=document.getElementById("cartModal"); if(m){m.style.di
     if(!q){ ev.preventDefault(); ev.stopPropagation(); /* no empty search popup */ }
   }, true); }
 })();</script>
+<script>
+ (function(){
+   const $=s=>document.querySelector(s);
+   const btn=$("#cartBtn");
+   const dialog=document.getElementById("cartDialog");
+   const backdrop=document.getElementById("cartBackdrop");
+   function openCart(){ if(backdrop) backdrop.hidden=false; if(dialog) dialog.hidden=false; document.body.style.overflow="hidden"; }
+   function closeCart(){ if(dialog) dialog.hidden=true; if(backdrop) backdrop.hidden=true; document.body.style.overflow=""; }
+   if(btn) btn.onclick=openCart;
+   if(backdrop) backdrop.onclick=closeCart;
+   const x=document.getElementById("cartClose"); if(x) x.onclick=closeCart;
+   window.addEventListener("keydown",e=>{ if(e.key==="Escape") closeCart(); });
+ })();
+</script>
 </body>
 </html>
 <script>
