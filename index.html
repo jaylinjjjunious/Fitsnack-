@@ -32,34 +32,6 @@
     p{margin:0;color:var(--muted)}
     footer{opacity:.7;text-align:center;padding:24px 8px}
   </style>
-  #cartMini, .cart-mini, .mini-cart, .floating-cart, .sticky-mini, [data-mini-cart]{ display:none !important; }
-<style id="cartModalOverrides">
-  /* Always start hidden */
-  #cartModal{display:none !important; position:fixed; inset:0; z-index:10000; 
-             align-items:center; justify-content:center; background:rgba(0,0,0,.5);}
-  /* When opened */
-  #cartModal.open{display:flex !important;}
-  /* Panel size: a bit smaller */
-  #cartModal .cart-panel{width:92vw; max-width:340px; border-radius:16px; 
-    background:#121214; color:#eee; padding:20px; box-shadow:0 10px 40px rgba(0,0,0,.35);}
-  #cartModal .close-btn{float:right; padding:6px 10px; border:1px solid #333; border-radius:10px;}
-</style>
-  <style id="cartSizingOverride">
-  .cart-dialog{ width:clamp(320px,65vw,440px); max-height:65vh; top:50%; left:50%; transform:translate(-50%,-50%); position:fixed; z-index:1000; width:clamp(320px,60vw,420px);max-height:60vh;top:50%;left:50%;transform:translate(-50%,-50%);position:fixed;z-index:1000;padding:18px;border-radius:16px;background:#141414;box-shadow:0 10px 40px rgba(0,0,0,.45)}
-  .cart-backdrop{ position:fixed; inset:0; backdrop-filter:blur(2px); background:rgba(0,0,0,.5); z-index:999; position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);z-index:999}
-  .cart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-  .cart-title{font-size:20px;font-weight:700}
-  </style>
-</head>
-<body>
-  <header>
-    <div class="bar">
-      <!-- Search bar only (no FitSnacks text) -->
-      <form class="search" role="search" aria-label="Search snacks" onsubmit="return handleSearch(event)">
-        <input id="q" name="q" type="search" placeholder="Search snacks…" autocomplete="off" />
-        <button id="cartBtn" type="button" class="icon-btn">CART</button>
-      </form>
-    </div>
   </header>
 
   <main>
