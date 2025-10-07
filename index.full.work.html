@@ -1,345 +1,527 @@
-<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-
-<!-- __MUTED__ <script>window.addEventListener("error",function(e){try{var pre=document.createElement("pre");pre.style.cssText="position:fixed;inset:0;background:#000;color:#0f0;padding:12px;font:12px/1.4 monospace;z-index:999999;overflow:auto";pre.textContent="JS ERROR: "+(e.message||e)+"\n"+(e.filename||"")+":"+(e.lineno||"")+":"+(e.colno||"");document.body.innerHTML="";document.body.appendChild(pre)}catch(_){};});</script> __MUTED__ -->
-<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FitSnacks – minimal test</title>
-<h1 style="font:700 20px/1.4 -apple-system,Segoe UI,sans-serif">Minimal test</h1>
-<p>If you can read this, rendering is fine and the issue is in app CSS/JS.</p>
-
-<!-- __MUTED__ <script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister()));
-}
-if (window.caches) {
-  caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
-}
-console.log("SW & caches cleared");
-</script> __MUTED__ -->
-,.ghost,.primary,.field{
-      -webkit-backdrop-filter:blur(var(--blur)); backdrop-filter:blur(var(--blur));
-      background:rgba(20,20,24,0.60); border:1px solid rgba(255,255,255,.08);
-      box-shadow:0 4px 24px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.04);
-    }
-    .row{ display:flex; align-items:center; gap:12px; position:relative; }
-    .row-between{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FitSnacks</title>
+  <meta name="theme-color" content="#0b0b0d">
+  <link rel="manifest" href="manifest.webmanifest">
+  <style>
+    :root { --bg:#0b0b0d; --text:#e9e9e9; --muted:#cfcfd6; --accent:#6ea8fe; --glass:rgba(30,30,36,.55); --line:rgba(255,255,255,.08); }
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--text);font:16px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:flex;flex-direction:column}
 
     /* Header */
-    .search-wrap{ flex:0 0 160px; min-width:0; position:relative; }
-    .search{ width:100%; border-radius:999px; padding:12px 44px 12px 36px; color:var(--text); outline:0; border:1px solid #2a2a2e; }
-    .icon-left{ position:absolute; left:12px; top:50%; transform:translateY(-50%); pointer-events:none; }
-    .icon-rights{ margin-left:auto; display:flex; gap:10px; flex-shrink:0; position:relative; z-index:10060; }
-    .btn{ border-radius:14px; width:44px; height:44px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; }
-    #cartBtn .badge{ position:absolute; top:-6px; right:-8px; background:var(--badge); color:#fff; border-radius:999px; padding:1px 6px; font-size:12px; font-weight:700; display:none; }
-
-    .greet{ margin:8px 2px 2px; color:#c7c7cc; font-size:14px; }
-
-    /* Carousel */
-    .carousel{ margin:10px 0 6px; position:relative; z-index:1; }
-    .snapper{ height:100px; display:flex; align-items:stretch; gap:var(--snap-gap); overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; padding:0 var(--snap-gap); }
-    .snapper::-webkit-scrollbar{display:none;}
-    .snap-spacer{flex:0 0 7.5%;}
-    .snap-card{ position:relative; flex:0 0 85%; scroll-snap-align:center; border-radius:14px; overflow:hidden; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.25); display:flex; align-items:center; justify-content:center; }
-    .banner{ width:100%; height:100%; object-fit:cover; }
-    .snap-meta{ position:absolute; left:10px; bottom:8px; right:10px; display:flex; justify-content:space-between; gap:8px; pointer-events:none; }
-    .snap-title{ font-weight:800; text-shadow:0 1px 6px rgba(0,0,0,.6); }
-    .snap-cta{ pointer-events:auto; }
-    .snap-dots{ display:flex; justify-content:center; gap:6px; margin-top:6px; }
-    .snap-dot{ width:6px; height:6px; border-radius:999px; background:#1a2521; border:1px solid rgba(46,230,166,.35); }
-    .snap-dot.active{ background:var(--accent); }
-
-    /* Chips */
-    .chips{ display:flex; gap:10px; margin:6px 0 12px; flex-wrap:wrap; }
-    .chip{ padding:6px 10px; border-radius:999px; font-size:13px; cursor:pointer; }
-    .chip.active{ outline:2px solid var(--accent); }
-
-    /* Grid */
-    .grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-    .card{ border-radius:16px; padding:10px; position:relative; display:flex; flex-direction:column; min-height:190px; }
-    .thumb{ height:90px; border-radius:12px; overflow:hidden; margin-bottom:8px; display:flex; align-items:center; justify-c
-    /* Overlays */
-    .overlay{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; padding:20px; z-index:9990; }
-    .overlay.show{ display:flex; }
-    .sheet{ width:92%; max-width:480px; border-radius:20px; padding:16px; }
-    #cartOverlay,#checkoutOverlay,#settingsOverlay,#orderSheet,#productSheet,#adminPrompt{ align-items:flex-end; }
-    #cartOverlay .sheet,#checkoutOverlay .sheet,#settingsOverlay .sheet,#orderSheet .sheet,#productSheet .sheet,#adminPrompt .sheet{
-      width:100%; border-top-left-radius:24px; border-top-right-radius:24px; border-bottom-left-radius:0; border-bottom-right-radius:0;
-      padding-bottom:calc(16px + env(safe-area-inset-bottom)); transform:translateY(100%); -webkit-transform:translateY(100%);
-      animation:slideUp 220ms ease-out forwards; -webkit-animation:slideUp 220ms ease-out forwards;
+    header{position:sticky;top:0;z-index:10;backdrop-filter:saturate(140%) blur(8px);background:rgba(16,16,20,.55);border-bottom:1px solid var(--line)}
+    .bar{max-width:960px;margin:0 auto;padding:10px 12px;display:flex;align-items:center;gap:12px}
+    form.search{flex:1;display:flex;align-items:center;gap:8px}
+    .search input[type="search"]{
+      width:100%; padding:10px 14px; border-radius:999px; border:1px solid var(--line);
+      background:var(--glass); color:var(--text); outline:none;
     }
-    @keyframes slideUp{ from{ transform:translateY(100%);} to{ transform:translateY(0);} }
-    .overlay.show .sheet{ transform:translateY(0)!important; -webkit-transform:translateY(0)!important; }
-
-    /* Settings/Admin */
-    .tabs{ display:flex; gap:8px; margin:6px 0 12px; }
-    .tab{ padding:8px 10px; border-radius:10px; cursor:pointer; border:1px solid #2a2a30; background:#18181d; }
-    .tab.active{ background:#24242a; }
-    .sheet-body{ max-height:70svh; overflow:auto; padding-right:4px; }
-    .admin-subtabs{ display:flex; gap:6px; margin:10px 0; flex-wrap:wrap; }
-    .subtab{ padding:6px 10px; border-radius:10px; cursor:pointer; border:1px solid #2a2a30; background:#18181d; font-size:13px; }
-    .subtab.active{ background:#24242a; }
-    .admin-list{ border:1px solid #2a2a30; border-radius:12px; padding:8px; margin-top:8px; }
-
-    .kpis{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    .kpi{ padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,.1); }
-    .kpi .label{ color:#c7c7cc; font-size:12px; }
-    .kpi .value{ font-weight:800; font-size:18px; margin-top:4px; }
-
-    /* Heat map */
-    .heat{ background:var(--heat-bg); border:1px solid #23232a; border-radius:12px; padding:8px; }
-    .heat-grid{ display:grid; grid-template-columns: 20px repeat(24, 1fr); gap:4px; align-items:center; }
-    .heat-cell{ height:16px; border-radius:4px; background:var(--heat-cell); }
-    .heat-legend{ display:flex; gap:6px; align-items:center; margin-top:8px; font-size:12px; color:#c7c7cc; }
-    .legend-swatch{ width:20px; height:10px; border-radius:4px; background:var(--heat-cell); }
-
-    /* Sticky cart bar */
-    #cartBar{
-      position:fixed;left:12px;right:12px;bottom:12px;display:none;align-items:center;justify-content:space-between;
-      gap:10px;padding:10px 12px;border-radius:14px;z-index:1000;
-      -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));
-      background:rgba(20,20,24,0.7);border:1px solid rgba(255,255,255,.08);
-      box-shadow:0 6px 24px rgba(0,0,0,.25);
+    .search button{
+      border:1px solid var(--line); background:var(--glass); color:var(--text);
+      border-radius:999px; padding:10px 14px; cursor:pointer;
     }
-    #cartBar.show{display:flex}
 
-    /* Toasts */
-    #toastHost{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none;z-index:11000}
-    .toast{pointer-events:auto;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(24,24,32,.9);font-weight:600;opacity:0;transform:translateY(8px);transition:opacity .22s ease,transform .22s ease}
-    .toast.show{opacity:1;transform:translateY(0)}
+    /* Layout */
+    main{flex:1;display:flex;justify-content:center;align-items:flex-start}
+    .wrap{width:100%;max-width:960px;padding:28px 16px}
+    .card{background:var(--glass);border:1px solid var(--line);border-radius:14px;padding:28px;box-shadow:0 6px 24px rgba(0,0,0,.28)}
+    h1{margin:0 0 8px;font-size:28px}
+    p{margin:0;color:var(--muted)}
+    footer{opacity:.7;text-align:center;padding:24px 8px}
+  </style>
+  </header>
 
-    /* Z-order */
-    #settingsOverlay{ z-index: 10000; }
-    #orderSheet{ z-index: 10050; }
+  <main>
+    <div class="wrap">
+      <section class="card">
+        <h1>Clean start</h1>
+        <p>Header now has a search bar. No brand text is shown.</p>
+      </section>
+    </div>
+  </main>
 
-    /* --- Stock save pop on product card --- */
-    .card-pop{
-      position:absolute; right:10px; top:10px;
-      background:rgba(46,230,166,.95); color:#001a12;
-      border-radius:10px; padding:6px 8px; font-weight:800; font-size:12px;
-      border:1px solid rgba(255,255,255,.15);
-      pointer-events:none;
-      transform:translateY(-6px) scale(.95); opacity:0;
-      animation:popfade .9s ease-out forwards;
+  <footer>© 2025 FitSnacks</footer>
+
+  <script>
+    function handleSearch(e){
+      e.preventDefault();
+      const q = (document.getElementById('q')?.value || '').trim();
+      if(!q){ alert('Type something to search.'); return false; }
+      console.log('Search submitted:', q);
+      // TODO: replace with real search later
+      alert('Searching for: ' + q);
+      return false;
     }
-    @keyframes popfade{
-      0%  {opacity:0; transform:translateY(-6px) scale(.95)}
-          <!-- Filter chips -->
-    <div class="chips" id="chips">
-      <div class="chip" data-filter="">all</div>
-      <div class="chip" data-filter="vegan">vegan</div>
-      <div class="chip" data-filter="gluten-free">gluten-free</div>
-      <div class="chip" data-filter="protein">protein</div>
-      <div class="chip" data-filter="favorites">favorites</div>
-      <div class="chip" data-filter="stock">stock</div>
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(r => console.log('SW registered:', r.scope))
+          .catch(err => console.warn('SW registration failed:', err));
+      });
+    }
+  </script>
+<div id="cartModal" style="position:fixed;inset:0;display:none;z-index:9999;">
+  <div onclick="openCart()" style="position:absolute;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);"></div>
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+              width:90%;max-width:420px;background:#111827;color:#fff;border-radius:16px;
+              padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.6);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <h2 style="margin:0;font-size:22px;">Your Cart</h2>
+      <button onclick="openCart()" style="background:transparent;border:0;color:#9ca3af;font-size:18px;">✕</button>
     </div>
-
-    <!-- Product grid -->
-    <div id="grid" class="grid" role="list">
-      <div class="card" role="listitem" data-name="Potato Chips" data-price="2.50" data-img="assets/product-funyuns.jpg" data-tags="snack">
-        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb"><img src="assets/product-funyuns.jpg" alt="Potato Chips" loading="lazy"></div>
-        <div class="title">Potato Chips</div>
-        <div class="price">$2.50</div>
-        <button class="add" aria-label="Add Potato Chips">+</button>
-      </div>
-      <div class="card" role="listitem" data-name="Protein Bar" data-price="2.99" data-img="assets/product-chesters.jpg" data-tags="protein">
-        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb"><img src="assets/product-chesters.jpg" alt="Protein Bar" loading="lazy"></div>
-        <div class="title">Protein Bar</div>
-        <div class="price">$2.99</div>
-        <button class="add" aria-label="Add Protein Bar">+</button>
-      </div>
-      <div class="card" role="listitem" data-name="Trail Mix" data-price="3.49" data-img="assets/product-cheetos.jpg" data-tags="vegan,gluten-free">
-        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb"><img src="assets/product-cheetos.jpg" alt="Trail Mix" loading="lazy"></div>
-        <div class="title">Trail Mix</div>
-        <div class="price">$3.49</div>
-        <button class="add" aria-label="Add Trail Mix">+</button>
-      </div>
-      <div class="card" role="listitem" data-name="Granola Bar" data-price="1.99" data-img="assets/product-granola.jpg" data-tags="vegan,protein">
-        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb"><img src="assets/product-granola.jpg" alt="Granola Bar" loading="lazy"></div>
-        <div class="title">Granola Bar</div>
-        <div class="price">$1.99</div>
-        <button class="add" aria-label="Add Granola Bar">+</button>
-      </div>
-      <div class="card" role="listitem" data-name="Doritos Flamin’ Hot Nacho" data-price="2.00" data-img="assets/product-doritos.jpg" data-tags="snack">
-        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb"><img src="assets/product-doritos.jpg" alt="Doritos Flamin’ Hot Nacho" loading="lazy"></div>
-        <div class="title">Doritos Flamin’ Hot Nacho</div>
-        <div class="price">$2.00</div>
-        <button class="add" aria-label="Add Doritos Flamin’ Hot Nacho">+</button>
-      </div>
-      <div class="card" role="listitem" data-name="Greek Yogurt" data-price="2.00" data-img="assets/greek-yogurt.jpeg?v=3" data-tags="protein">
-        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb">
-          <img src="assets/greek-yogurt.jpeg?v=3" alt="Greek Yogurt" loading="lazy"
-               onerror="if(!this.__triedJPG){this.__triedJPG=1;this.src='assets/greek-yogurt.jpg?v=3';}else{this.src='assets/product-yogurt.jpg';}">
-        </div>
-        <div class="title">Greek Yogurt</div>
-        <div class="price">$2.00</div>
-        <button class="add" aria-label="Add Greek Yogurt">+</button>
-      </div>
-      <div class="card" role="listitem" data-name="Mixed Nuts" data-price="3.20" data-img="assets/product-nuts.jpg" data-tags="vegan,protein">
-        <button class="fav" aria-label="Favorite"><span>⭐</span></button>
-        <div class="thumb"><img src="assets/product-nuts.jpg" alt="Mixed Nuts" loading="lazy"></div>
-        <div class="title">Mixed Nuts</div>
-        <div class="price">$3.20</div>
-        <button class="a
-    <!-- Product mini sheet -->
-    <div id="productSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Add item">
-      <div class="sheet" role="document">
-        <div class="row-between">
-          <h3 id="sheetTitle">Item</h3>
-          <button class="ghost" id="sheetClose" type="button">Close</button>
-        </div>
-        <div style="display:flex; gap:12px; align-items:center; margin-top:8px;">
-          <div style="width:88px;height:88px;border-radius:12px;overflow:hidden;border:1px solid #2a2a30;">
-            <img id="sheetImg" alt="" style="width:100%;height:100%;object-fit:cover">
-          </div>
-          <div style="flex:1">
-            <div id="sheetPrice" class="price" style="font-size:18px;"></div>
-            <div id="sheetStock" style="margin-top:6px;color:#c7c7cc;font-size:13px;">Stock: --</div>
-            <div id="sheetLowWarn" style="display:none;margin-top:6px;color:#ff6b6b;font-weight:600;font-size:13px;">Low stock</div>
-          </div>
-        </div>
-        <div class="row-between" style="margin-top:10px;">
-          <div class="qty" style="display:flex;align-items:center;gap:8px;">
-            <button id="qtyMinus" class="ghost" type="button" aria-label="Decrease">−</button>
-            <div id="qtyVal" aria-live="polite" style="min-width:24px;text-align:center;">1</div>
-            <button id="qtyPlus" class="ghost" type="button" aria-label="Increase">+</button>
-          </div>
-          <button class="primary" id="sheetAdd" type="button">Add</button>
-        </div>
-      </div>
+    <div id="cartBody" style="color:#cbd5e1">Cart is empty</div>
+  </div>
+</div>
+<script>function showCart(){var m=document.getElementById("cartModal"); if(m){m.style.display="block";}}
+function hideCart(){var m=document.getElementById("cartModal"); if(m){m.style.display="none";}}</script>
+<script>
+(function(){
+  function q(id){return document.getElementById(id);}
+  window.showCart = function(){ var m=q("cartModal"); if(m){ m.style.display="block"; }};
+  window.hideCart = function(){ var m=q("cartModal"); if(m){ m.style.display="none"; }};
+  window.addEventListener("DOMContentLoaded", function(){
+    // If multiple #cartModal exist, keep the first and remove the rest
+    var mods = document.querySelectorAll("#cartModal");
+    for (var i=1;i<mods.length;i++){ mods[i].remove(); }
+    // Always start hidden
+    if (mods[0]) { mods[0].style.display="none"; }
+    // Close on ESC
+    document.addEventListener("keydown", function(e){ if(e.key==="Escape"){ hideCart(); }});
+  });
+})();
+</script>
+<script id="cartModalFix">(function(){
+  function $(s,root){return (root||document).querySelector(s);}
+  function $all(s,root){return Array.from((root||document).querySelectorAll(s));}
+  function modal(){return document.getElementById("cartModal");}
+  window.showCart=function(){ var m=modal(); if(!m) return; m.classList.add("open"); m.style.display="flex"; };
+  window.hideCart=function(){ var m=modal(); if(!m) return; m.classList.remove("open","show","visible"); m.style.display="none"; };
+  window.addEventListener("DOMContentLoaded", function(){
+    var mods=$all("#cartModal");
+    for (var i=1;i<mods.length;i++){ mods[i].remove(); }
+    var m=mods[0];
+    if(!m){ return; }
+    /* Strip any inline display or auto-open classes */
+    m.classList.remove("open","show","visible","active");
+    m.style.display="none";
+    /* Overlay click to close */
+    m.addEventListener("click", function(e){ if(e.target===m){ hideCart(); }});
+    /* Close buttons inside */
+    $all(".close-btn,[data-close]", m).forEach(function(btn){ btn.addEventListener("click", hideCart); });
+    /* ESC to close */
+    document.addEventListener("keydown", function(e){ if(e.key==="Escape") hideCart(); });
+  });
+})();</script>
+  <div id="cartBackdrop" class="cart-backdrop" hidden></div>
+  <div id="cartDialog" class="cart-dialog" hidden>
+    <div class="cart-head"><div class="cart-title">Your cart</div><button id="cartClose" class="icon-btn" type="button">Close</button></div>
+    <p class="muted" id="cartBody">Cart is empty.</p>
+  </div>
+  <script id="cartLogic">
+  const $=s=>document.querySelector(s);
+  const cartBtn=$("#cartBtn"); const dialog=$("#cartDialog"); const backdrop=$("#cartBackdrop"); const closeBtn=$("#cartClose");
+  // Hide ANY stray old cart overlays that might be hard-coded
+  document.querySelectorAll(".cart-dialog:not(#cartDialog)").forEach(el=>el.hidden=true);
+  document.querySelectorAll(".cart-backdrop:not(#cartBackdrop)").forEach(el=>el.hidden=true);
+  function openCart(){backdrop.hidden=false;dialog.hidden=false;document.body.style.overflow=hidden}
+  function closeCart(){dialog.hidden=true;backdrop.hidden=true;document.body.style.overflow=}
+  cartBtn&&cartBtn.addEventListener(click,openCart);
+  closeBtn&&closeBtn.addEventListener(click,closeCart);
+  backdrop&&backdrop.addEventListener(click,closeCart);
+  window.addEventListener(keydown,e=>{if(e.key===Escape) closeCart()});
+  </script>
+<script>
+(function(){
+  const $ = (s)=>document.querySelector(s);
+  const cartBtn = $("#cartBtn");
+  const searchForm = document.getElementById("searchForm");
+  const dialog   = document.getElementById("cartDialog");
+  const backdrop = document.getElementById("cartBackdrop");
+  const closeBtn = document.getElementById("cartClose");
+  function openCart(e){ if(e) e.preventDefault(); if(searchForm) e && e.stopPropagation();
+    if(backdrop) backdrop.hidden=false; if(dialog) dialog.hidden=false; document.body.style.overflow="hidden"; }
+  function closeCart(e){ if(e) e.preventDefault(); if(backdrop) backdrop.hidden=true; if(dialog) dialog.hidden=true; document.body.style.overflow=""; }
+  if(cartBtn){ cartBtn.addEventListener("click", openCart); }
+  if(closeBtn){ closeBtn.addEventListener("click", closeCart); }
+  if(backdrop){ backdrop.addEventListener("click", closeCart); }
+  /* stop the search form from reacting when the click originated on the cart button */
+  if(searchForm){ searchForm.addEventListener("submit", function(ev){
+      const fromCart = ev.submitter && ev.submitter.id === "cartBtn";
+      if(fromCart){ ev.preventDefault(); ev.stopPropagation(); openCart(ev); }
+  }); }
+})();
+</script>
+<script>(function(){
+  const $=(s)=>document.querySelector(s);
+  const cartBtn = $("#cartBtn");
+  const searchForm = document.querySelector("form");
+  const searchInput = document.querySelector("input[type=\"search\"]")||$("#search");
+  const dialog   = document.getElementById("cartDialog");
+  const backdrop = document.getElementById("cartBackdrop");
+  const closeBtn = document.getElementById("cartClose");
+  function openCart(e){ if(e){e.preventDefault(); e.stopPropagation();} if(backdrop) backdrop.hidden=false; if(dialog) dialog.hidden=false; document.body.style.overflow="hidden"; }
+  function closeCart(e){ if(e){e.preventDefault(); e.stopPropagation();} if(backdrop) backdrop.hidden=true; if(dialog) dialog.hidden=true; document.body.style.overflow=""; }
+  if(cartBtn){ cartBtn.addEventListener("click", openCart); }
+  if(closeBtn){ closeBtn.addEventListener("click", closeCart); }
+  if(backdrop){ backdrop.addEventListener("click", closeCart); }
+  /* Only show search UI if there is a real query; otherwise do nothing */
+  if(searchForm){ searchForm.addEventListener("submit", function(ev){
+    const q = (searchInput && searchInput.value || "").trim();
+    if(!q){ ev.preventDefault(); ev.stopPropagation(); /* no empty search popup */ }
+  }, true); }
+})();</script>
+<script>
+ (function(){
+   const $=s=>document.querySelector(s);
+   const btn=$("#cartBtn");
+   const dialog=document.getElementById("cartDialog");
+   const backdrop=document.getElementById("cartBackdrop");
+   function openCart(){ if(backdrop) backdrop.hidden=false; if(dialog) dialog.hidden=false; document.body.style.overflow="hidden"; }
+   function closeCart(){ if(dialog) dialog.hidden=true; if(backdrop) backdrop.hidden=true; document.body.style.overflow=""; }
+   if(btn) btn.onclick=openCart;
+   if(backdrop) backdrop.onclick=closeCart;
+   const x=document.getElementById("cartClose"); if(x) x.onclick=closeCart;
+   window.addEventListener("keydown",e=>{ if(e.key==="Escape") closeCart(); });
+ })();
+</script>
+<script>
+(function(){
+ const btn=document.getElementById("cartBtn");
+ const dlg=document.getElementById("cartDialog");
+ const bg=document.getElementById("cartBackdrop");
+ function openCart(){ if(bg) bg.hidden=false; if(dlg) dlg.hidden=false; document.body.style.overflow="hidden"; }
+ function closeCart(){ if(bg) bg.hidden=true; if(dlg) dlg.hidden=true; document.body.style.overflow=""; }
+ if(btn) btn.onclick=openCart;
+ if(bg) bg.onclick=closeCart;
+ const x=document.getElementById("cartClose"); if(x) x.onclick=closeCart;
+ window.addEventListener("keydown",e=>{ if(e.key==="Escape") closeCart(); });
+})();
+</script>
+</body>
+</html>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const cartBtn = document.getElementById('cartBtn');
+  if (cartBtn) {
+    cartBtn.textContent = 'CART';
+    cartBtn.setAttribute('aria-label','Open cart');
+    cartBtn.addEventListener('click', function(){
+      const ov = document.getElementById('cartOverlay');
+      if (ov) ov.classList.add('show');
+      else alert('Cart overlay not found yet');
+    });
+  }
+});
+</script>
+<!-- Cart Overlay -->
+<div id="cartOverlay" class="overlay" style="display:none;">
+  <div class="sheet" style="background:rgba(20,20,24,.95);padding:20px;border-radius:18px;max-width:380px;margin:auto;">
+    <div class="row-between" style="display:flex;justify-content:space-between;align-items:center;">
+      <h3>Your Cart</h3>
+      <button id="closeCart" style="background:none;border:none;color:#fff;font-size:18px;">✕</button>
     </div>
+    <div id="cartContent" style="margin-top:12px;color:#c7c7cc;">Cart is empty</div>
+  </div>
+</div>
 
-    <!-- Order details sheet -->
-    <div id="orderSheet" class="overlay" role="dialog" aria-modal="true" aria-label="Order details">
-      <div class="sheet" role="document">
-        <div class="row-between">
-          <h3>Order</h3>
-          <button class="ghost" id="orderClose" type="button">Close</button>
-        </div>
-        <div id="orderMeta" style="margin-top:6px;color:#c7c7cc;font-size:13px">–</div>
-        <div id="orderLines" class="admin-list" style="margin-top:8px">–</div>
-        <div class="row-between" style="margin-top:10px;">
-          <strong>Total</strong><strong id="orderTotal">$0.00</strong>
-        </div>
-        <div class="actions" style="margin-top:12px;">
-          <button class="ghost" id="orderCancel" type="button">Cancel</button>
-          <button class="primary" id="orderDelivered" type="button">Mark Delivered</button>
-        </div>
-      </div>
-    </div>
+<script>
+document.querySelector('#cartBtn')?.addEventListener('click',()=>{
+  document.querySelector('#cartOverlay').style.display='flex';
+});
+document.querySelector('#closeCart')?.addEventListener('click',()=>{
+  document.querySelector('#cartOverlay').style.display='none';
+});
+</script>
+<!-- === UPDATE CART STYLES: CENTERED MODAL === -->
+<style>
+  #cartPanel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 92%;
+    max-width: 460px;
+    background: #111;
+    border: 1px solid #2a2a2e;
+    border-radius: 20px;
+    box-shadow: 0 25px 60px rgba(0,0,0,.6);
+    padding: 24px;
+    display: none;
+    z-index: 10000;
+    animation: fadeIn .25s ease;
+  }
+  #cartPanel.show {
+    display: block;
+  }
+  #cartPanel h3 {
+    margin: 0 0 12px;
+    font-size: 20px;
+    text-align: center;
+  }
+  #cartClose {
+    appearance: none;
+    border: 0;
+    background: #222;
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 12px;
+    display: block;
+    margin: 16px auto 0;
+  }
+  #cartEmpty {
+    opacity: .8;
+    text-align: center;
+    margin-top: 20px;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -46%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+  }
+</style>
+<!-- === /UPDATE CART STYLES === -->
+<!-- CART MODAL OVERRIDES -->
+<style>
+  /* Target multiple possibilities just in case the id/class differs */
+  #cartPanel,
+  .cart-panel,
+  [data-cart-panel] {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
 
-    <!-- Cart -->
-    <div id="cartOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Cart">
-      <div class="sheet" role="document">
-        <div class="row-between">
-          <h3>Cart</h3>
-          <button class="ghost" id="cartBack" type="button">Back</button>
-        </div>
-        <div id="cartContent" class="sheet-body">Cart is empty</div>
-        <div class="row-between" style="margin-top:10px;">
-          <strong>Total</strong><strong id="cartTotal">$0.00</strong>
-        </div>
-        <div class="actions" style="margin-top:12px;">
-          <button class="ghost" id="reorderLast" type="button">Re-order last</button>
-          <button class="primary" id="cartCheckout" type="button">Checkout</button>
-        </div>
-      </div>
-    </div>
+    width: 92% !important;
+    max-width: 480px !important;
+    background: #111 !important;
+    border: 1px solid #2a2a2e !important;
+    border-radius: 20px !important;
+    box-shadow: 0 25px 60px rgba(0,0,0,.6) !important;
+    padding: 24px !important;
+    z-index: 10000 !important;
 
-    <!-- Checkout -->
-    <div id="checkoutOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Checkout">
-      <div class="sheet" role="document">
-        <div class="row-between">
-          <h3>Checkout</h3>
-          <button class="ghost" id="checkoutClose" type="button">Close</button>
-        </div>
+    /* Kill any previous bottom/right/inset rules */
+    bottom: auto !important;
+    right: auto !important;
+    inset: auto !important;
+  }
 
-        <div class="sheet-body">
-          <div style="margin-top:6px;">Your name:</div>
-          <input id="checkoutName" class="field" style="width:100%;padding:10px;border-radius:10px" autocomplete="name">
-          <div style="margin-top:10px;">Where are you on campus?</div>
-          <input id="checkoutLocation" class="field" style="width:100%;padding:10px;border-radius:10px" autocomplete="organization-title">
+  #cartPanel h3,
+  .cart-panel h3,
+  [data-cart-panel] h3 {
+    margin: 0 0 12px !important;
+    font-size: 20px !important;
+    text-align: center !important;
+  }
 
-          <div style="margin-top:12px;">Promo code</div>
-          <input id="checkoutPromo" class="
-    <!-- Settings / Admin -->
-    <div id="settingsOverlay" class="overlay" role="dialog" aria-modal="true" aria-label="Settings">
-      <div class="sheet" role="document">
-        <div class="row-between">
-          <h3>Settings</h3>
-          <button class="ghost" id="settingsClose" type="button">Close</button>
-        </div>
+  #cartEmpty,
+  .cart-empty,
+  [data-cart-empty] {
+    opacity: .8 !important;
+    text-align: center !important;
+    margin-top: 20px !important;
+  }
+</style>
+<!-- /CART MODAL OVERRIDES -->
+<!-- Force CART modal to enlarge + center -->
+<style>
+  #cartPanel,
+  .cart-panel,
+  [data-cart-panel] {
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 90% !important;
+    max-width: 500px !important;
+    height: auto !important;
+    min-height: 280px !important;
+    background: #111 !important;
+    border-radius: 22px !important;
+    padding: 30px !important;
+    z-index: 9999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    box-shadow: 0 20px 50px rgba(0,0,0,.7) !important;
+  }
 
-        <div class="tabs" role="tablist" aria-label="Settings tabs">
-          <button id="tabGeneral" class="tab active" role="tab" aria-selected="true">General</button>
-          <button id="tabAdmin" class="tab" role="tab" aria-selected="false">Admin</button>
-        </div>
+  #cartPanel h3,
+  .cart-panel h3,
+  [data-cart-panel] h3 {
+    font-size: 22px !important;
+    margin-bottom: 15px !important;
+  }
+</style>
 
-        <div id="settingsGeneral" class="sheet-body" role="tabpanel" aria-labelledby="tabGeneral">
-          <div style="margin-top:6px;">Your name</div>
-          <input id="profileName" class="field" style="width:100%;padding:10px;border-radius:10px">
-          <div style="margin-top:10px;">Default location</div>
-          <input id="profileLoc" class="field" style="width:100%;padding:10px;border-radius:10px">
-          <div class="actions" style="margin-top:12px;">
-            <button class="primary" id="profileSave" type="button">Save</button>
-          </div>
-        </div>
+<script>
+  // Force real-time centering when opened
+  document.addEventListener("DOMContentLoaded", () => {
+    const cart = document.querySelector("#cartPanel, .cart-panel, [data-cart-panel]");
+    if (cart) {
+      const observer = new MutationObserver(() => {
+        cart.style.top = "50%";
+        cart.style.left = "50%";
+        cart.style.transform = "translate(-50%, -50%)";
+      });
+      observer.observe(cart, { attributes: true, attributeFilter: ["style"] });
+    }
+  });
+</script>
+<!-- /Force CART modal to enlarge + center -->
+<style>
+.cart-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(30, 30, 35, 0.95);
+  color: white;
+  padding: 20px 30px;
+  border-radius: 18px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  width: 80%;
+  max-width: 400px;
+  text-align: center;
+  z-index: 9999;
+  display: none;
+}
+.cart-modal.active {
+  display: block;
+}
+</style>
+<!-- v:cart-fix-4 -->
+<style>
+#cartDialog{
+  position:fixed !important;
+  top:50% !important;
+  left:50% !important;
+  transform:translate(-50%,-50%) !important;
+  width:clamp(320px,60vw,420px) !important;
+  max-height:60vh !important;
+  border-radius:16px !important;
+  z-index:1000 !important;
+}
+#cartBackdrop{
+  position:fixed !important;
+  inset:0 !important;
+  background:rgba(0,0,0,.55) !important;
+  backdrop-filter:blur(2px) !important;
+  z-index:999 !important;
+}
+</style>
+<!-- v:cart-fix-5 -->
+<style>
+  /* Resize + center the REAL cart dialog */
+  #cartDialog{
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%,-50%) !important;
+    width: clamp(320px, 55vw, 420px) !important;  /* a bit smaller */
+    max-height: 55vh !important;                  /* a bit smaller */
+    border-radius: 16px !important;
+    z-index: 1000 !important;
+  }
+  #cartBackdrop{
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0,0,0,.55) !important;
+    backdrop-filter: blur(2px) !important;
+    z-index: 999 !important;
+  }
+</style>
 
-        <div id="settingsAdmin" class="sheet-body" role="tabpanel" aria-labelledby="tabAdmin" style="display:none;">
-          <div style="margin-top:6px;">Admin password</div>
-          <input id="adminPass" class="field" style="width:100%;padding:10px;border-radius:10px" type="password">
-          <div class="actions" style="margin-top:12px;">
-            <button class="primary" id="adminUnlock" type="button">Unlock</button>
-          </div>
+<script>
+/* Kill any legacy cart UIs and stop auto-open */
+(function(){
+  const keep = new Set(['cartDialog','cartBackdrop','cartBtn','cartClose']);
+  // Hide any old cart elements that might be stuck on screen
+  document.querySelectorAll('[id*="cart"]').forEach(el=>{
+    if(!keep.has(el.id)) el.style.display = 'none';
+  });
+  // Ensure our real cart is hidden by default
+  const dialog = document.getElementById('cartDialog');
+  const backdrop = document.getElementById('cartBackdrop');
+  if (dialog) dialog.hidden = true;
+  if (backdrop) backdrop.hidden = true;
 
-          <!-- Admin area appears after unlock -->
-          <div id="adminArea" style="display:none; margin-top:16px;">
-            <div class="kpis">
-              <div class="kpi"><div class="label">Open orders</div><div class="value" id="kpiOpen">0</div></div>
-              <div class="kpi"><div class="label">Revenue (local)</div><div class="value" id="kpiRev">$0.00</div></div>
-            </div>
+  // Remove ANY accidental auto-open calls that might have slipped in
+  // (If some inline script called openCart(), this prevents it from running again)
+  window.openCart = window.openCart || function(){ 
+    if (!dialog || !backdrop) return;
+    backdrop.hidden = false; dialog.hidden = false; document.body.style.overflow = 'hidden';
+  };
+  window.closeCart = window.closeCart || function(){
+    if (!dialog || !backdrop) return;
+    dialog.hidden = true; backdrop.hidden = true; document.body.style.overflow = '';
+  };
+})();
+</script>
+<!-- v:cart-fix-6 -->
+<style>
+  /* Always hide any element marked hidden */
+  [hidden]{display:none !important;}
 
-            <!-- Subtabs -->
-            <div class="admin-subtabs" id="adminSubtabs"></div>
+  /* Nuke any legacy cart dialogs, keep only our #cartDialog visible */
+  .cart-dialog:not(#cartDialog), .cart-modal:not(#cartDialog) { width:clamp(320px,65vw,440px); max-height:65vh; top:50%; left:50%; transform:translate(-50%,-50%); position:fixed; z-index:1000;  display:none !important; }
 
-            <!-- Panels -->
-            <div id="adminPanels">
-              <div id="adminStock"   class="admin-list" style="display:none;"></div>
-              <div id="adminOrders"  class="admin-list" style="display:none;"></div>
-              <div id="adminHeat"    class="admin-list" style="display:none;">
-                <div class="heat">
-                  <div style="font-weight:700;margin-bottom:6px;">Orders Heat Map (7×24)</div>
-                  <div class="heat-grid" id="heatGrid"></div>
-                  <div class="heat-legend">
-                    <span>Low</span>
-                    <div class="legend-swatch" id="legendLow"></div>
-                    <div class="legend-swatch" id="legendMid"></div>
-                    <div class="legend-swatch" id="legendHigh"></div>
-                    <span>High</span>
-                  </div>
-                </div>
-              </div>
-              <div id="adminHistory" class="admin-list" style="display:none;"></div>
-              <div id="adminPromos"  class="admin-list" style="display:none;">
-                <div style="margin-bottom:8px;">Active promo pattern examples: <code>SAVE10</code>, <code>$3</code></div>
-                <div style="color:#c7c7cc;">(This simple demo reads codes at checkout; extend here to manage scheduled promos.)</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+  /* Resize + center our real cart */
+  #cartDialog{
+    position:fixed !important;
+    top:50% !important; left:50% !important; transform:translate(-50%,-50%) !important;
+    width: clamp(320px, 52vw, 420px) !important;
+    max-height: 55vh !important;
+    border-radius:16px !important; z-index:1000 !important;
+  }
+  #cartBackdrop{
+    position:fixed !important; inset:0 !important;
+    background:rgba(0,0,0,.55) !important; backdrop-filter:blur(2px) !important;
+    z-index:999 !important;
+  }
+</style>
 
-    <!-- Optional admin prompt overlay -->
-    <div id="adminPrompt" class="overlay" role="dialog" aria-modal="true" aria-label="Admin prompt">
-      <div class="sheet" role="document">
-        <div class="row-between">
-          <h3>Admin required</h3>
-          <button class="ghost" id="adminPromptClose" type="button">Close</button>
+<script>
+(function(){
+  const $ = s => document.querySelector(s);
+  const dialog   = $('#cartDialog');
+  const backdrop = $('#cartBackdrop');
+  const cartBtn  = $('#cartBtn');
+  const closeBtn = $('#cartClose');
+
+  // 1) Hide ANY stray/legacy cart UIs
+  document.querySelectorAll('[id*="cart"], .cart-dialog, .cart-modal, .modal').forEach(el=>{ width:clamp(320px,65vw,440px); max-height:65vh; top:50%; left:50%; transform:translate(-50%,-50%); position:fixed; z-index:1000; 
+    if (el !== dialog && el !== backdrop) {
+      el.style.display = 'none';
+      el.hidden = true;
+      el.removeAttribute('open');
+    }
+  });
+
+  // 2) Make sure our cart starts hidden and is closable
+  function openCart(){ if(!dialog||!backdrop) return;
+    backdrop.hidden=false; dialog.hidden=false; document.body.style.overflow='hidden';
+  }
+  function closeCart(){ if(!dialog||!backdrop) return;
+    dialog.hidden=true; backdrop.hidden=true; document.body.style.overflow='';
+  }
+  window.openCart = openCart; window.closeCart = closeCart;
+
+  // wire buttons (overwrite any previous handlers)
+  if (cartBtn)  cartBtn.onclick  = openCart;
+  if (closeBtn) closeBtn.onclick = closeCart;
+  if (backdrop) backdrop.onclick = closeCart;
+  window.addEventListener('keydown', e => { if (e.key === 'Escape') closeCart(); });
+
+  // 3) Kill any accidental auto-open that may have been left in earlier scripts
+  setTimeout(closeCart, 10);
+})();
+</script>
+="ghost" id="adminPromptClose" type="button">Close</button>
         </div>
         <div style="margin-top:8px;">Please unlock Admin in Settings first.</div>
         <div class="actions" style="margin-top:12px;">
