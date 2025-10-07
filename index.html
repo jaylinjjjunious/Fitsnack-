@@ -58,7 +58,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
+        navigator.serviceWorker.register('sw.off.js?v=1759818632'))
           .then(r => console.log('SW registered:', r.scope))
           .catch(err => console.warn('SW registration failed:', err));
       });
