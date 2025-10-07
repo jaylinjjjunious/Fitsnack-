@@ -166,6 +166,12 @@ if(O&&B){ bind(); O.addEventListener("click",function(e){ if(e.target===O) close
   <style>.carousel .slide{height:84px}@media (min-width:768px){.carousel .slide{height:120px}}</style>
   <!-- v45-height: 94px mobile / 120px tablet (slightly larger) -->
   <style>.carousel .slide{height:94px}@media (min-width:768px){.carousel .slide{height:120px}}</style>
+  <style>
+  /* Edge-to-edge banner (kill inner padding/background) */
+  .carousel, .track { padding:0; background:transparent; }
+  .slide { margin:0; overflow:hidden; border-radius:16px; }
+  .slide img { display:block; width:100%; height:100%; object-fit:cover; }
+  </style>
 </body>
   <!-- v52-autorotate7s-io: observer-based loop 1→2→3→1 -->
 <script>(function(){
