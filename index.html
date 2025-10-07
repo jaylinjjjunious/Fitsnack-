@@ -67,9 +67,34 @@
     </form>
     <button class="cart" id="cartBtn" aria-label="Cart">🛒</button>
   </header>
-  <div class="overlay" id="overlay">
+  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v35-trim</div>
+  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v36-bind</div>
+  <script>(function(){var O=document.getElementById("overlay"),B=document.getElementById("cartBtn"),C=document.getElementById("closeBtn"),last=null;function openM(){last=document.activeElement;document.body.classList.add("lock");O.classList.add("show");O.setAttribute("aria-hidden","false");setTimeout(function(){(document.querySelector(".sheet-body")||O).focus();},0);}function closeM(){O.classList.remove("show");O.setAttribute("aria-hidden","true");document.body.classList.remove("lock");if(last&&last.focus)last.focus();}if(B)B.addEventListener("click",openM);if(C)C.addEventListener("click",closeM);if(O)O.addEventListener("click",function(e){if(e.target===O)closeM();});window.addEventListener("keydown",function(e){if(e.key==="Escape")closeM();});})();</script>
+  <!-- v37-modal: add centered mini page back -->
+  <style>
+    .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:saturate(1.2) blur(4px);z-index:20;}
+    .overlay.show{display:flex;}
+    .sheet{width:min(88vw,420px);max-height:72vh;background:#16161a;color:#e9e9ec;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.45);display:flex;flex-direction:column;overflow:hidden;transform:translateY(10px);opacity:0;transition:transform .18s ease, opacity .18s ease;}
+    .overlay.show .sheet{transform:translateY(0);opacity:1;}
+    .sheet-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#1c1c21;border-bottom:1px solid rgba(255,255,255,.06);}
+    .sheet-title{font-weight:600;}
+    .sheet-close{border:0;border-radius:12px;padding:6px 10px;background:rgba(255,255,255,.12);color:#fff;font-size:14px;}
+    .sheet-body{padding:14px;overflow:auto;}
+    body.lock{overflow:hidden;}
+  </style>
+  <div class="overlay" id="overlay" aria-hidden="true">
     <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
       <header class="sheet-head">
         <div class="sheet-title" id="cartTitle">Your Cart</div>
-  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v35-trim</div>
+        <button class="sheet-close" id="closeBtn" type="button">Close</button>
+      </header>
+      <div class="sheet-body" tabindex="0"><p>Mini cart goes here.</p></div>
+    </section>
+  </div>
+  <script>(function(){var O=document.getElementById("overlay"),B=document.getElementById("cartBtn"),C=null,last=null;
+function bind(){C=document.getElementById("closeBtn"); if(B)B.addEventListener("click",openM); if(C)C.addEventListener("click",closeM);}
+function openM(){last=document.activeElement; document.body.classList.add("lock"); O.classList.add("show"); O.setAttribute("aria-hidden","false"); setTimeout(function(){(document.querySelector(".sheet-body")||O).focus();},0);}
+function closeM(){O.classList.remove("show"); O.setAttribute("aria-hidden","true"); document.body.classList.remove("lock"); if(last&&last.focus) last.focus();}
+if(O&&B){ bind(); O.addEventListener("click",function(e){ if(e.target===O) closeM();}); window.addEventListener("keydown",function(e){ if(e.key==="Escape") closeM();}); }})();</script>
+  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v37-modal</div>
 </body></html>
