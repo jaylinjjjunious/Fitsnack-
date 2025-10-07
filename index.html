@@ -5,35 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title></title>
   <meta name="theme-color" content="#0b0b0d">
-  <!-- v16 -->
+  <!-- v17 -->
   <style>
     :root{
       --bg:#0b0b0d; --text:#e9e9ec;
-      --right-stop:20px; /* reserved space on the right (cart gap) */
+      /* adjust this to move the stop point */
+      --right-stop: 42px; /* try 42px; tell me if you want more/less */
     }
     html,body{
       margin:0; height:100%;
       background:var(--bg); color:var(--text);
       font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif;
     }
-    .hdr{
-      padding:10px 0;
-      background:#0b0b0d; position:sticky; top:0; z-index:1;
-    }
-    /* Flush LEFT. Hard-cap to stop on the RIGHT (safe-areas respected) */
-    .search{ margin-left:max(0px, env(safe-area-inset-left)); }
+    .hdr{ padding:10px 0; background:#0b0b0d; position:sticky; top:0; z-index:1; }
+    /* Flush LEFT; hard-cap RIGHT using safe-areas + right-stop */
+    .search{ margin-left: max(0px, env(safe-area-inset-left)); }
     .search input{
       width: calc(
         100vw
         - max(0px, env(safe-area-inset-left))
-        - (max(0px, env(safe-area-inset-right)) + var(--right-stop))
+        - ( max(0px, env(safe-area-inset-right)) + var(--right-stop) )
       );
       display:block; border:0; outline:0;
       padding:8px 12px;
       color:#fff; background:rgba(255,255,255,.1);
       border-radius:20px; font-size:.95em;
     }
-    .ver{position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px}
   </style>
 </head>
 <body>
@@ -42,17 +39,6 @@
       <input type="search" name="q" placeholder="Search…" autocomplete="off" enterkeyhint="search">
     </form>
   </header>
-  <div class="ver">v16</div>
-
-  <!-- one-time cache reset so v16 actually shows -->
-  <script>(function(){try{
-    if(!('serviceWorker' in navigator)) return;
-    navigator.serviceWorker.getRegistrations()
-      .then(rs=>Promise.all(rs.map(r=>r.unregister())))
-      .then(()=>window.caches?caches.keys().then(k=>Promise.all(k.map(n=>caches.delete(n)))):null)
-      .then(()=>{ if(location.search.indexOf('v16loaded')<0){
-        location.search+=(location.search?'&':'?')+'v16loaded=1';
-      }});
-  }catch(e){console.log(e)}})();</script>
+  <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v17</div>
 </body>
 </html>
