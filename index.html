@@ -44,8 +44,8 @@
   #cartModal .close-btn{float:right; padding:6px 10px; border:1px solid #333; border-radius:10px;}
 </style>
   <style id="cartSizingOverride">
-  .cart-dialog{width:clamp(320px,60vw,420px);max-height:60vh;top:50%;left:50%;transform:translate(-50%,-50%);position:fixed;z-index:1000;padding:18px;border-radius:16px;background:#141414;box-shadow:0 10px 40px rgba(0,0,0,.45)}
-  .cart-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);z-index:999}
+  .cart-dialog{ width:clamp(320px,65vw,440px); max-height:65vh; top:50%; left:50%; transform:translate(-50%,-50%); position:fixed; z-index:1000; width:clamp(320px,60vw,420px);max-height:60vh;top:50%;left:50%;transform:translate(-50%,-50%);position:fixed;z-index:1000;padding:18px;border-radius:16px;background:#141414;box-shadow:0 10px 40px rgba(0,0,0,.45)}
+  .cart-backdrop{ position:fixed; inset:0; backdrop-filter:blur(2px); background:rgba(0,0,0,.5); z-index:999; position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);z-index:999}
   .cart-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
   .cart-title{font-size:20px;font-weight:700}
   </style>
@@ -56,7 +56,7 @@
       <!-- Search bar only (no FitSnacks text) -->
       <form class="search" role="search" aria-label="Search snacks" onsubmit="return handleSearch(event)">
         <input id="q" name="q" type="search" placeholder="Search snacks…" autocomplete="off" />
-        <button type="button" aria-label="Search" onclick="showCart()" onclick="showCart()" onclick="showCart()">CART</button>
+        <button id="cartBtn" type="button" class="icon-btn">CART</button>
       </form>
     </div>
   </header>
@@ -161,6 +161,27 @@ function hideCart(){var m=document.getElementById("cartModal"); if(m){m.style.di
   backdrop&&backdrop.addEventListener(click,closeCart);
   window.addEventListener(keydown,e=>{if(e.key===Escape) closeCart()});
   </script>
+<script>
+(function(){
+  const $ = (s)=>document.querySelector(s);
+  const cartBtn = $("#cartBtn");
+  const searchForm = document.getElementById("searchForm");
+  const dialog   = document.getElementById("cartDialog");
+  const backdrop = document.getElementById("cartBackdrop");
+  const closeBtn = document.getElementById("cartClose");
+  function openCart(e){ if(e) e.preventDefault(); if(searchForm) e && e.stopPropagation();
+    if(backdrop) backdrop.hidden=false; if(dialog) dialog.hidden=false; document.body.style.overflow="hidden"; }
+  function closeCart(e){ if(e) e.preventDefault(); if(backdrop) backdrop.hidden=true; if(dialog) dialog.hidden=true; document.body.style.overflow=""; }
+  if(cartBtn){ cartBtn.addEventListener("click", openCart); }
+  if(closeBtn){ closeBtn.addEventListener("click", closeCart); }
+  if(backdrop){ backdrop.addEventListener("click", closeCart); }
+  /* stop the search form from reacting when the click originated on the cart button */
+  if(searchForm){ searchForm.addEventListener("submit", function(ev){
+      const fromCart = ev.submitter && ev.submitter.id === "cartBtn";
+      if(fromCart){ ev.preventDefault(); ev.stopPropagation(); openCart(ev); }
+  }); }
+})();
+</script>
 </body>
 </html>
 <script>
@@ -428,7 +449,7 @@ document.querySelector('#closeCart')?.addEventListener('click',()=>{
   [hidden]{display:none !important;}
 
   /* Nuke any legacy cart dialogs, keep only our #cartDialog visible */
-  .cart-dialog:not(#cartDialog), .cart-modal:not(#cartDialog) { display:none !important; }
+  .cart-dialog:not(#cartDialog), .cart-modal:not(#cartDialog) { width:clamp(320px,65vw,440px); max-height:65vh; top:50%; left:50%; transform:translate(-50%,-50%); position:fixed; z-index:1000;  display:none !important; }
 
   /* Resize + center our real cart */
   #cartDialog{
@@ -454,7 +475,7 @@ document.querySelector('#closeCart')?.addEventListener('click',()=>{
   const closeBtn = $('#cartClose');
 
   // 1) Hide ANY stray/legacy cart UIs
-  document.querySelectorAll('[id*="cart"], .cart-dialog, .cart-modal, .modal').forEach(el=>{
+  document.querySelectorAll('[id*="cart"], .cart-dialog, .cart-modal, .modal').forEach(el=>{ width:clamp(320px,65vw,440px); max-height:65vh; top:50%; left:50%; transform:translate(-50%,-50%); position:fixed; z-index:1000; 
     if (el !== dialog && el !== backdrop) {
       el.style.display = 'none';
       el.hidden = true;
