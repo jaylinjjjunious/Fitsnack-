@@ -5,31 +5,49 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title></title>
   <meta name="theme-color" content="#0b0b0d">
-  <!-- v13 -->
+  <!-- v14 -->
   <style>
     :root{
       --bg:#0b0b0d; --text:#e9e9ec;
-      --cart-gap:56px;            /* change this width if you want more/less stop on right */
+      --cart-gap:38px; /* slightly smaller right stop gap */
     }
-    html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+    html,body{
+      margin:0;
+      height:100%;
+      background:var(--bg);
+      color:var(--text);
+      font-family:-apple-system,system-ui,Segoe UI,Roboto,Arial,sans-serif;
+    }
 
-    /* Header: obey safe areas, flush-left, reserve fixed space on right */
     .hdr{
       padding-top:10px;
       padding-bottom:10px;
-      padding-left: max(0px, env(safe-area-inset-left));              /* flush to the white line */
-      padding-right: calc(max(0px, env(safe-area-inset-right)) + var(--cart-gap)); /* stop early on right */
-      background:#0b0b0d; position:sticky; top:0; z-index:1;
+      padding-left:max(0px, env(safe-area-inset-left));
+      padding-right:calc(max(0px, env(safe-area-inset-right)) + var(--cart-gap));
+      background:#0b0b0d;
+      position:sticky;
+      top:0;
+      z-index:1;
     }
     .search input{
-      width:100%; display:block;
-      border:0; outline:0;
+      width:100%;
+      display:block;
+      border:0;
+      outline:0;
       padding:8px 12px;
-      color:#fff; background:rgba(255,255,255,.1);
-      border-radius:20px; font-size:.95em;
+      color:#fff;
+      background:rgba(255,255,255,.1);
+      border-radius:20px;
+      font-size:.95em;
     }
 
-    .ver{position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px}
+    .ver{
+      position:fixed;
+      bottom:8px;
+      left:8px;
+      opacity:.35;
+      font-size:12px;
+    }
   </style>
 </head>
 <body>
@@ -38,6 +56,6 @@
       <input type="search" name="q" placeholder="Search…" autocomplete="off" enterkeyhint="search">
     </form>
   </header>
-  <div class="ver">v13</div>
+  <div class="ver">v14</div>
 </body>
 </html>
