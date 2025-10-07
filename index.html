@@ -160,6 +160,7 @@ if(O&&B){ bind(); O.addEventListener("click",function(e){ if(e.target===O) close
     window.addEventListener(visibilitychange, function(){ if(document.hidden) clearInterval(a); });
   })();</script>
   <div style="position:fixed;bottom:8px;left:8px;opacity:.35;font-size:12px">v38-carousel</div>
-  <!-- v40-size: smaller carousel + dedupe -->
   <style>.carousel .slide{height:160px}@media (min-width:768px){.carousel .slide{height:200px}}</style>
+  <!-- v41-height: shorten carousel to ~130px -->
+  <style>.carousel .slide{height:130px}@media (min-width:768px){.carousel .slide{height:170px}}</style>
 </body></html>
