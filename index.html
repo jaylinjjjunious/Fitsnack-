@@ -480,3 +480,23 @@ document.addEventListener('DOMContentLoaded', () => {
   display: block;
 }
 </style>
+<!-- v:cart-fix-4 -->
+<style>
+#cartDialog{
+  position:fixed !important;
+  top:50% !important;
+  left:50% !important;
+  transform:translate(-50%,-50%) !important;
+  width:clamp(320px,60vw,420px) !important;
+  max-height:60vh !important;
+  border-radius:16px !important;
+  z-index:1000 !important;
+}
+#cartBackdrop{
+  position:fixed !important;
+  inset:0 !important;
+  background:rgba(0,0,0,.55) !important;
+  backdrop-filter:blur(2px) !important;
+  z-index:999 !important;
+}
+</style>
